@@ -1,6 +1,15 @@
+import { CacheProvider } from "@emotion/react";
+import Navbar from "./Navbar"
+import PostList from "./components/PostsList"
+import Registration from "./components/Registration"
+import { createTheme, ThemeProvider, colors } from '@mui/material';
+import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
+
 // import { useState } from "react"
 // import ListGroup from "./ListGroup"
-// import Alert from "./Alert"
+// import Alert from "./Alert"W
 
 // function App() {
 //   const [cities, setCities] = useState(["London", "New York", "Paris", "Tokyo", "Delhi", "Dubai"])
@@ -44,17 +53,50 @@
 //   )
 // }
 
-import Navbar from "./Navbar"
-import PostList from "./components/PostsList"
-import Registration from "./components/Registration"
-
 function App() {
+  const cacheRtl = createCache({
+    key: 'muirtl',
+    stylisPlugins: [prefixer, rtlPlugin],
+  });
+  
+  const theme = createTheme({
+    direction: 'rtl',
+    palette: {
+      primary: {
+        main: colors.green[600],
+        contrastText: '#f7f7eb',
+      },
+      secondary: {
+        main: '#f7f7eb',
+        contrastText: colors.green[600],
+      }
+    },
+    typography: {
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+    },
+  });
+
+  document.dir = 'rtl';
+
   return (
-    <div>
-      <Navbar/>
-      {/* <Registration />
-      <PostList /> */}
-    </div>
+    <CacheProvider value={cacheRtl}>
+      <ThemeProvider theme={theme}>
+        <Navbar/>
+        {/* <Registration />
+        <PostList /> */}
+      </ThemeProvider>
+    </CacheProvider>
   )
 }
 
