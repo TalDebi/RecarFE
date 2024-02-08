@@ -14,12 +14,14 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import Logo from "./assets/recarLogo.jpeg"
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { useNavigate } from "react-router-dom";
 import { Badge } from '@mui/material';
 
-const pages = ['הרכבים שלי', 'חיפוש'];
+const pages = [{ title: 'הרכבים שלי', route: 'myCars'}, { title: 'חיפוש רכבים', route: 'search' }];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function Navbar() {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -38,6 +40,11 @@ function Navbar() {
     setAnchorElUser(null);
   };
 
+  const handleNavMenuClick = (route: string) => {
+    handleCloseNavMenu();
+    navigate(`/${route}`);
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -47,7 +54,6 @@ function Navbar() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -90,8 +96,8 @@ function Navbar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.title} onClick={(): void => handleNavMenuClick(page.route)}>
+                  <Typography textAlign="center">{page.title}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -101,7 +107,6 @@ function Navbar() {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -118,11 +123,11 @@ function Navbar() {
           <Box sx={{ flexGrow: 1, ml: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                key={page.title}
+                onClick={(): void => handleNavMenuClick(page.route)}
                 sx={{ my: 2, color: 'inherit', display: 'block' }}
               >
-                {page}
+                {page.title}
               </Button>
             ))}
           </Box>       
