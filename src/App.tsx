@@ -21,7 +21,7 @@ function App() {
     direction: 'rtl',
     palette: {
       primary: {
-        main: colors.green[600],
+        main: colors.green[500],
         contrastText: '#f7f7eb',
       },
       secondary: {

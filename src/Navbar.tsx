@@ -12,12 +12,15 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import Logo from "./assets/recarLogo.jpeg"
+import SearchIcon from '@mui/icons-material/Search';
+import CarIcon from '@mui/icons-material/Toys';
+import RecarLogo from "./assets/recarLogo.svg"
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useNavigate } from "react-router-dom";
 import { Badge } from '@mui/material';
 
-const pages = [{ title: 'הרכבים שלי', route: 'myCars'}, { title: 'חיפוש רכבים', route: 'search' }];
+const pages = [{ title: 'הרכבים שלי', route: 'myCars', icon: <CarIcon/> }, 
+              { title: 'חיפוש רכבים', route: 'search', icon: <SearchIcon/> }];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function Navbar() {
@@ -49,7 +52,12 @@ function Navbar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-        <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+        <Box
+          component="img"
+          sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, width: 70, height: 70 }}
+          alt="logo"
+          src={RecarLogo}
+        />
           <Typography
             variant="h6"
             noWrap
@@ -102,7 +110,12 @@ function Navbar() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          <Box
+          component="img"
+          sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, width: 70, height: 70 }}
+          alt="logo"
+          src={RecarLogo}
+        />
           <Typography
             variant="h5"
             noWrap
@@ -124,8 +137,9 @@ function Navbar() {
             {pages.map((page) => (
               <Button
                 key={page.title}
+                startIcon={page.icon}
                 onClick={(): void => handleNavMenuClick(page.route)}
-                sx={{ my: 2, color: 'inherit', display: 'block' }}
+                sx={{ my: 2, color: 'inherit' }}
               >
                 {page.title}
               </Button>
