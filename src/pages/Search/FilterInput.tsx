@@ -1,13 +1,18 @@
 import * as React from "react";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import Autocomplete, {
+  AutocompleteRenderGetTagProps,
+  createFilterOptions,
+} from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { Chip } from "@mui/material";
+import { Chip, SxProps, Theme } from "@mui/material";
 
 interface FilterInputProps {
   filterLabel: string;
   options: { value: string; displayValue: string }[];
   value: { value: string; displayValue: string }[];
   setValue: (newValue: { value: string; displayValue: string }[]) => void;
+  style?: SxProps<Theme>;
+  key: string;
 }
 
 function FilterInput({
@@ -15,11 +20,46 @@ function FilterInput({
   options,
   filterLabel,
   setValue,
+  style,
+  key,
 }: FilterInputProps) {
+  const renderTags = (
+    value: {
+      value: string;
+      displayValue: string;
+    }[],
+    getTagProps: AutocompleteRenderGetTagProps
+  ): JSX.Element[] => {
+    const displayedValues = value.slice(0, 1);
+    const moreValuesCount = value.length - displayedValues.length;
+
+    return displayedValues
+      .map((option, index) => (
+        <Chip
+          size="small"
+          label={option.displayValue}
+          {...getTagProps({ index })}
+        />
+      ))
+      .concat(
+        moreValuesCount > 0 ? (
+          <Chip
+            size="small"
+            key={displayedValues.length}
+            label={`+${moreValuesCount}`}
+            color="default"
+          />
+        ) : (
+          []
+        )
+      );
+  };
+
   return (
     <Autocomplete
+      key={`autocomplete-${key}`}
       multiple
-      sx={{ width: 275 }}
+      sx={style}
       size="small"
       limitTags={1}
       getLimitTagsText={() => value.length - 1}
@@ -37,31 +77,13 @@ function FilterInput({
           sx={{ backgroundColor: "white" }}
         />
       )}
-      renderTags={(value, getTagProps) => {
-        const displayedValues = value.slice(0, 1); // Display up to 5 tags
-        const moreValuesCount = value.length - displayedValues.length;
-
-        return displayedValues
-          .map((option, index) => (
-            <Chip
-              size="small"
-              label={option.displayValue}
-              {...getTagProps({ index })}
-            />
-          ))
-          .concat(
-            moreValuesCount > 0 ? (
-              <Chip
-                size="small"
-                key={displayedValues.length}
-                label={`+${moreValuesCount}`}
-                color="default"
-              />
-            ) : (
-              []
-            )
-          );
-      }}
+      renderTags={(
+        value: {
+          value: string;
+          displayValue: string;
+        }[],
+        getTagProps: AutocompleteRenderGetTagProps
+      ): JSX.Element[] => renderTags(value, getTagProps)}
     />
   );
 }

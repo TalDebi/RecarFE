@@ -23,8 +23,17 @@ const top100Films = [
   { displayValue: "Pulp Fiction", value: "7" },
 ];
 
+const MIN_PRICE = 0;
+const MAX_PRICE = 100;
+const STEP = 10;
+
 function Search() {
   const theme = useTheme();
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [priceFilters, setPriceFilters] = useState<number[]>([
+    MIN_PRICE,
+    MAX_PRICE,
+  ]);
   const [makeFilters, setMakeFilters] = useState<
     { value: string; displayValue: string }[]
   >([]);
@@ -37,6 +46,7 @@ function Search() {
   const [yearFilters, setYearFilters] = useState<
     { value: string; displayValue: string }[]
   >([]);
+  const [clearKey, setClearKey] = useState(0);
 
   const filterInputs = [
     { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
@@ -44,6 +54,35 @@ function Search() {
     { label: "שנה", value: cityFilters, setValue: setCityFilters },
     { label: "איזור מכירה", value: yearFilters, setValue: setYearFilters },
   ];
+
+  const priceSliderText = (value: number): string => {
+    return `₪ ${value}K`;
+  };
+
+  const handleOnSearchInput = (
+    event: React.FormEvent<HTMLDivElement>
+  ): void => {
+    setSearchInput(event.target.value);
+  };
+
+  const handleClearFilters = () => {
+    setSearchInput("");
+    setMakeFilters([]);
+    setModelFilters([]);
+    setCityFilters([]);
+    setYearFilters([]);
+    setPriceFilters([MIN_PRICE, MAX_PRICE]);
+    setClearKey((prevKey) => prevKey + 1);
+  };
+
+  const handleSearch = () => {
+    console.log(searchInput);
+    console.log(makeFilters);
+    console.log(modelFilters);
+    console.log(cityFilters);
+    console.log(yearFilters);
+    console.log(priceFilters);
+  };
 
   return (
     <Container
@@ -69,17 +108,26 @@ function Search() {
             size="small"
             placeholder="חיפוש..."
             sx={{ backgroundColor: "white", width: "100%", mr: 2 }}
+            value={searchInput}
+            onInput={(event: React.FormEvent<HTMLDivElement>): void =>
+              handleOnSearchInput(event)
+            }
           />
           <Box display="flex">
             <Button
               variant="contained"
-              sx={{ height: "100%", boxShadow: "none" }}
+              sx={{ height: "100%" }}
+              onClick={handleSearch}
             >
               <IconButton>
                 <SearchIcon sx={{ color: theme.palette.secondary.light }} />
               </IconButton>
             </Button>
-            <Button variant="text" sx={{ color: theme.palette.primary.dark }}>
+            <Button
+              variant="text"
+              sx={{ color: theme.palette.primary.dark }}
+              onClick={handleClearFilters}
+            >
               נקה
             </Button>
           </Box>
@@ -87,14 +135,23 @@ function Search() {
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           {filterInputs.map((filter, index) => (
             <FilterInput
-              key={index}
+              key={`${index}-${clearKey}`}
               options={top100Films}
               filterLabel={filter.label}
               value={filter.value}
               setValue={filter.setValue}
+              style={{ width: 275 }}
             />
           ))}
-          <RangeSlider />
+          <RangeSlider
+            style={{ width: 200, pt: 3 }}
+            min={MIN_PRICE}
+            max={MAX_PRICE}
+            step={STEP}
+            valuetext={priceSliderText}
+            value={priceFilters}
+            setValue={setPriceFilters}
+          />
         </Box>
         <Box>
           <Button
