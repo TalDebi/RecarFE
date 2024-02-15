@@ -1,6 +1,7 @@
 import * as React from "react";
-import Autocomplete from "@mui/material/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import { Chip } from "@mui/material";
 
 interface FilterInputProps {
   options: { title: string; year: number }[];
@@ -23,9 +24,13 @@ function FilterInput({ options, label }: FilterInputProps) {
       multiple
       size="small"
       limitTags={1}
+      getLimitTagsText={(value) => value}
       id={`filterInput${label}`}
       options={options}
       getOptionLabel={(option) => option?.title}
+      filterOptions={createFilterOptions({
+        limit: 10,
+      })}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -33,6 +38,31 @@ function FilterInput({ options, label }: FilterInputProps) {
           sx={{ backgroundColor: "white" }}
         />
       )}
+      renderTags={(value, getTagProps) => {
+        const displayedValues = value.slice(0, 1); // Display up to 5 tags
+        const moreValuesCount = value.length - displayedValues.length;
+
+        return displayedValues
+          .map((option, index) => (
+            <Chip
+              size="small"
+              label={option.title}
+              {...getTagProps({ index })}
+            />
+          ))
+          .concat(
+            moreValuesCount > 0 ? (
+              <Chip
+                size="small"
+                key={displayedValues.length}
+                label={`+${moreValuesCount}`}
+                color="default"
+              />
+            ) : (
+              []
+            )
+          );
+      }}
       sx={{ width: 275 }}
     />
   );

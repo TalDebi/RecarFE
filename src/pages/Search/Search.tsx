@@ -39,6 +39,7 @@ function Search() {
         minWidth: "100%",
         padding: 4,
         backgroundColor: theme.palette.secondary.light,
+        overflow: "auto",
       }}
     >
       <Box width={1400}>
