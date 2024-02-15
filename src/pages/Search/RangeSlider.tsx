@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import { Stack, Typography } from "@mui/material";
@@ -8,7 +8,7 @@ const MAX_PRICE = 100;
 const STEP = 10;
 
 function RangeSlider() {
-  const [value, setValue] = React.useState<number[]>([MIN_PRICE, MAX_PRICE]);
+  const [value, setValue] = useState<number[]>([MIN_PRICE, MAX_PRICE]);
 
   const valuetext = (value: number) => {
     return `₪ ${value}K`;

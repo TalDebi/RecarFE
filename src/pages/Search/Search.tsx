@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,19 +14,36 @@ import AddIcon from "@mui/icons-material/Add";
 import ResultsTable from "./ResultsTable";
 
 const top100Films = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-  { title: "12 Angry Men", year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: "Pulp Fiction", year: 1994 },
+  { displayValue: "The Shawshank Redemption", value: "1" },
+  { displayValue: "The Godfather", value: "2" },
+  { displayValue: "The Godfather: Part II", value: "3" },
+  { displayValue: "The Dark Knight", value: "4" },
+  { displayValue: "12 Angry Men", value: "5" },
+  { displayValue: "Schindler's List", value: "6" },
+  { displayValue: "Pulp Fiction", value: "7" },
 ];
-
-const filterInputs = ["יצרן", "דגם", "שנה", "איזור מכירה"];
 
 function Search() {
   const theme = useTheme();
+  const [makeFilters, setMakeFilters] = useState<
+    { value: string; displayValue: string }[]
+  >([]);
+  const [modelFilters, setModelFilters] = useState<
+    { value: string; displayValue: string }[]
+  >([]);
+  const [cityFilters, setCityFilters] = useState<
+    { value: string; displayValue: string }[]
+  >([]);
+  const [yearFilters, setYearFilters] = useState<
+    { value: string; displayValue: string }[]
+  >([]);
+
+  const filterInputs = [
+    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
+    { label: "דגם", value: modelFilters, setValue: setModelFilters },
+    { label: "שנה", value: cityFilters, setValue: setCityFilters },
+    { label: "איזור מכירה", value: yearFilters, setValue: setYearFilters },
+  ];
 
   return (
     <Container
@@ -69,7 +86,13 @@ function Search() {
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           {filterInputs.map((filter, index) => (
-            <FilterInput key={index} options={top100Films} label={filter} />
+            <FilterInput
+              key={index}
+              options={top100Films}
+              filterLabel={filter.label}
+              value={filter.value}
+              setValue={filter.setValue}
+            />
           ))}
           <RangeSlider />
         </Box>

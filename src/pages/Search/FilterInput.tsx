@@ -4,37 +4,36 @@ import TextField from "@mui/material/TextField";
 import { Chip } from "@mui/material";
 
 interface FilterInputProps {
-  options: { title: string; year: number }[];
-  label: string;
+  filterLabel: string;
+  options: { value: string; displayValue: string }[];
+  value: { value: string; displayValue: string }[];
+  setValue: (newValue: { value: string; displayValue: string }[]) => void;
 }
 
-const top100Films = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-  { title: "12 Angry Men", year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: "Pulp Fiction", year: 1994 },
-];
-
-function FilterInput({ options, label }: FilterInputProps) {
+function FilterInput({
+  value,
+  options,
+  filterLabel,
+  setValue,
+}: FilterInputProps) {
   return (
     <Autocomplete
       multiple
+      sx={{ width: 275 }}
       size="small"
       limitTags={1}
-      getLimitTagsText={(value) => value}
-      id={`filterInput${label}`}
+      getLimitTagsText={() => value.length - 1}
+      id={`filterInput${filterLabel}`}
       options={options}
-      getOptionLabel={(option) => option?.title}
+      getOptionLabel={(option) => option?.displayValue}
+      onChange={(event, value) => setValue(value)}
       filterOptions={createFilterOptions({
         limit: 10,
       })}
       renderInput={(params) => (
         <TextField
           {...params}
-          label={label}
+          label={filterLabel}
           sx={{ backgroundColor: "white" }}
         />
       )}
@@ -46,7 +45,7 @@ function FilterInput({ options, label }: FilterInputProps) {
           .map((option, index) => (
             <Chip
               size="small"
-              label={option.title}
+              label={option.displayValue}
               {...getTagProps({ index })}
             />
           ))
@@ -63,7 +62,6 @@ function FilterInput({ options, label }: FilterInputProps) {
             )
           );
       }}
-      sx={{ width: 275 }}
     />
   );
 }
