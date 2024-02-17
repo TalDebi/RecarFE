@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  TextField,
-  useTheme,
-  IconButton,
-} from "@mui/material";
+import { Box, Button, Container, TextField, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
 import RangeSlider from "./RangeSlider";
@@ -119,9 +112,7 @@ function Search() {
               sx={{ height: "100%" }}
               onClick={handleSearch}
             >
-              <IconButton>
-                <SearchIcon sx={{ color: theme.palette.secondary.light }} />
-              </IconButton>
+              <SearchIcon sx={{ color: theme.palette.secondary.light }} />
             </Button>
             <Button
               variant="text"
@@ -135,7 +126,8 @@ function Search() {
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           {filterInputs.map((filter, index) => (
             <FilterInput
-              key={`${index}-${clearKey}`}
+              key={index}
+              clearKey={`${index}-${clearKey}`}
               options={top100Films}
               filterLabel={filter.label}
               value={filter.value}

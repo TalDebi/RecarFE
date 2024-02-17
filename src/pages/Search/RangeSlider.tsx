@@ -45,7 +45,6 @@ function RangeSlider({
       onChange={handleChange}
       valueLabelDisplay="auto"
       getAriaValueText={valuetext}
-      aria-label="Temperature"
       defaultValue={[min, max]}
       step={step}
       marks={range(min, max)}

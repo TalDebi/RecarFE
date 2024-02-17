@@ -12,7 +12,7 @@ interface FilterInputProps {
   value: { value: string; displayValue: string }[];
   setValue: (newValue: { value: string; displayValue: string }[]) => void;
   style?: SxProps<Theme>;
-  key: string;
+  clearKey: string;
 }
 
 function FilterInput({
@@ -21,7 +21,7 @@ function FilterInput({
   filterLabel,
   setValue,
   style,
-  key,
+  clearKey,
 }: FilterInputProps) {
   const renderTags = (
     value: {
@@ -57,7 +57,7 @@ function FilterInput({
 
   return (
     <Autocomplete
-      key={`autocomplete-${key}`}
+      key={`autocomplete-${clearKey}`}
       multiple
       sx={style}
       size="small"
