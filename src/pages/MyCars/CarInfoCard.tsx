@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import carImage from "../assets/toyotaExample.avif";
+import carImage from "../../assets/toyotaExample.avif";
 import { Badge } from "@mui/material";
 import MoreVert from "@mui/icons-material/MoreVert";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
