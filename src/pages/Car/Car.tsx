@@ -4,12 +4,16 @@ import carImage from "../../assets/toyotaExample.avif";
 import {
   Card,
   CardContent,
+  CardHeader,
   Container,
+  IconButton,
   Typography,
   useTheme,
 } from "@mui/material";
 import { useParams } from "react-router";
 import Carousel from "react-material-ui-carousel";
+import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
+import CommentsTree from "./CommentsTree";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -62,6 +66,14 @@ function ResultsTable() {
             boxShadow: 3,
           }}
         >
+          <CardHeader
+            sx={{ height: 0, pb: 0 }}
+            action={
+              <IconButton aria-label="favoriteIcon">
+                <FavoriteIcon />
+              </IconButton>
+            }
+          />
           <CardContent
             sx={{
               flex: "1 0 auto",
@@ -69,7 +81,6 @@ function ResultsTable() {
               justifyContent: "space-between",
               ml: 5,
               mr: 10,
-              mt: 2,
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -92,7 +103,7 @@ function ResultsTable() {
       <Card
         sx={{
           width: 1400,
-          mt: 8,
+          mt: 6,
           boxShadow: 3,
         }}
       >
@@ -105,9 +116,17 @@ function ResultsTable() {
           }}
         >
           <Typography variant="h6">פרטים נוספים:</Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", mt: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              mt: 1,
+              flexWrap: "wrap",
+              justifyContent: "flex-start",
+            }}
+          >
             {additionalInfo.map((field, index) => (
-              <Box component="span" key={index}>
+              <Box component="span" key={index} mr={10}>
                 <Typography
                   component="span"
                   variant="subtitle2"
@@ -123,6 +142,7 @@ function ResultsTable() {
           </Box>
         </CardContent>
       </Card>
+      <CommentsTree />
     </Container>
   );
 }
