@@ -45,75 +45,75 @@ function ResultsTable() {
         pt: 13,
       }}
     >
-      <Box sx={{ display: "flex", width: 1400, height: 225 }}>
-        <Box sx={{ width: 400 }}>
-          <Carousel>
-            {[carImage, carImage, carImage, carImage, carImage, carImage].map(
-              (image, index: number): JSX.Element => (
-                <img
-                  key={index}
-                  src={image}
-                  alt="no image"
-                  style={{ width: "100%" }}
-                />
-              )
-            )}
-          </Carousel>
-        </Box>
-        <Card
-          sx={{
-            width: 1000,
-          }}
-        >
-          <CardHeader
-            sx={{ height: 0, pb: 0 }}
-            action={
-              <IconButton aria-label="favoriteIcon">
-                <FavoriteIcon />
-              </IconButton>
-            }
-          />
-          <CardContent
-            sx={{
-              flex: "1 0 auto",
-              display: "flex",
-              justifyContent: "space-between",
-              ml: 5,
-              mr: 10,
-            }}
-          >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h4">Toyota</Typography>
-              <Typography variant="h4">Camry</Typography>
-              <Typography variant="h6" mt={1}>
-                שנת 2010
-              </Typography>
-              <Typography variant="h6">חולון</Typography>
-            </Box>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h5" color="text.secondary">
-                מחיר
-              </Typography>
-              <Typography variant="h3">30,000₪</Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
       <Card
         sx={{
-          width: 1400,
-          mt: 6,
+          width: 1450,
         }}
       >
+        <CardHeader
+          sx={{ height: 0, pb: 0 }}
+          action={
+            <IconButton aria-label="favoriteIcon">
+              <FavoriteIcon />
+            </IconButton>
+          }
+        />
         <CardContent
           sx={{
-            flex: "1 0 auto",
             display: "flex",
             flexDirection: "column",
-            ml: 5,
+            ml: 2,
           }}
         >
-          <Typography variant="h6">פרטים נוספים:</Typography>
+          <Box sx={{ display: "flex", width: 1400, height: 225 }}>
+            <Box sx={{ width: 400 }}>
+              <Carousel>
+                {[
+                  carImage,
+                  carImage,
+                  carImage,
+                  carImage,
+                  carImage,
+                  carImage,
+                ].map(
+                  (image, index: number): JSX.Element => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt="no image"
+                      style={{ width: "100%" }}
+                    />
+                  )
+                )}
+              </Carousel>
+            </Box>
+            <Box
+              sx={{
+                flex: "1 0 auto",
+                display: "flex",
+                justifyContent: "space-start",
+                ml: 3,
+              }}
+            >
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h4">Toyota</Typography>
+                <Typography variant="h4">Camry</Typography>
+                <Typography variant="h6" mt={1}>
+                  שנת 2010
+                </Typography>
+                <Typography variant="h6">חולון</Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column", ml: 39 }}>
+                <Typography variant="h5" color="text.secondary">
+                  מחיר
+                </Typography>
+                <Typography variant="h3">30,000₪</Typography>
+              </Box>
+            </Box>
+          </Box>
+          <Typography variant="h5" mt={6}>
+            פרטים נוספים:
+          </Typography>
           <Box
             sx={{
               display: "flex",
@@ -138,23 +138,7 @@ function ResultsTable() {
               </Box>
             ))}
           </Box>
-        </CardContent>
-      </Card>
-      <Card
-        sx={{
-          width: 1400,
-          mt: 3,
-        }}
-      >
-        <CardContent
-          sx={{
-            flex: "1 0 auto",
-            display: "flex",
-            flexDirection: "column",
-            ml: 5,
-          }}
-        >
-          <Typography variant="h6" mt={1}>
+          <Typography variant="h5" mt={3}>
             תגובות:
           </Typography>
           <CommentsTree style={{ mt: 1 }} />
