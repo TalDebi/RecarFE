@@ -34,7 +34,7 @@ function ResultsTable() {
   return (
     <Container
       sx={{
-        position: "fixed",
+        position: "absolute",
         alignItems: "center",
         display: "flex",
         flexDirection: "column",
@@ -42,7 +42,7 @@ function ResultsTable() {
         minWidth: "100%",
         padding: 4,
         backgroundColor: theme.palette.secondary.light,
-        overflow: "auto",
+        pt: 13,
       }}
     >
       <Box sx={{ display: "flex", width: 1400, height: 225 }}>
@@ -63,7 +63,6 @@ function ResultsTable() {
         <Card
           sx={{
             width: 1000,
-            boxShadow: 3,
           }}
         >
           <CardHeader
@@ -104,7 +103,6 @@ function ResultsTable() {
         sx={{
           width: 1400,
           mt: 6,
-          boxShadow: 3,
         }}
       >
         <CardContent
@@ -142,7 +140,26 @@ function ResultsTable() {
           </Box>
         </CardContent>
       </Card>
-      <CommentsTree />
+      <Card
+        sx={{
+          width: 1400,
+          mt: 3,
+        }}
+      >
+        <CardContent
+          sx={{
+            flex: "1 0 auto",
+            display: "flex",
+            flexDirection: "column",
+            ml: 5,
+          }}
+        >
+          <Typography variant="h6" mt={1}>
+            תגובות:
+          </Typography>
+          <CommentsTree style={{ mt: 1 }} />
+        </CardContent>
+      </Card>
     </Container>
   );
 }
