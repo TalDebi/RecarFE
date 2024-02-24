@@ -89,6 +89,7 @@ function Search() {
         padding: 4,
         backgroundColor: theme.palette.secondary.light,
         overflow: "auto",
+        pt: 13,
       }}
     >
       <Box width={1400}>

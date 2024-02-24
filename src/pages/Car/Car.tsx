@@ -1,19 +1,26 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import carImage from "../../assets/toyotaExample.avif";
 import {
+  Button,
+  ButtonProps,
   Card,
   CardContent,
   CardHeader,
   Container,
   IconButton,
   Typography,
+  styled,
   useTheme,
 } from "@mui/material";
 import { useParams } from "react-router";
 import Carousel from "react-material-ui-carousel";
-import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteFilledIcon from "@mui/icons-material/Favorite";
 import CommentsTree from "./CommentsTree";
+import Divider from "@mui/material/Divider";
+import { Comment } from "./CommentsTree";
+import { red } from "@mui/material/colors";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -27,9 +34,45 @@ const additionalInfo = [
   { label: "קילומטראג", value: "32432432" },
   { label: "קילומטראג", value: "32432432" },
 ];
+
+const comments: Comment[] = [
+  {
+    id: "1",
+    user: { imgUrl: "/static/images/avatar/2.jpg", username: "טל" },
+    text: "האם הרכב עבר תאונה?",
+    replies: [
+      {
+        id: "1.1",
+        user: { imgUrl: "/static/images/avatar/2.jpg", username: "ניר" },
+        text: "כן מלא תאונות...אני בכלל מופתע שאתה רוצה לקנות את האוטו.",
+        replies: [],
+      },
+    ],
+  },
+  {
+    id: "2",
+    user: { imgUrl: "user3.jpg", username: "ניר" },
+    text: "בלה בלה בלה",
+    replies: [],
+  },
+];
+
 function ResultsTable() {
   const theme = useTheme();
   const { carID } = useParams();
+  const [isFavorite, setFavorite] = useState<boolean>(false);
+
+  const handleFavorite = (): void => {
+    setFavorite(!isFavorite);
+  };
+
+  const ColorButton = styled(Button)<ButtonProps>(({ theme }) => ({
+    color: red[600],
+    borderColor: red[600],
+    "&:hover": {
+      borderColor: red[600],
+    },
+  }));
 
   return (
     <Container
@@ -40,9 +83,9 @@ function ResultsTable() {
         flexDirection: "column",
         minHeight: "100%",
         minWidth: "100%",
-        padding: 4,
         backgroundColor: theme.palette.secondary.light,
-        pt: 13,
+        p: 3,
+        pt: 12,
       }}
     >
       <Card
@@ -51,11 +94,17 @@ function ResultsTable() {
         }}
       >
         <CardHeader
-          sx={{ height: 0, pb: 0 }}
+          sx={{ height: 0, p: 3, pb: 0 }}
           action={
-            <IconButton aria-label="favoriteIcon">
-              <FavoriteIcon />
-            </IconButton>
+            <ColorButton
+              variant="outlined"
+              endIcon={
+                isFavorite ? <FavoriteFilledIcon /> : <FavoriteBorderIcon />
+              }
+              onClick={handleFavorite}
+            >
+              {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
+            </ColorButton>
           }
         />
         <CardContent
@@ -66,7 +115,7 @@ function ResultsTable() {
           }}
         >
           <Box sx={{ display: "flex", width: 1400, height: 225 }}>
-            <Box sx={{ width: 400 }}>
+            <Box sx={{ width: 400 }} mr={2}>
               <Carousel>
                 {[
                   carImage,
@@ -87,12 +136,18 @@ function ResultsTable() {
                 )}
               </Carousel>
             </Box>
+            <Divider
+              orientation="vertical"
+              variant="middle"
+              flexItem
+              sx={{ opacity: 0.7, borderWidth: 1 }}
+            />
             <Box
               sx={{
                 flex: "1 0 auto",
                 display: "flex",
                 justifyContent: "space-start",
-                ml: 3,
+                ml: 2,
               }}
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -119,6 +174,7 @@ function ResultsTable() {
               display: "flex",
               flexDirection: "row",
               mt: 1,
+              mb: 2,
               flexWrap: "wrap",
               justifyContent: "flex-start",
             }}
@@ -138,10 +194,11 @@ function ResultsTable() {
               </Box>
             ))}
           </Box>
-          <Typography variant="h5" mt={3}>
+          <Divider flexItem sx={{ opacity: 0.7, borderWidth: 1 }} />
+          <Typography variant="h5" mt={2}>
             תגובות:
           </Typography>
-          <CommentsTree style={{ mt: 1 }} />
+          <CommentsTree style={{ mt: 1 }} comments={comments} />
         </CardContent>
       </Card>
     </Container>

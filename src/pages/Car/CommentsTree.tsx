@@ -10,14 +10,22 @@ import {
   TreeItemProps,
   treeItemClasses,
 } from "@mui/x-tree-view/TreeItem";
-import { Avatar, IconButton } from "@mui/material";
+import { Avatar, Button, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+
+export type Comment = {
+  id: string;
+  user: { imgUrl?: string; username: string };
+  text: string;
+  replies: Comment[];
+};
 
 type StyledTreeItemProps = TreeItemProps & {
   commentText: string;
   username: string;
   avatarUrl?: string;
+  isReply?: boolean;
 };
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
@@ -55,8 +63,13 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   props: StyledTreeItemProps,
   ref: React.Ref<HTMLLIElement>
 ) {
-  const theme = useTheme();
-  const { avatarUrl, commentText, username, ...other } = props;
+  const { avatarUrl, commentText, username, isReply = false, ...other } = props;
+
+  const handleReply = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
+    event.stopPropagation();
+  };
 
   return (
     <StyledTreeItemRoot
@@ -88,6 +101,17 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
             </Box>
           </Box>
           <Box sx={{ display: "flex" }}>
+            {!isReply ? (
+              <Button
+                variant="text"
+                sx={{ color: "text.secondary" }}
+                onClick={(event): void => handleReply(event)}
+              >
+                הגב
+              </Button>
+            ) : (
+              <></>
+            )}
             <IconButton size="small" aria-label="editIcon">
               <EditIcon />
             </IconButton>
@@ -104,37 +128,39 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
 });
 
 interface CommentsTreeProps {
+  comments: Comment[];
   style?: SxProps<Theme>;
 }
 
-export default function CommentsTree({ style }: CommentsTreeProps) {
+export default function CommentsTree({ comments, style }: CommentsTreeProps) {
   return (
     <TreeView
-      aria-label="gmail"
-      defaultExpanded={["3"]}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
-      defaultEndIcon={<div style={{ width: 24 }} />}
       sx={{
         flexGrow: 1,
         overflowY: "auto",
         ...style,
       }}
     >
-      <StyledTreeItem
-        nodeId="1"
-        commentText="האם הרכב עבר תאונה?"
-        username="טל"
-        avatarUrl="/static/images/avatar/2.jpg"
-      />
-      <StyledTreeItem nodeId="2" commentText="Trash" username="טל" />
-      <StyledTreeItem nodeId="3" commentText="Categories" username="טל">
-        <StyledTreeItem nodeId="5" commentText="Social" username="טל" />
-        <StyledTreeItem nodeId="6" commentText="Updates" username="טל" />
-        <StyledTreeItem nodeId="7" commentText="Forums" username="טל" />
-        <StyledTreeItem nodeId="8" commentText="Promotions" username="טל" />
-      </StyledTreeItem>
-      <StyledTreeItem nodeId="4" commentText="History" username="טל" />
+      {comments.map((comment) => (
+        <StyledTreeItem
+          nodeId={comment.id}
+          commentText={comment.text}
+          username={comment.user.username}
+          avatarUrl={comment.user?.imgUrl ?? comment.user.imgUrl}
+        >
+          {comment.replies.map((reply) => (
+            <StyledTreeItem
+              nodeId={reply.id}
+              commentText={reply.text}
+              username={reply.user.username}
+              avatarUrl={reply.user?.imgUrl ?? reply.user.imgUrl}
+              isReply={true}
+            />
+          ))}
+        </StyledTreeItem>
+      ))}
     </TreeView>
   );
 }
