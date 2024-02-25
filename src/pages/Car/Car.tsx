@@ -21,6 +21,7 @@ import CommentsTree from "./CommentsTree";
 import Divider from "@mui/material/Divider";
 import { Comment } from "./CommentsTree";
 import { red } from "@mui/material/colors";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -93,20 +94,6 @@ function ResultsTable() {
           width: 1450,
         }}
       >
-        <CardHeader
-          sx={{ height: 0, p: 3, pb: 0 }}
-          action={
-            <ColorButton
-              variant="outlined"
-              endIcon={
-                isFavorite ? <FavoriteFilledIcon /> : <FavoriteBorderIcon />
-              }
-              onClick={handleFavorite}
-            >
-              {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
-            </ColorButton>
-          }
-        />
         <CardContent
           sx={{
             display: "flex",
@@ -146,8 +133,9 @@ function ResultsTable() {
               sx={{
                 flex: "1 0 auto",
                 display: "flex",
-                justifyContent: "space-start",
+                justifyContent: "space-between",
                 ml: 2,
+                mt: 1,
               }}
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -156,14 +144,27 @@ function ResultsTable() {
                 <Typography variant="h6" mt={1}>
                   שנת 2010
                 </Typography>
-                <Typography variant="h6">חולון</Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon />
+                  <Typography variant="h6">חולון</Typography>
+                </Box>
               </Box>
-              <Box sx={{ display: "flex", flexDirection: "column", ml: 39 }}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="h5" color="text.secondary">
                   מחיר
                 </Typography>
                 <Typography variant="h3">30,000₪</Typography>
               </Box>
+              <ColorButton
+                sx={{ height: "fit-content" }}
+                variant="outlined"
+                endIcon={
+                  isFavorite ? <FavoriteFilledIcon /> : <FavoriteBorderIcon />
+                }
+                onClick={handleFavorite}
+              >
+                {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
+              </ColorButton>
             </Box>
           </Box>
           <Typography variant="h5" mt={6}>
