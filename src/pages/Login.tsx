@@ -9,23 +9,16 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import RecarAvatar from "../assets/recarLogo.svg";
 import CarIllustration from "../../../../../Downloads/6977def.svg";
+import { useNavigate } from "react-router-dom";
+import Copyright from "../customComponents/Copyright";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"."}
-      {"Copyright © "}
-      Recar {new Date().getFullYear()}
-    </Typography>
-  );
-}
+export default function Login() {
+  const navigate = useNavigate();
 
-export default function SignInSide() {
+  const navigateToRegistration = () => {
+    navigate("/registration");
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -96,7 +89,12 @@ export default function SignInSide() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2" color="primary.dark">
+                <Link
+                  href=""
+                  onClick={navigateToRegistration}
+                  variant="body2"
+                  color="primary.dark"
+                >
                   נרשמת בעבר? הירשם!{" "}
                 </Link>
               </Grid>
