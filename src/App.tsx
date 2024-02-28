@@ -30,12 +30,15 @@ function App() {
     direction: "rtl",
     palette: {
       primary: {
-        main: colors.green[500],
+        main: colors.green[600],
         contrastText: "#f7f7eb",
       },
       secondary: {
         main: "#f7f7eb",
-        contrastText: colors.green[600],
+        contrastText: colors.green[700],
+      },
+      background: {
+        default: colors.grey[200],
       },
     },
     typography: {

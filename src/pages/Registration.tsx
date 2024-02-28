@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
@@ -83,7 +82,6 @@ export default function Registration() {
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
       <Container maxWidth="sm">
-        <CssBaseline />
         <Box
           sx={{
             marginTop: 2,
@@ -198,7 +196,7 @@ export default function Registration() {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, width: 200, height: 40 }}
+                  sx={{ mt: 3, mb: 2, width: 160, height: 40 }}
                 >
                   הירשם
                 </Button>
@@ -243,11 +241,7 @@ export default function Registration() {
         sx={{
           backgroundImage: `url(${CarIllustration})`,
           backgroundRepeat: "no-repeat",
-          backgroundColor: (t) =>
-            t.palette.mode === "light"
-              ? t.palette.grey[50]
-              : t.palette.grey[900],
-          backgroundSize: "",
+          backgroundColor: theme.palette.background.default,
           backgroundPosition: "center",
         }}
       />

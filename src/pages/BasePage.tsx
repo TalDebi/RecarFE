@@ -14,7 +14,7 @@ const BasePage = ({ children }) => {
         minHeight: "100%",
         minWidth: "100%",
         overflow: "visible",
-        backgroundColor: theme.palette.secondary.light,
+        backgroundColor: theme.palette.background.default,
         p: 3,
         pt: 12,
         boxSizing: "border-box",

@@ -11,9 +11,11 @@ import RecarAvatar from "../assets/recarLogo.svg";
 import CarIllustration from "../assets/CarIllustration.svg";
 import { useNavigate } from "react-router-dom";
 import Copyright from "../customComponents/Copyright";
+import { useTheme } from "@mui/material";
 
 export default function Login() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const navigateToRegistration = (): void => {
     navigate("/registration");
@@ -111,11 +113,7 @@ export default function Login() {
         sx={{
           backgroundImage: `url(${CarIllustration})`,
           backgroundRepeat: "no-repeat",
-          backgroundColor: (t) =>
-            t.palette.mode === "light"
-              ? t.palette.grey[50]
-              : t.palette.grey[900],
-          backgroundSize: "",
+          backgroundColor: theme.palette.background.default,
           backgroundPosition: "center",
         }}
       />
