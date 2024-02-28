@@ -58,17 +58,17 @@ function Search() {
     setSearchInput(event.target.value);
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = (): void => {
     setSearchInput("");
     setMakeFilters([]);
     setModelFilters([]);
     setCityFilters([]);
     setYearFilters([]);
     setPriceFilters([MIN_PRICE, MAX_PRICE]);
-    setClearKey((prevKey) => prevKey + 1);
+    setClearKey((prevKey): number => prevKey + 1);
   };
 
-  const handleSearch = () => {
+  const handleSearch = (): void => {
     console.log(searchInput);
     console.log(makeFilters);
     console.log(modelFilters);
@@ -125,17 +125,19 @@ function Search() {
           </Box>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-          {filterInputs.map((filter, index) => (
-            <FilterInput
-              key={index}
-              clearKey={`${index}-${clearKey}`}
-              options={top100Films}
-              filterLabel={filter.label}
-              value={filter.value}
-              setValue={filter.setValue}
-              style={{ width: 275 }}
-            />
-          ))}
+          {filterInputs.map(
+            (filter, index): JSX.Element => (
+              <FilterInput
+                key={index}
+                clearKey={`${index}-${clearKey}`}
+                options={top100Films}
+                filterLabel={filter.label}
+                value={filter.value}
+                setValue={filter.setValue}
+                style={{ width: 275 }}
+              />
+            )
+          )}
           <RangeSlider
             style={{ width: 200, pt: 3 }}
             min={MIN_PRICE}

@@ -26,18 +26,18 @@ export default function Registration() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
-  const imgSelected = (e: ChangeEvent<HTMLInputElement>) => {
+  const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
       setImgSrc(e.target.files[0]);
     }
   };
-  const selectImg = () => {
+  const selectImg = (): void => {
     console.log("Selecting image...");
     fileInputRef.current?.click();
   };
 
-  const register = async () => {
+  const register = async (): Promise<void> => {
     const url = await uploadPhoto(imgSrc!);
     console.log("upload returned:" + url);
     if (emailInputRef.current?.value && passwordInputRef.current?.value) {
@@ -53,7 +53,7 @@ export default function Registration() {
 
   const onGoogleLoginSuccess = async (
     credentialResponse: CredentialResponse
-  ) => {
+  ): Promise<void> => {
     console.log(credentialResponse);
     try {
       const res = await googleSignin(credentialResponse);
@@ -63,15 +63,15 @@ export default function Registration() {
     }
   };
 
-  const onGoogleLoginFailure = () => {
+  const onGoogleLoginFailure = (): void => {
     console.log("Google login failed");
   };
 
-  const navigateToLogin = () => {
+  const navigateToLogin = (): void => {
     navigate("/login");
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -239,7 +239,7 @@ export default function Registration() {
         item
         xs={false}
         sm={4}
-        md={7}
+        md={6}
         sx={{
           backgroundImage: `url(${CarIllustration})`,
           backgroundRepeat: "no-repeat",

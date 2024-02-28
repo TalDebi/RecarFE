@@ -20,9 +20,11 @@ function MyCars() {
         backgroundColor: theme.palette.secondary.light,
       }}
     >
-      {[1, 2, 3].map(() => (
-        <CarInfoCard />
-      ))}
+      {[1, 2, 3].map(
+        (): JSX.Element => (
+          <CarInfoCard />
+        )
+      )}
       <Fab color="primary" aria-label="add">
         <AddIcon />
       </Fab>

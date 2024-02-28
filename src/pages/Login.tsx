@@ -15,11 +15,11 @@ import Copyright from "../customComponents/Copyright";
 export default function Login() {
   const navigate = useNavigate();
 
-  const navigateToRegistration = () => {
+  const navigateToRegistration = (): void => {
     navigate("/registration");
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({

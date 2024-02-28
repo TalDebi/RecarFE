@@ -13,12 +13,12 @@ import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 const mainInfo = ["יצרן", "דגם", "שנה", "איזור מכירה"];
 
 function CarInfoCard() {
-  const handleOpenMoreOptions = () => {
+  const handleOpenMoreOptions = (): void => {
     console.log(1);
   };
 
   return (
-    <Card sx={{ display: "flex", width: 1300, height: 160, mb: 2 }}>
+    <Card sx={{ display: "flex", width: 1300, height: 155, mb: 2 }}>
       <CardMedia
         component="img"
         sx={{ width: 250, height: 160 }}
@@ -34,20 +34,22 @@ function CarInfoCard() {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-          {mainInfo.map((field, index) => (
-            <Box component="span" key={index}>
-              <Typography
-                component="span"
-                variant="subtitle1"
-                color="text.secondary"
-              >
-                {field}:{" "}
-              </Typography>
-              <Typography component="span" variant="h6">
-                toyota
-              </Typography>
-            </Box>
-          ))}
+          {mainInfo.map(
+            (field, index): JSX.Element => (
+              <Box component="span" key={index}>
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="text.secondary"
+                >
+                  {field}:{" "}
+                </Typography>
+                <Typography component="span" variant="h6">
+                  toyota
+                </Typography>
+              </Box>
+            )
+          )}
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Typography variant="h5" color="text.secondary">
