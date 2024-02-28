@@ -15,7 +15,8 @@ import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import NoPage from "./pages/NoPage";
 import Search from "./pages/Search/Search";
-import MyCars from "./pages/MyCars";
+import Login from "./pages/Login";
+import MyCars from "./pages/MyCars/MyCars";
 import Car from "./pages/Car/Car";
 
 function App() {
@@ -61,11 +62,12 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Outlet />}>
-              <Route index element={<Navigate to="/registration" />} />
+              <Route index element={<Navigate to="/login" />} />
+              <Route path="login" element={<Login />} />
               <Route path="registration" element={<Registration />} />
               <Route path="search" element={<Search />} />
-              <Route path="myCars" element={<MyCars />} />
               <Route path="Car/:carID" element={<Car />} />
+              <Route path="myCars" element={<MyCars />} />
               <Route path="*" element={<NoPage />} />
             </Route>
           </Routes>
