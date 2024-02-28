@@ -1,12 +1,9 @@
-import React from 'react'
+import React from "react";
 
 function NoPage() {
-    const pageIndex = 404;
+  const pageIndex = 404;
 
-    return (
-        <div>
-            {pageIndex}
-        </div>
-    )}
+  return <>{pageIndex}</>;
+}
 
-export default NoPage
+export default NoPage;

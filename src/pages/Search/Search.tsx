@@ -78,20 +78,7 @@ function Search() {
   };
 
   return (
-    <Container
-      sx={{
-        position: "fixed",
-        alignItems: "center",
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100%",
-        minWidth: "100%",
-        padding: 4,
-        backgroundColor: theme.palette.secondary.light,
-        overflow: "auto",
-        pt: 13,
-      }}
-    >
+    <>
       <Box width={1400}>
         <Box
           sx={{ display: "flex", justifyContent: "center", height: 40, mb: 1 }}
@@ -124,7 +111,7 @@ function Search() {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           {filterInputs.map(
             (filter, index): JSX.Element => (
               <FilterInput
@@ -161,7 +148,7 @@ function Search() {
       <Box width={1400} sx={{ mt: 2 }}>
         <ResultsTable />
       </Box>
-    </Container>
+    </>
   );
 }
 
