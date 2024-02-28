@@ -62,15 +62,15 @@ function FilterInput({
       sx={style}
       size="small"
       limitTags={1}
-      getLimitTagsText={() => value.length - 1}
+      getLimitTagsText={(): number => value.length - 1}
       id={`filterInput${filterLabel}`}
       options={options}
-      getOptionLabel={(option) => option?.displayValue}
-      onChange={(event, value) => setValue(value)}
+      getOptionLabel={(option): string => option?.displayValue}
+      onChange={(_, value): void => setValue(value)}
       filterOptions={createFilterOptions({
         limit: 10,
       })}
-      renderInput={(params) => (
+      renderInput={(params): JSX.Element => (
         <TextField
           {...params}
           label={filterLabel}

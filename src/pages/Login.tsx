@@ -8,18 +8,20 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import RecarAvatar from "../assets/recarLogo.svg";
-import CarIllustration from "../../../../../Downloads/6977def.svg";
+import CarIllustration from "../assets/CarIllustration.svg";
 import { useNavigate } from "react-router-dom";
 import Copyright from "../customComponents/Copyright";
+import { useTheme } from "@mui/material";
 
 export default function Login() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
-  const navigateToRegistration = () => {
+  const navigateToRegistration = (): void => {
     navigate("/registration");
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -111,11 +113,7 @@ export default function Login() {
         sx={{
           backgroundImage: `url(${CarIllustration})`,
           backgroundRepeat: "no-repeat",
-          backgroundColor: (t) =>
-            t.palette.mode === "light"
-              ? t.palette.grey[50]
-              : t.palette.grey[900],
-          backgroundSize: "",
+          backgroundColor: theme.palette.background.default,
           backgroundPosition: "center",
         }}
       />

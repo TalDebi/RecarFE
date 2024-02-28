@@ -18,6 +18,7 @@ import Search from "./pages/Search/Search";
 import Login from "./pages/Login";
 import MyCars from "./pages/MyCars/MyCars";
 import Car from "./pages/Car/Car";
+import BasePage from "./pages/BasePage";
 
 function App() {
   const cacheRtl = createCache({
@@ -29,12 +30,15 @@ function App() {
     direction: "rtl",
     palette: {
       primary: {
-        main: colors.green[500],
+        main: colors.green[600],
         contrastText: "#f7f7eb",
       },
       secondary: {
         main: "#f7f7eb",
-        contrastText: colors.green[600],
+        contrastText: colors.green[700],
+      },
+      background: {
+        default: colors.grey[200],
       },
     },
     typography: {
@@ -65,10 +69,38 @@ function App() {
               <Route index element={<Navigate to="/login" />} />
               <Route path="login" element={<Login />} />
               <Route path="registration" element={<Registration />} />
-              <Route path="search" element={<Search />} />
-              <Route path="Car/:carID" element={<Car />} />
-              <Route path="myCars" element={<MyCars />} />
-              <Route path="*" element={<NoPage />} />
+              <Route
+                path="search"
+                element={
+                  <BasePage>
+                    <Search />
+                  </BasePage>
+                }
+              />
+              <Route
+                path="Car/:carID"
+                element={
+                  <BasePage>
+                    <Car />
+                  </BasePage>
+                }
+              />
+              <Route
+                path="myCars"
+                element={
+                  <BasePage>
+                    <MyCars />
+                  </BasePage>
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <BasePage>
+                    <NoPage />
+                  </BasePage>
+                }
+              />
             </Route>
           </Routes>
         </BrowserRouter>

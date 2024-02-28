@@ -22,8 +22,8 @@ function RangeSlider({
   setValue,
   valuetext,
 }: RangeSliderProps) {
-  const handleChange = (event: Event, newValue: number | number[]) => {
-    setValue(newValue as number[]);
+  const handleChange = (_: Event, newValue: number[]): void => {
+    setValue(newValue);
   };
 
   const range = (
@@ -40,7 +40,7 @@ function RangeSlider({
   return (
     <Slider
       sx={style}
-      getAriaLabel={() => "Temperature range"}
+      getAriaLabel={(): string => "Temperature range"}
       value={value}
       onChange={handleChange}
       valueLabelDisplay="auto"

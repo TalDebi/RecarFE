@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
@@ -16,7 +15,7 @@ import { uploadPhoto } from "../services/file-service";
 import { IUser, googleSignin, registrUser } from "../services/user-service";
 import { Badge, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import CarIllustration from "../../../../../Downloads/6977def.svg";
+import CarIllustration from "../assets/CarIllustration.svg";
 
 export default function Registration() {
   const navigate = useNavigate();
@@ -26,18 +25,18 @@ export default function Registration() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
-  const imgSelected = (e: ChangeEvent<HTMLInputElement>) => {
+  const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
       setImgSrc(e.target.files[0]);
     }
   };
-  const selectImg = () => {
+  const selectImg = (): void => {
     console.log("Selecting image...");
     fileInputRef.current?.click();
   };
 
-  const register = async () => {
+  const register = async (): Promise<void> => {
     const url = await uploadPhoto(imgSrc!);
     console.log("upload returned:" + url);
     if (emailInputRef.current?.value && passwordInputRef.current?.value) {
@@ -53,7 +52,7 @@ export default function Registration() {
 
   const onGoogleLoginSuccess = async (
     credentialResponse: CredentialResponse
-  ) => {
+  ): Promise<void> => {
     console.log(credentialResponse);
     try {
       const res = await googleSignin(credentialResponse);
@@ -63,15 +62,15 @@ export default function Registration() {
     }
   };
 
-  const onGoogleLoginFailure = () => {
+  const onGoogleLoginFailure = (): void => {
     console.log("Google login failed");
   };
 
-  const navigateToLogin = () => {
+  const navigateToLogin = (): void => {
     navigate("/login");
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -83,7 +82,6 @@ export default function Registration() {
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
       <Container maxWidth="sm">
-        <CssBaseline />
         <Box
           sx={{
             marginTop: 2,
@@ -198,7 +196,7 @@ export default function Registration() {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, width: 200, height: 40 }}
+                  sx={{ mt: 3, mb: 2, width: 160, height: 40 }}
                 >
                   הירשם
                 </Button>
@@ -239,15 +237,11 @@ export default function Registration() {
         item
         xs={false}
         sm={4}
-        md={7}
+        md={6}
         sx={{
           backgroundImage: `url(${CarIllustration})`,
           backgroundRepeat: "no-repeat",
-          backgroundColor: (t) =>
-            t.palette.mode === "light"
-              ? t.palette.grey[50]
-              : t.palette.grey[900],
-          backgroundSize: "",
+          backgroundColor: theme.palette.background.default,
           backgroundPosition: "center",
         }}
       />

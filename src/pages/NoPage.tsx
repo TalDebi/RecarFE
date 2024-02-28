@@ -1,12 +1,17 @@
-import React from 'react'
+import React from "react";
+import { Container } from "@mui/material";
+import PageNotFoundIllustration from "../assets/PageNotFound.svg";
 
-function NoPage() {
-    const pageIndex = 404;
+const NoPage = () => (
+  <Container
+    sx={{
+      height: "80vh",
+      backgroundImage: `url(${PageNotFoundIllustration})`,
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "",
+      backgroundPosition: "center",
+    }}
+  />
+);
 
-    return (
-        <div>
-            {pageIndex}
-        </div>
-    )}
-
-export default NoPage
+export default NoPage;

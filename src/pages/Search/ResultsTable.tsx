@@ -47,7 +47,7 @@ const columns: GridColDef[] = [
     field: "price",
     headerName: "מחיר",
     width: 200,
-    valueGetter: (params: GridValueGetterParams) =>
+    valueGetter: (params: GridValueGetterParams): string =>
       `₪ ${params.row.price || ""}`,
   },
   {
@@ -128,8 +128,8 @@ function ResultsTable() {
         columns={columns}
         disableRowSelectionOnClick
         hideFooter
-        getRowHeight={() => 110}
-        onCellDoubleClick={(data) => handleRowDoubleclick(data.row.id)}
+        getRowHeight={(): number => 110}
+        onCellDoubleClick={(data): void => handleRowDoubleclick(data.row.id)}
       />
     </Box>
   );
