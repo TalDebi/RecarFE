@@ -5,6 +5,7 @@ import carImage from "../../assets/toyotaExample.avif";
 import { IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
+import { useNavigate } from "react-router";
 
 const columns: GridColDef[] = [
   {
@@ -115,7 +116,11 @@ const rows = [
 ];
 
 function ResultsTable() {
-  const handleRowDoubleclick = (): void => {};
+  const navigate = useNavigate();
+
+  const handleRowDoubleclick = (carID: number): void => {
+    navigate(`../Car/${carID}`, { replace: true });
+  };
   return (
     <Box sx={{ height: 450, width: "100%", backgroundColor: "white" }}>
       <DataGrid
@@ -124,7 +129,7 @@ function ResultsTable() {
         disableRowSelectionOnClick
         hideFooter
         getRowHeight={() => 110}
-        onCellDoubleClick={() => handleRowDoubleclick}
+        onCellDoubleClick={(data) => handleRowDoubleclick(data.row.id)}
       />
     </Box>
   );
