@@ -16,7 +16,7 @@ import { uploadPhoto } from "../services/file-service";
 import { IUser, googleSignin, registrUser } from "../services/user-service";
 import { Badge, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import CarIllustration from "../../../../../Downloads/6977def.svg";
+import CarIllustration from "../assets/CarIllustration.svg";
 
 export default function Registration() {
   const navigate = useNavigate();
