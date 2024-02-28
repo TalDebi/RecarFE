@@ -20,21 +20,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
 
 const pages = [
-  { title: "הרכבים שלי", route: "myCars", icon: <CarIcon /> },
   { title: "חיפוש רכבים", route: "search", icon: <SearchIcon /> },
+  { title: "הרכבים שלי", route: "myCars", icon: <CarIcon /> },
 ];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-
+      
   const showNavbar =
     location.pathname !== "/login" && location.pathname !== "/registration";
 

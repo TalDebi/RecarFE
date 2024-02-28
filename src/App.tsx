@@ -15,8 +15,8 @@ import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import NoPage from "./pages/NoPage";
 import Search from "./pages/Search";
-import MyCars from "./pages/MyCars";
 import Login from "./pages/Login";
+import MyCars from "./pages/MyCars/MyCars";
 
 function App() {
   const cacheRtl = createCache({
