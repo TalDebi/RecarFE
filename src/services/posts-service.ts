@@ -1,13 +1,14 @@
-import apiClient, { CanceledError } from "./api-client"
+import apiClient, { CanceledError } from "./api-client";
 
-import { PostData } from "../components/Post"
+import { PostData } from "../components/Post";
 
-export { CanceledError }
+export { CanceledError };
 const getAllPosts = () => {
-    const abortController = new AbortController()
-    const req = apiClient.get<PostData[]>('studentpost', { signal: abortController.signal })
-    return { req, abort: () => abortController.abort() }
+  const abortController = new AbortController();
+  const req = apiClient.get<PostData[]>("studentpost", {
+    signal: abortController.signal,
+  });
+  return { req, abort: () => abortController.abort() };
+};
 
-}
-
-export default { getAllPosts }
+export default { getAllPosts };
