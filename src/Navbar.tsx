@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -16,7 +16,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CarIcon from "@mui/icons-material/Toys";
 import RecarLogo from "./assets/recarLogo.svg";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
 
 const pages = [
@@ -27,12 +27,17 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+      
+  const showNavbar =
+    location.pathname !== "/login" && location.pathname !== "/registration";
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -54,7 +59,7 @@ function Navbar() {
     navigate(`/${route}`);
   };
 
-  return (
+  return showNavbar ? (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -206,6 +211,8 @@ function Navbar() {
         </Toolbar>
       </Container>
     </AppBar>
+  ) : (
+    <></>
   );
 }
 export default Navbar;
