@@ -14,9 +14,10 @@ import createCache from "@emotion/cache";
 import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import NoPage from "./pages/NoPage";
-import Search from "./pages/Search";
+import Search from "./pages/Search/Search";
 import Login from "./pages/Login";
 import MyCars from "./pages/MyCars/MyCars";
+import Car from "./pages/Car/Car";
 
 function App() {
   const cacheRtl = createCache({
@@ -65,6 +66,7 @@ function App() {
               <Route path="login" element={<Login />} />
               <Route path="registration" element={<Registration />} />
               <Route path="search" element={<Search />} />
+              <Route path="Car/:carID" element={<Car />} />
               <Route path="myCars" element={<MyCars />} />
               <Route path="*" element={<NoPage />} />
             </Route>

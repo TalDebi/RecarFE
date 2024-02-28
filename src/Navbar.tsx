@@ -35,7 +35,7 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-      
+  
   const showNavbar =
     location.pathname !== "/login" && location.pathname !== "/registration";
 
