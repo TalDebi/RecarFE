@@ -3,12 +3,8 @@ import Box from "@mui/material/Box";
 import carImage from "../../assets/toyotaExample.avif";
 import {
   Button,
-  ButtonProps,
   Card,
   CardContent,
-  CardHeader,
-  Container,
-  IconButton,
   Typography,
   styled,
   useTheme,
@@ -20,8 +16,9 @@ import FavoriteFilledIcon from "@mui/icons-material/Favorite";
 import CommentsTree from "./CommentsTree";
 import Divider from "@mui/material/Divider";
 import { Comment } from "./CommentsTree";
-import { red } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EditIcon from "@mui/icons-material/Edit";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -58,22 +55,32 @@ const comments: Comment[] = [
   },
 ];
 
+interface ButtonProps {
+  buttonColor: string;
+}
+
 function ResultsTable() {
   const theme = useTheme();
   const { carID } = useParams();
   const [isFavorite, setFavorite] = useState<boolean>(false);
+  const [isEditMode, setEditMode] = useState<boolean>(false);
 
   const handleFavorite = (): void => {
     setFavorite(!isFavorite);
   };
 
-  const ColorButton = styled(Button)<ButtonProps>(({ theme }) => ({
-    color: red[600],
-    borderColor: red[600],
-    "&:hover": {
-      borderColor: red[600],
-    },
-  }));
+  const handleEdit = (): void => {
+    setEditMode(!isEditMode);
+  };
+
+  const StyledButton = styled(Button)<ButtonProps>`
+    background-color: ${({ buttonColor }) => buttonColor};
+    border-color: ${({ buttonColor }) => buttonColor};
+
+    &:hover {
+      border-color: ${({ buttonColor }) => buttonColor};
+    }
+  `;
 
   return (
     <Card
@@ -103,19 +110,15 @@ function ResultsTable() {
               )}
             </Carousel>
           </Box>
-          <Divider
-            orientation="vertical"
-            variant="middle"
-            flexItem
-            sx={{ opacity: 0.7, borderWidth: 1 }}
-          />
           <Box
             sx={{
               flex: "1 0 auto",
               display: "flex",
               justifyContent: "space-between",
-              ml: 3,
-              mt: 1,
+              p: 3,
+              border: "1px solid",
+              borderColor: theme.palette.primary.light,
+              borderRadius: 1,
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -135,7 +138,8 @@ function ResultsTable() {
               </Typography>
               <Typography variant="h3">30,000₪</Typography>
             </Box>
-            <ColorButton
+            {/* <StyledButton
+              buttonColor={red[600]}
               sx={{ height: "fit-content", width: 160 }}
               variant="outlined"
               endIcon={
@@ -144,7 +148,16 @@ function ResultsTable() {
               onClick={handleFavorite}
             >
               {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
-            </ColorButton>
+            </StyledButton> */}
+            <StyledButton
+              buttonColor={theme.palette.primary.main}
+              sx={{ height: "fit-content" }}
+              variant="contained"
+              endIcon={<EditIcon />}
+              onClick={handleEdit}
+            >
+              עריכה
+            </StyledButton>
           </Box>
         </Box>
         <Typography variant="h5" mt={7}>
@@ -175,7 +188,14 @@ function ResultsTable() {
             </Box>
           ))}
         </Box>
-        <Divider flexItem sx={{ opacity: 0.7, borderWidth: 1 }} />
+        <Divider
+          flexItem
+          sx={{
+            opacity: 0.7,
+            borderWidth: 1,
+            borderColor: theme.palette.primary.light,
+          }}
+        />
         <Typography variant="h5" mt={3}>
           תגובות:
         </Typography>

@@ -38,7 +38,7 @@ function App() {
         contrastText: colors.green[700],
       },
       background: {
-        default: colors.grey[200],
+        default: colors.grey[100],
       },
     },
     typography: {
