@@ -117,7 +117,7 @@ function ResultsTable() {
               justifyContent: "space-between",
               p: 3,
               border: "1px solid",
-              borderColor: theme.palette.primary.light,
+              borderColor: theme.palette.primary.main,
               borderRadius: 1,
             }}
           >
@@ -193,7 +193,7 @@ function ResultsTable() {
           sx={{
             opacity: 0.7,
             borderWidth: 1,
-            borderColor: theme.palette.primary.light,
+            borderColor: theme.palette.primary.main,
           }}
         />
         <Typography variant="h5" mt={3}>
