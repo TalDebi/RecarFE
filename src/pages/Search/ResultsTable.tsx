@@ -122,13 +122,13 @@ function ResultsTable() {
     navigate(`../Car/${carID}`, { replace: true });
   };
   return (
-    <Box sx={{ height: 450, width: "100%", backgroundColor: "white" }}>
+    <Box sx={{ height: 410, width: "100%", backgroundColor: "white" }}>
       <DataGrid
         rows={rows}
         columns={columns}
         disableRowSelectionOnClick
         hideFooter
-        getRowHeight={(): number => 110}
+        getRowHeight={(): number => 105}
         onCellDoubleClick={(data): void => handleRowDoubleclick(data.row.id)}
       />
     </Box>

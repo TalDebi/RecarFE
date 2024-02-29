@@ -1,27 +1,25 @@
 import React from "react";
-import { Container, useTheme } from "@mui/material";
+import { CssBaseline, Grid, useTheme } from "@mui/material";
 
 const BasePage = ({ children }) => {
   const theme = useTheme();
 
   return (
-    <Container
+    <Grid
+      container
+      component="main"
       sx={{
-        position: "absolute",
-        alignItems: "center",
         display: "flex",
         flexDirection: "column",
-        minHeight: "100%",
-        minWidth: "100%",
-        overflow: "visible",
+        alignItems: "center",
         backgroundColor: theme.palette.background.default,
         p: 3,
         pt: 12,
-        boxSizing: "border-box",
       }}
     >
-      {children}
-    </Container>
+      <CssBaseline />
+      <Grid item>{children}</Grid>
+    </Grid>
   );
 };
 
