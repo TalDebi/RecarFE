@@ -84,22 +84,15 @@ export default function Login() {
             >
               התחבר{" "}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2" color="primary.dark">
-                  שכחתי סיסמא?{" "}
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link
-                  href=""
-                  onClick={navigateToRegistration}
-                  variant="body2"
-                  color="primary.dark"
-                >
-                  נרשמת בעבר? הירשם!{" "}
-                </Link>
-              </Grid>
+            <Grid item>
+              <Link
+                href=""
+                onClick={navigateToRegistration}
+                variant="body2"
+                color="primary.dark"
+              >
+                נרשמת בעבר? הירשם!{" "}
+              </Link>
             </Grid>
             <Copyright sx={{ mt: 5 }} />
           </Box>

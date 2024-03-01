@@ -85,7 +85,7 @@ function ResultsTable() {
   return (
     <Card
       sx={{
-        width: 1400,
+        width: 1350,
       }}
     >
       <CardContent
@@ -95,7 +95,7 @@ function ResultsTable() {
           p: 3,
         }}
       >
-        <Box sx={{ display: "flex", width: 1350, height: 225 }}>
+        <Box sx={{ display: "flex", width: 1300, height: 225 }}>
           <Box sx={{ width: 400 }} mr={3}>
             <Carousel>
               {[carImage, carImage, carImage, carImage, carImage, carImage].map(
@@ -117,7 +117,7 @@ function ResultsTable() {
               justifyContent: "space-between",
               p: 3,
               border: "1px solid",
-              borderColor: theme.palette.primary.main,
+              borderColor: theme.palette.primary.light,
               borderRadius: 1,
             }}
           >
@@ -193,7 +193,7 @@ function ResultsTable() {
           sx={{
             opacity: 0.7,
             borderWidth: 1,
-            borderColor: theme.palette.primary.main,
+            borderColor: theme.palette.primary.light,
           }}
         />
         <Typography variant="h5" mt={3}>

@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import { Box, Button, Container, TextField, useTheme } from "@mui/material";
+import { Box, Button, TextField, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
 import RangeSlider from "./RangeSlider";
 import AddIcon from "@mui/icons-material/Add";
 import ResultsTable from "./ResultsTable";
+import {
+  MAX_PRICE,
+  MAX_YEAR,
+  MIN_PRICE,
+  MIN_YEAR,
+  PRICE_STEP,
+  YEAR_STEP,
+} from "./consts";
 
 const top100Films = [
   { displayValue: "The Shawshank Redemption", value: "1" },
@@ -16,16 +24,16 @@ const top100Films = [
   { displayValue: "Pulp Fiction", value: "7" },
 ];
 
-const MIN_PRICE = 0;
-const MAX_PRICE = 100;
-const STEP = 10;
-
 function Search() {
   const theme = useTheme();
   const [searchInput, setSearchInput] = useState<string>("");
   const [priceFilters, setPriceFilters] = useState<number[]>([
     MIN_PRICE,
     MAX_PRICE,
+  ]);
+  const [yearFilters, setYearFilters] = useState<number[]>([
+    MIN_YEAR,
+    MAX_YEAR,
   ]);
   const [makeFilters, setMakeFilters] = useState<
     { value: string; displayValue: string }[]
@@ -36,21 +44,39 @@ function Search() {
   const [cityFilters, setCityFilters] = useState<
     { value: string; displayValue: string }[]
   >([]);
-  const [yearFilters, setYearFilters] = useState<
-    { value: string; displayValue: string }[]
-  >([]);
   const [clearKey, setClearKey] = useState(0);
 
-  const filterInputs = [
-    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
-    { label: "דגם", value: modelFilters, setValue: setModelFilters },
-    { label: "שנה", value: cityFilters, setValue: setCityFilters },
-    { label: "איזור מכירה", value: yearFilters, setValue: setYearFilters },
-  ];
+  const yearSliderText = (value: number): string => value.toString();
 
   const priceSliderText = (value: number): string => {
     return `₪ ${value}K`;
   };
+
+  const filterInputs = [
+    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
+    { label: "דגם", value: modelFilters, setValue: setModelFilters },
+    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
+  ];
+  const filterSliders = [
+    {
+      label: "שנה",
+      value: yearFilters,
+      setValue: setYearFilters,
+      min: MIN_YEAR,
+      max: MAX_YEAR,
+      step: YEAR_STEP,
+      sliderText: yearSliderText,
+    },
+    {
+      label: "מחיר",
+      value: priceFilters,
+      setValue: setPriceFilters,
+      min: MIN_PRICE,
+      max: MAX_PRICE,
+      step: PRICE_STEP,
+      sliderText: priceSliderText,
+    },
+  ];
 
   const handleOnSearchInput = (
     event: React.FormEvent<HTMLDivElement>
@@ -63,7 +89,7 @@ function Search() {
     setMakeFilters([]);
     setModelFilters([]);
     setCityFilters([]);
-    setYearFilters([]);
+    setYearFilters([MIN_YEAR, MAX_YEAR]);
     setPriceFilters([MIN_PRICE, MAX_PRICE]);
     setClearKey((prevKey): number => prevKey + 1);
   };
@@ -81,7 +107,7 @@ function Search() {
     <>
       <Box width={1400}>
         <Box
-          sx={{ display: "flex", justifyContent: "center", height: 40, mb: 1 }}
+          sx={{ display: "flex", justifyContent: "center", height: 40, mb: 2 }}
         >
           <TextField
             id="searchInput"
@@ -121,19 +147,25 @@ function Search() {
                 filterLabel={filter.label}
                 value={filter.value}
                 setValue={filter.setValue}
-                style={{ width: 275 }}
+                style={{ width: 285 }}
               />
             )
           )}
-          <RangeSlider
-            style={{ width: 200, pt: 3 }}
-            min={MIN_PRICE}
-            max={MAX_PRICE}
-            step={STEP}
-            valuetext={priceSliderText}
-            value={priceFilters}
-            setValue={setPriceFilters}
-          />
+          {filterSliders.map(
+            (filter, index): JSX.Element => (
+              <RangeSlider
+                key={index}
+                clearKey={`${index}-${clearKey}`}
+                style={{ width: 200, pt: 3, ml: 2 }}
+                min={filter.min}
+                max={filter.max}
+                step={filter.step}
+                valuetext={filter.sliderText}
+                value={filter.value}
+                setValue={filter.setValue}
+              />
+            )
+          )}
         </Box>
         <Box>
           <Button
@@ -145,7 +177,7 @@ function Search() {
           </Button>
         </Box>
       </Box>
-      <Box width={1400} sx={{ mt: 2 }}>
+      <Box width={1400} sx={{ mt: 3 }}>
         <ResultsTable />
       </Box>
     </>

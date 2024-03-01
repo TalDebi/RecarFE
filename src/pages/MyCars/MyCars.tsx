@@ -10,8 +10,8 @@ function MyCars() {
   return (
     <>
       {[1, 2, 3].map(
-        (): JSX.Element => (
-          <CarInfoCard />
+        (index: number): JSX.Element => (
+          <CarInfoCard key={index} />
         )
       )}
       <Fab color="primary" aria-label="add">

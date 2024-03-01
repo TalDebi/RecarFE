@@ -18,7 +18,7 @@ function CarInfoCard() {
   };
 
   return (
-    <Card sx={{ display: "flex", width: 1300, height: 155, mb: 2 }}>
+    <Card sx={{ display: "flex", width: 1200, height: 155, mb: 2 }}>
       <CardMedia
         component="img"
         sx={{ width: 250, height: 160 }}
