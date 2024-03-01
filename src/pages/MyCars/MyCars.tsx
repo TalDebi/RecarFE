@@ -4,6 +4,7 @@ import { Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CarInfoCard from "./CarInfoCard";
 import RecarDialog from "../../customComponents/RecarDialog";
+import CarInfoForm from "../CarInfoForm";
 
 function MyCars() {
   const theme = useTheme();
@@ -29,7 +30,7 @@ function MyCars() {
         dialogType="Creation"
         dialogTitle="יצירת פוסט חדש"
       >
-        <></>
+        <CarInfoForm />
       </RecarDialog>
     </>
   );

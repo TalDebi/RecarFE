@@ -20,6 +20,7 @@ import { grey, red } from "@mui/material/colors";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import RecarDialog from "../../customComponents/RecarDialog";
+import CarInfoForm from "../CarInfoForm";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -217,7 +218,7 @@ function ResultsTable() {
         dialogType="Edit"
         dialogTitle="עריכת פרטי מכונית"
       >
-        <></>
+        <CarInfoForm />
       </RecarDialog>
     </>
   );

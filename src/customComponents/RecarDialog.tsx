@@ -32,7 +32,9 @@ const RecarDialog = ({
   return (
     <Dialog open={open} onClose={handleClose} scroll="paper">
       <DialogTitle>{dialogTitle}</DialogTitle>
-      <DialogContent dividers>{children}</DialogContent>
+      <DialogContent dividers sx={{ width: 600, height: 510 }}>
+        {children}
+      </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: "text.secondary" }}>
           סגור
