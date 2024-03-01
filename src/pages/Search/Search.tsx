@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent } from "react";
 import { Box, Button, TextField, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
@@ -78,9 +78,7 @@ function Search() {
     },
   ];
 
-  const handleOnSearchInput = (
-    event: React.FormEvent<HTMLDivElement>
-  ): void => {
+  const handleOnSearchInput = (event: FormEvent<HTMLDivElement>): void => {
     setSearchInput(event.target.value);
   };
 
@@ -116,7 +114,7 @@ function Search() {
             placeholder="חיפוש..."
             sx={{ backgroundColor: "white", width: "100%", mr: 2 }}
             value={searchInput}
-            onInput={(event: React.FormEvent<HTMLDivElement>): void =>
+            onInput={(event: FormEvent<HTMLDivElement>): void =>
               handleOnSearchInput(event)
             }
           />

@@ -19,6 +19,7 @@ import { Comment } from "./CommentsTree";
 import { grey, red } from "@mui/material/colors";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
+import RecarDialog from "../../customComponents/RecarDialog";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -83,62 +84,70 @@ function ResultsTable() {
   `;
 
   return (
-    <Card
-      sx={{
-        width: 1350,
-      }}
-    >
-      <CardContent
+    <>
+      <Card
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          p: 3,
+          width: 1350,
         }}
       >
-        <Box sx={{ display: "flex", width: 1300, height: 225 }}>
-          <Box sx={{ width: 400 }} mr={3}>
-            <Carousel>
-              {[carImage, carImage, carImage, carImage, carImage, carImage].map(
-                (image, index: number): JSX.Element => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt="no image"
-                    style={{ width: "100%" }}
-                  />
-                )
-              )}
-            </Carousel>
-          </Box>
-          <Box
-            sx={{
-              flex: "1 0 auto",
-              display: "flex",
-              justifyContent: "space-between",
-              p: 3,
-              border: "1px solid",
-              borderColor: theme.palette.primary.light,
-              borderRadius: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h4">Toyota</Typography>
-              <Typography variant="h4">Camry</Typography>
-              <Typography variant="h6" mt={1}>
-                שנת 2010
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <LocationOnIcon color="primary" />
-                <Typography variant="h6">חולון</Typography>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            p: 3,
+          }}
+        >
+          <Box sx={{ display: "flex", width: 1300, height: 225 }}>
+            <Box sx={{ width: 400 }} mr={3}>
+              <Carousel>
+                {[
+                  carImage,
+                  carImage,
+                  carImage,
+                  carImage,
+                  carImage,
+                  carImage,
+                ].map(
+                  (image, index: number): JSX.Element => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt="no image"
+                      style={{ width: "100%" }}
+                    />
+                  )
+                )}
+              </Carousel>
+            </Box>
+            <Box
+              sx={{
+                flex: "1 0 auto",
+                display: "flex",
+                justifyContent: "space-between",
+                p: 3,
+                border: "1px solid",
+                borderColor: theme.palette.primary.light,
+                borderRadius: 1,
+              }}
+            >
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h4">Toyota</Typography>
+                <Typography variant="h4">Camry</Typography>
+                <Typography variant="h6" mt={1}>
+                  שנת 2010
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon color="primary" />
+                  <Typography variant="h6">חולון</Typography>
+                </Box>
               </Box>
-            </Box>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="h5" color="text.secondary">
-                מחיר
-              </Typography>
-              <Typography variant="h3">30,000₪</Typography>
-            </Box>
-            {/* <StyledButton
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h5" color="text.secondary">
+                  מחיר
+                </Typography>
+                <Typography variant="h3">30,000₪</Typography>
+              </Box>
+              {/* <StyledButton
               buttonColor={red[600]}
               sx={{ height: "fit-content", width: 160 }}
               variant="outlined"
@@ -149,59 +158,68 @@ function ResultsTable() {
             >
               {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
             </StyledButton> */}
-            <StyledButton
-              buttonColor={theme.palette.primary.main}
-              sx={{ height: "fit-content" }}
-              variant="contained"
-              endIcon={<EditIcon />}
-              onClick={handleEdit}
-            >
-              עריכה
-            </StyledButton>
-          </Box>
-        </Box>
-        <Typography variant="h5" mt={7}>
-          פרטים נוספים:
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            mt: 1,
-            mb: 3,
-            flexWrap: "wrap",
-            justifyContent: "flex-start",
-          }}
-        >
-          {additionalInfo.map((field, index) => (
-            <Box component="span" key={index} mr={10}>
-              <Typography
-                component="span"
-                variant="subtitle2"
-                color="text.secondary"
+              <StyledButton
+                buttonColor={theme.palette.primary.main}
+                sx={{ height: "fit-content" }}
+                variant="contained"
+                endIcon={<EditIcon />}
+                onClick={handleEdit}
               >
-                {field.label}:{" "}
-              </Typography>
-              <Typography component="span" variant="h6">
-                {field.value}
-              </Typography>
+                עריכה
+              </StyledButton>
             </Box>
-          ))}
-        </Box>
-        <Divider
-          flexItem
-          sx={{
-            opacity: 0.7,
-            borderWidth: 1,
-            borderColor: theme.palette.primary.light,
-          }}
-        />
-        <Typography variant="h5" mt={3}>
-          תגובות:
-        </Typography>
-        <CommentsTree style={{ mt: 1 }} comments={comments} />
-      </CardContent>
-    </Card>
+          </Box>
+          <Typography variant="h5" mt={7}>
+            פרטים נוספים:
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              mt: 1,
+              mb: 3,
+              flexWrap: "wrap",
+              justifyContent: "flex-start",
+            }}
+          >
+            {additionalInfo.map((field, index) => (
+              <Box component="span" key={index} mr={10}>
+                <Typography
+                  component="span"
+                  variant="subtitle2"
+                  color="text.secondary"
+                >
+                  {field.label}:{" "}
+                </Typography>
+                <Typography component="span" variant="h6">
+                  {field.value}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+          <Divider
+            flexItem
+            sx={{
+              opacity: 0.7,
+              borderWidth: 1,
+              borderColor: theme.palette.primary.light,
+            }}
+          />
+          <Typography variant="h5" mt={3}>
+            תגובות:
+          </Typography>
+          <CommentsTree style={{ mt: 1 }} comments={comments} />
+        </CardContent>
+      </Card>
+      <RecarDialog
+        open={isEditMode}
+        setOpen={setEditMode}
+        dialogType="Edit"
+        dialogTitle="עריכת פרטי מכונית"
+      >
+        <></>
+      </RecarDialog>
+    </>
   );
 }
 
