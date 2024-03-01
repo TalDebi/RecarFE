@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
+import React from "react";
 import Slider from "@mui/material/Slider";
-import { Stack, SxProps, Theme } from "@mui/material";
+import { SxProps, Theme, useTheme } from "@mui/material";
 
 interface RangeSliderProps {
   style?: SxProps<Theme>;
@@ -11,6 +10,7 @@ interface RangeSliderProps {
   value: number[];
   setValue: (value: number[]) => void;
   valuetext: (value: number) => string;
+  clearKey: string;
 }
 
 function RangeSlider({
@@ -21,7 +21,10 @@ function RangeSlider({
   value,
   setValue,
   valuetext,
+  clearKey,
 }: RangeSliderProps) {
+  const theme = useTheme();
+
   const handleChange = (_: Event, newValue: number[]): void => {
     setValue(newValue);
   };
@@ -31,15 +34,16 @@ function RangeSlider({
     end: number
   ): { value: number; label: string }[] =>
     start === end
-      ? [{ value: start, label: `₪ ${start}K` }]
+      ? [{ value: start, label: valuetext(start) }]
       : [
-          { value: start, label: `₪ ${start}K` },
+          { value: start, label: valuetext(start) },
           ...range(start + step * 2, end),
         ];
 
   return (
     <Slider
-      sx={style}
+      key={`slider-${clearKey}`}
+      sx={{ ...style, color: theme.palette.primary.dark }}
       getAriaLabel={(): string => "Temperature range"}
       value={value}
       onChange={handleChange}

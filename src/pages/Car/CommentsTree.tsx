@@ -26,6 +26,7 @@ type StyledTreeItemProps = TreeItemProps & {
   username: string;
   avatarUrl?: string;
   isReply?: boolean;
+  index: number;
 };
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
@@ -63,9 +64,28 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   props: StyledTreeItemProps,
   ref: React.Ref<HTMLLIElement>
 ) {
-  const { avatarUrl, commentText, username, isReply = false, ...other } = props;
+  const {
+    avatarUrl,
+    commentText,
+    username,
+    isReply = false,
+    index,
+    ...other
+  } = props;
 
   const handleReply = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
+    event.stopPropagation();
+  };
+
+  const handleEdit = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
+    event.stopPropagation();
+  };
+
+  const handleDelete = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void => {
     event.stopPropagation();
@@ -112,10 +132,18 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
             ) : (
               <></>
             )}
-            <IconButton size="small" aria-label="editIcon">
+            <IconButton
+              size="small"
+              aria-label="editIcon"
+              onClick={(event): void => handleEdit(event)}
+            >
               <EditIcon />
             </IconButton>
-            <IconButton size="small" aria-label="deleteIcon">
+            <IconButton
+              size="small"
+              aria-label="deleteIcon"
+              onClick={(event): void => handleDelete(event)}
+            >
               <DeleteIcon />
             </IconButton>
           </Box>
@@ -143,19 +171,23 @@ export default function CommentsTree({ comments, style }: CommentsTreeProps) {
         ...style,
       }}
     >
-      {comments.map((comment) => (
+      {comments.map((comment, commentIndex: number) => (
         <StyledTreeItem
+          key={commentIndex}
           nodeId={comment.id}
           commentText={comment.text}
           username={comment.user.username}
           avatarUrl={comment.user?.imgUrl ?? comment.user.imgUrl}
+          index={commentIndex}
         >
-          {comment.replies.map((reply) => (
+          {comment.replies.map((reply, replyIndex: number) => (
             <StyledTreeItem
+              key={`${commentIndex}-${replyIndex}`}
               nodeId={reply.id}
               commentText={reply.text}
               username={reply.user.username}
               avatarUrl={reply.user?.imgUrl ?? reply.user.imgUrl}
+              index={replyIndex}
               isReply={true}
             />
           ))}

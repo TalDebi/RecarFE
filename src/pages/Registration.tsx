@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useRef, useState, FormEvent } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -70,7 +70,7 @@ export default function Registration() {
     navigate("/login");
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -111,8 +111,8 @@ export default function Registration() {
             <Avatar
               sx={{
                 mt: 2,
-                width: 125,
-                height: 125,
+                width: 150,
+                height: 150,
                 border: "2px solid",
                 borderColor: theme.palette.primary.main,
               }}
@@ -131,83 +131,74 @@ export default function Registration() {
             onSubmit={handleSubmit}
             sx={{ mt: 2 }}
           >
-            <Grid container spacing={2}>
-              <Grid item container spacing={2}>
-                <Grid item xs={3} />
-                <Grid item xs={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="name"
-                    required
-                    fullWidth
-                    id="name"
-                    label="שם פרטי"
-                    autoFocus
-                  />
-                </Grid>
-                <Grid item xs={3} />
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="phoneNumber"
-                    label="מספר טלפון"
-                    name="phoneNumber"
-                    autoComplete="tel"
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="email"
-                    label="אימייל"
-                    name="email"
-                    autoComplete="email"
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="סיסמא"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="אמת סיסמא"
-                    type="password"
-                    id="confirmPassword"
-                    autoComplete="new-password"
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid container flexDirection="column" alignItems="center">
-              <Grid item>
-                <Button
-                  type="submit"
+            <Grid item container spacing={2}>
+              <Grid item xs={3} />
+              <Grid item xs={6}>
+                <TextField
+                  autoComplete="given-name"
+                  name="name"
+                  required
                   fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2, width: 160, height: 40 }}
-                >
+                  id="name"
+                  label="שם פרטי"
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={3} />
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="phoneNumber"
+                  label="מספר טלפון"
+                  name="phoneNumber"
+                  autoComplete="tel"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="אימייל"
+                  name="email"
+                  autoComplete="email"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="סיסמא"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label="אמת סיסמא"
+                  type="password"
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button type="submit" fullWidth variant="contained">
                   הירשם
                 </Button>
               </Grid>
-              <Grid item mb={1}>
+              <Grid item xs={8}>
                 <GoogleLogin
                   onSuccess={onGoogleLoginSuccess}
                   onError={onGoogleLoginFailure}
                 />
               </Grid>
-              <Grid item>
+              <Grid item xs={4}>
                 <Link
                   href=""
                   onClick={navigateToLogin}
@@ -221,7 +212,7 @@ export default function Registration() {
           </Box>
         </Box>
         <Grid container flexDirection="column" alignItems="center">
-          <Grid item mt={5}>
+          <Grid item mt={8}>
             <Copyright />
           </Grid>
           <Grid item>

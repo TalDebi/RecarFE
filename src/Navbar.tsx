@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -17,16 +17,23 @@ import RecarLogo from "./assets/recarLogo.svg";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
+import RecarDialog from "./customComponents/RecarDialog";
+import UserEditForm from "./pages/UserEditForm";
 
 const pages = [
   { title: "חיפוש רכבים", route: "search", icon: <SearchIcon /> },
   { title: "הרכבים שלי", route: "myCars", icon: <CarIcon /> },
 ];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isEditMode, setEditMode] = useState<boolean>(false);
+
+  const handleEdit = (): void => {
+    setEditMode(!isEditMode);
+    handleCloseUserMenu();
+  };
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -57,6 +64,12 @@ function Navbar() {
     handleCloseNavMenu();
     navigate(`/${route}`);
   };
+
+  const settings = [
+    { label: "פרופיל משתמש", action: handleCloseUserMenu },
+    { label: "עריכת פרטי משתמש", action: handleEdit },
+    { label: "התנתקות", action: handleCloseUserMenu },
+  ];
 
   return showNavbar ? (
     <AppBar position="fixed">
@@ -201,13 +214,21 @@ function Navbar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting.label} onClick={setting.action}>
+                  <Typography textAlign="center">{setting.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
         </Toolbar>
+        <RecarDialog
+          open={isEditMode}
+          setOpen={setEditMode}
+          dialogType="Edit"
+          dialogTitle="עריכת פרטי משתמש"
+        >
+          <UserEditForm />
+        </RecarDialog>
       </Container>
     </AppBar>
   ) : (

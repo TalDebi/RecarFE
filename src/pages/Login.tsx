@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { FormEvent } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -21,7 +21,7 @@ export default function Login() {
     navigate("/registration");
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -84,22 +84,15 @@ export default function Login() {
             >
               התחבר{" "}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2" color="primary.dark">
-                  שכחתי סיסמא?{" "}
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link
-                  href=""
-                  onClick={navigateToRegistration}
-                  variant="body2"
-                  color="primary.dark"
-                >
-                  נרשמת בעבר? הירשם!{" "}
-                </Link>
-              </Grid>
+            <Grid item>
+              <Link
+                href=""
+                onClick={navigateToRegistration}
+                variant="body2"
+                color="primary.dark"
+              >
+                נרשמת בעבר? הירשם!{" "}
+              </Link>
             </Grid>
             <Copyright sx={{ mt: 5 }} />
           </Box>

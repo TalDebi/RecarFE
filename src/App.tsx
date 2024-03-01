@@ -30,7 +30,9 @@ function App() {
     direction: "rtl",
     palette: {
       primary: {
+        light: colors.green[200],
         main: colors.green[600],
+        dark: colors.green[800],
         contrastText: "#f7f7eb",
       },
       secondary: {
