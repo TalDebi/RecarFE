@@ -248,7 +248,14 @@ function Car() {
         dialogType="Edit"
         dialogTitle="עריכת פרטי מכונית"
       >
-        <CarInfoForm />
+        <CarInfoForm defaultValues={{
+          "year": 2010,
+          "price": 30000,
+          "milage": 32142,
+          "model" : "Camry",
+          "make": "Toyota",
+          "city": "חולון"
+        }} />
       </RecarDialog>
     </>
   );
