@@ -13,7 +13,6 @@ import {
   PRICE_STEP,
   YEAR_STEP,
 } from "./consts";
-import { string } from "zod";
 
 const top100Films = [
   { displayValue: "The Shawshank Redemption", value: "1" },
@@ -62,12 +61,7 @@ function Search() {
   const [colorOption, setColorOption] = useState<boolean>(false)
   const [milageOption, setMilageOption] = useState<boolean>(false)
 
-  const [filterInputs, setFilterInputs] = useState([
-    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
-    { label: "דגם", value: modelFilters, setValue: setModelFilters },
-    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
 
-  ])
 
   const yearSliderText = (value: number): string => value.toString();
 
@@ -107,7 +101,7 @@ function Search() {
       step: PRICE_STEP,
       valuetext: priceSliderText,
       component: RangeSlider,
-      style: { width: 200, pt: 3,mx: 5 }
+      style: { width: 200, pt: 3, mx: 5 }
     },
     {
       key: "milage",
@@ -170,6 +164,9 @@ function Search() {
     setCityFilters([]);
     setYearFilters([MIN_YEAR, MAX_YEAR]);
     setPriceFilters([MIN_PRICE, MAX_PRICE]);
+    setHandFilters([]);
+    setColorFilters([]);
+    setMilageFilters([MIN_YEAR, MAX_YEAR])
     setClearKey((prevKey): number => prevKey + 1);
   };
 
@@ -216,20 +213,8 @@ function Search() {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
-          {/* {filterInputs.map(
-            (filter, index): JSX.Element => (
-              <FilterInput
-                key={index}
-                clearKey={`${index}-${clearKey}`}
-                options={top100Films}
-                filterLabel={filter.label}
-                value={filter.value}
-                setValue={filter.setValue}
-                style={{ width: 285, height: 50 }}
-              />
-            )
-          )} */}
+        <Box sx={{ display: "flex", justifyContent: "flex-start", flexWrap: "wrap" }}>
+
           {
             filterObjects.map((filter, index) => {
               if (filterList.includes(filter.key)) {
@@ -238,21 +223,6 @@ function Search() {
               }
             })
           }
-          {/* {filterSliders.map(
-            (filter, index): JSX.Element => (
-              <RangeSlider
-                key={index}
-                clearKey={`${index}-${clearKey}`}
-                style={{ width: 200, pt: 3, ml: 2 }}
-                min={filter.min}
-                max={filter.max}
-                step={filter.step}
-                valuetext={filter.sliderText}
-                value={filter.value}
-                setValue={filter.setValue}
-              />
-            )
-          )} */}
         </Box>
         <Box>
           <Button
