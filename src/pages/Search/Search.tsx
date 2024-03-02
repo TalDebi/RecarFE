@@ -1,5 +1,5 @@
-import React, { useState, FormEvent } from "react";
-import { Box, Button, TextField, useTheme } from "@mui/material";
+import React, { useState, FormEvent, useEffect, useRef } from "react";
+import { Box, Button, TextField, useTheme, Menu, MenuItem, FormControlLabel, Checkbox } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
 import RangeSlider from "./RangeSlider";
@@ -13,6 +13,7 @@ import {
   PRICE_STEP,
   YEAR_STEP,
 } from "./consts";
+import { string } from "zod";
 
 const top100Films = [
   { displayValue: "The Shawshank Redemption", value: "1" },
@@ -35,6 +36,10 @@ function Search() {
     MIN_YEAR,
     MAX_YEAR,
   ]);
+  const [milageFilters, setMilageFilters] = useState<number[]>([
+    MIN_YEAR,
+    MAX_YEAR,
+  ]);
   const [makeFilters, setMakeFilters] = useState<
     { value: string; displayValue: string }[]
   >([]);
@@ -44,39 +49,115 @@ function Search() {
   const [cityFilters, setCityFilters] = useState<
     { value: string; displayValue: string }[]
   >([]);
+
+  const [handFilters, setHandFilters] = useState<
+    { value: string; displayValue: string }[]
+  >([]);
+  const [colorFilters, setColorFilters] = useState<
+    { value: string; displayValue: string }[]
+  >([]);
   const [clearKey, setClearKey] = useState(0);
+
+  const [handOption, setHandOption] = useState<boolean>(false)
+  const [colorOption, setColorOption] = useState<boolean>(false)
+  const [milageOption, setMilageOption] = useState<boolean>(false)
+
+  const [filterInputs, setFilterInputs] = useState([
+    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
+    { label: "דגם", value: modelFilters, setValue: setModelFilters },
+    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
+
+  ])
 
   const yearSliderText = (value: number): string => value.toString();
 
   const priceSliderText = (value: number): string => {
     return `₪ ${value}K`;
+
   };
 
-  const filterInputs = [
-    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
-    { label: "דגם", value: modelFilters, setValue: setModelFilters },
-    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
-  ];
-  const filterSliders = [
+  const milageSliderText = (value: number): string => value.toString();
+
+
+  const filterObjects = [
+    { filterLabel: "יצרן", value: makeFilters, setValue: setMakeFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "make", component: FilterInput },
+    { filterLabel: "דגם", value: modelFilters, setValue: setModelFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "model", component: FilterInput },
+    { filterLabel: "איזור מכירה", value: cityFilters, setValue: setCityFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "city", component: FilterInput },
+    { filterLabel: "צבע", value: colorFilters, setValue: setColorFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "color", component: FilterInput },
+    { filterLabel: "יד", value: handFilters, setValue: setHandFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "hand", component: FilterInput },
     {
+      key: "year",
       label: "שנה",
       value: yearFilters,
       setValue: setYearFilters,
       min: MIN_YEAR,
       max: MAX_YEAR,
       step: YEAR_STEP,
-      sliderText: yearSliderText,
+      valuetext: yearSliderText,
+      component: RangeSlider,
+      style: { width: 200, pt: 3, mx: 5 }
     },
     {
+      key: "price",
       label: "מחיר",
       value: priceFilters,
       setValue: setPriceFilters,
       min: MIN_PRICE,
       max: MAX_PRICE,
       step: PRICE_STEP,
-      sliderText: priceSliderText,
+      valuetext: priceSliderText,
+      component: RangeSlider,
+      style: { width: 200, pt: 3,mx: 5 }
     },
-  ];
+    {
+      key: "milage",
+      label: "קילומטראז'",
+      value: milageFilters,
+      setValue: setMilageFilters,
+      min: MIN_PRICE,
+      max: MAX_PRICE,
+      step: PRICE_STEP,
+      valuetext: milageSliderText,
+      component: RangeSlider,
+      style: { width: 200, pt: 3, mx: 5 }
+    },
+
+
+
+  ]
+  const [filterList, setFilterList] = useState(["make", "model", "city", "year", "price"])
+
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+
+
+
+  const handleCloseUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    console.log(event)
+    setAnchorElUser(null);
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+
+
+  const handleAdvancedOptionChange = (event: React.ChangeEvent<HTMLInputElement>, option) => {
+    if (event.target.checked) {
+      setFilterList([...filterList, option.key])
+    } else {
+      option.setValue(undefined)
+      setFilterList(filterList.filter(item => item != option.key))
+    }
+    option.setChecked(event.target.checked)
+
+  }
+
+  const advancedOptions = [
+    { key: "hand", label: "יד", value: handFilters, setValue: setHandFilters, isChecked: handOption, setChecked: setHandOption },
+    { key: "milage", label: "קילומטראז'", value: milageFilters, setValue: setMilageFilters, isChecked: milageOption, setChecked: setMilageOption },
+    { key: "color", label: "צבע", value: colorFilters, setValue: setColorFilters, isChecked: colorOption, setChecked: setColorOption },
+  ]
 
   const handleOnSearchInput = (event: FormEvent<HTMLDivElement>): void => {
     setSearchInput(event.target.value);
@@ -135,8 +216,8 @@ function Search() {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {filterInputs.map(
+        <Box sx={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+          {/* {filterInputs.map(
             (filter, index): JSX.Element => (
               <FilterInput
                 key={index}
@@ -145,11 +226,19 @@ function Search() {
                 filterLabel={filter.label}
                 value={filter.value}
                 setValue={filter.setValue}
-                style={{ width: 285 }}
+                style={{ width: 285, height: 50 }}
               />
             )
-          )}
-          {filterSliders.map(
+          )} */}
+          {
+            filterObjects.map((filter, index) => {
+              if (filterList.includes(filter.key)) {
+                return <filter.component clearKey={`${index}-${clearKey}`} {...filter} />
+
+              }
+            })
+          }
+          {/* {filterSliders.map(
             (filter, index): JSX.Element => (
               <RangeSlider
                 key={index}
@@ -163,16 +252,39 @@ function Search() {
                 setValue={filter.setValue}
               />
             )
-          )}
+          )} */}
         </Box>
         <Box>
           <Button
             startIcon={<AddIcon />}
             variant="text"
             sx={{ color: theme.palette.primary.dark }}
+            onClick={handleOpenUserMenu}
           >
             חיפוש מתקדם
           </Button>
+          <Menu
+            sx={{ mt: '45px' }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+          >
+            {advancedOptions.map((option) => (
+              <MenuItem >
+                <FormControlLabel control={<Checkbox inputProps={{ 'aria-label': 'controlled' }} checked={option.isChecked} onChange={event => handleAdvancedOptionChange(event, option)} />} label={option.label} />
+              </MenuItem>
+            ))}
+          </Menu>
         </Box>
       </Box>
       <Box width={1400} sx={{ mt: 3 }}>
