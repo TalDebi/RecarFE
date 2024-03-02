@@ -63,12 +63,7 @@ function Search() {
   const [colorOption, setColorOption] = useState<boolean>(false)
   const [milageOption, setMilageOption] = useState<boolean>(false)
 
-  const [filterInputs, setFilterInputs] = useState([
-    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
-    { label: "דגם", value: modelFilters, setValue: setModelFilters },
-    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
 
-  ])
 
   const yearSliderText = (value: number): string => value.toString();
 
@@ -159,7 +154,7 @@ function Search() {
       step: PRICE_STEP,
       valuetext: priceSliderText,
       component: RangeSlider,
-      style: { width: 200, pt: 3,mx: 5 }
+      style: { width: 200, pt: 3, mx: 5 }
     },
     {
       key: "milage",
@@ -222,6 +217,9 @@ function Search() {
     setCityFilters([]);
     setYearFilters([MIN_YEAR, MAX_YEAR]);
     setPriceFilters([MIN_PRICE, MAX_PRICE]);
+    setHandFilters([]);
+    setColorFilters([]);
+    setMilageFilters([MIN_YEAR, MAX_YEAR])
     setClearKey((prevKey): number => prevKey + 1);
   };
 
@@ -268,7 +266,8 @@ function Search() {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-start", flexWrap: "wrap" }}>
+
           {
             filterObjects.map((filter, index) => {
               if (filterList.includes(filter.key)) {
