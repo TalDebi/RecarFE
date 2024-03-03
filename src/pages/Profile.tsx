@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import {
     Button,
@@ -9,27 +9,14 @@ import {
     styled,
     useTheme,
 } from "@mui/material";
-import { useParams } from "react-router";
-import Carousel from "react-material-ui-carousel";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+
 import EditIcon from "@mui/icons-material/Edit";
 import AvaterPic from "../assets/avatar.jpeg"
 import RecarDialog from "../customComponents/RecarDialog";
 import UserEditForm from "./UserEditForm";
 
 
-const additionalInfo = [
-    { label: "קילומטראג", value: "1231" },
-    { label: "קילומטראג", value: "32142" },
-    { label: "קילומטראג", value: "4234234" },
-    { label: "קילומטראג", value: "234234" },
-    { label: "קילומטראג", value: "32424" },
-    { label: "קילומטראג", value: "23423432" },
-    { label: "קילומטראג", value: "4234" },
-    { label: "קילומטראג", value: "43242" },
-    { label: "קילומטראג", value: "32432432" },
-    { label: "קילומטראג", value: "32432432" },
-];
+
 
 
 
@@ -39,13 +26,8 @@ interface ButtonProps {
 
 function ResultsTable() {
     const theme = useTheme();
-    const { carID } = useParams();
-    const [isFavorite, setFavorite] = useState<boolean>(false);
     const [isEditMode, setEditMode] = useState<boolean>(false);
 
-    const handleFavorite = (): void => {
-        setFavorite(!isFavorite);
-    };
 
     const handleEdit = (): void => {
         setEditMode(!isEditMode);
