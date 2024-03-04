@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, SyntheticEvent, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { Box, Button, Tab, Tabs, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -7,7 +7,7 @@ import RecarDialog from "../../customComponents/RecarDialog";
 import CarInfoForm from "../CarInfoForm";
 
 interface TabPanelProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }
@@ -34,8 +34,8 @@ function CustomTabPanel(props: TabPanelProps) {
 
 function a11yProps(index: number) {
   return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
+    id: `tab-${index}`,
+    "aria-controls": `tabpanel-${index}`,
   };
 }
 
@@ -47,10 +47,10 @@ function MyCars() {
     setOpen(!isOpen);
   };
 
-  const [value, setValue] = React.useState(0);
+  const [tabIndex, setTabIndex] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleTabsChange = (_: SyntheticEvent, newIndex: number) => {
+    setTabIndex(newIndex);
   };
 
   return (
@@ -64,7 +64,7 @@ function MyCars() {
           justifyContent: "space-between",
         }}
       >
-        <Tabs value={value} onChange={handleChange}>
+        <Tabs value={tabIndex} onChange={handleTabsChange}>
           <Tab label="הפוסטים שלי" {...a11yProps(0)} />
           <Tab label="פוסטים שאהבתי" {...a11yProps(1)} />
         </Tabs>
@@ -81,14 +81,14 @@ function MyCars() {
         </Button>
       </Box>
       <Box sx={{ overflow: "auto", height: 500 }}>
-        <CustomTabPanel value={value} index={0}>
+        <CustomTabPanel value={tabIndex} index={0}>
           {[1, 2].map(
             (index: number): JSX.Element => (
               <CarInfoCard key={index} postId={"1"} />
             )
           )}
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
+        <CustomTabPanel value={tabIndex} index={1}>
           {[1, 2, 3, 4].map(
             (index: number): JSX.Element => (
               <CarInfoCard key={index} postId={"2"} />
