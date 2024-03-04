@@ -17,8 +17,7 @@ import RecarLogo from "./assets/recarLogo.svg";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
-import RecarDialog from "./customComponents/RecarDialog";
-import UserEditForm from "./pages/UserEditForm";
+
 
 const pages = [
   { title: "חיפוש רכבים", route: "search", icon: <SearchIcon /> },
@@ -60,14 +59,18 @@ function Navbar() {
     setAnchorElUser(null);
   };
 
+  const navigateToProfile = (): void => {
+    handleCloseUserMenu();
+    navigate(`/profile`);;
+  };
+
   const handleNavMenuClick = (route: string): void => {
     handleCloseNavMenu();
     navigate(`/${route}`);
   };
 
   const settings = [
-    { label: "פרופיל משתמש", action: handleCloseUserMenu },
-    { label: "עריכת פרטי משתמש", action: handleEdit },
+    { label: "פרופיל", action: navigateToProfile },
     { label: "התנתקות", action: handleCloseUserMenu },
   ];
 
@@ -221,14 +224,6 @@ function Navbar() {
             </Menu>
           </Box>
         </Toolbar>
-        <RecarDialog
-          open={isEditMode}
-          setOpen={setEditMode}
-          dialogType="Edit"
-          dialogTitle="עריכת פרטי משתמש"
-        >
-          <UserEditForm />
-        </RecarDialog>
       </Container>
     </AppBar>
   ) : (
