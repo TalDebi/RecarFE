@@ -2,11 +2,14 @@ import expressApp from 'express'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
+import fs from 'fs'
+import https from 'https'
 const __filename = fileURLToPath(import.meta.url);
-
+const privateKey = fs.readFileSync('client-key.pem');
+const certificate = fs.readFileSync('client-cert.pem');
 const __dirname = dirname(__filename);
 const app = expressApp();
-const PORT = 80;
+const PORT = 443;
 
 
 app.use(expressApp.static(path.join(__dirname, 'dist')));
@@ -16,4 +19,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
+const server = https.createServer({ key: privateKey, cert: certificate }, app);
+
+server.listen(PORT, () => {
+  console.log(`Express server listening on port ${PORT} (HTTPS)`);
+});
