@@ -13,6 +13,8 @@ import {
   PRICE_STEP,
   YEAR_STEP,
 } from "./consts";
+import { useQuery } from "react-query";
+import { fetchAllTypes } from "../../services/carapi";
 
 const top100Films = [
   { displayValue: "The Shawshank Redemption", value: "1" },
@@ -52,10 +54,59 @@ function Search() {
     return `₪ ${value}K`;
   };
 
+  const {
+    data: allMakes,
+    isLoading: isLoadingMakes,
+    error: errorFetchingMakes,
+  } = useQuery<{ id: number; name: string }[], Error>(
+    ["allMakes"],
+    () => fetchAllTypes("make"),
+    {
+      onSuccess: (data: { id: number; name: string }[]): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
+
+  const {
+    data: allModels,
+    isLoading: isLoadingModels,
+    error: errorFetchingModels,
+  } = useQuery<{ id: number; name: string }[], Error>(
+    ["allModels"],
+    () => fetchAllTypes("model"),
+    {
+      onSuccess: (data: { id: number; name: string }[]): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
+
   const filterInputs = [
-    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
-    { label: "דגם", value: modelFilters, setValue: setModelFilters },
-    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
+    {
+      label: "יצרן",
+      value: makeFilters,
+      setValue: setMakeFilters,
+      options: top100Films,
+    },
+    {
+      label: "דגם",
+      value: modelFilters,
+      setValue: setModelFilters,
+      options: top100Films,
+    },
+    {
+      label: "איזור מכירה",
+      value: cityFilters,
+      setValue: setCityFilters,
+      options: top100Films,
+    },
   ];
   const filterSliders = [
     {
@@ -141,7 +192,7 @@ function Search() {
               <FilterInput
                 key={index}
                 clearKey={`${index}-${clearKey}`}
-                options={top100Films}
+                options={filter.options}
                 filterLabel={filter.label}
                 value={filter.value}
                 setValue={filter.setValue}
