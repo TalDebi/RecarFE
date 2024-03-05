@@ -21,6 +21,9 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import RecarDialog from "../../customComponents/RecarDialog";
 import CarInfoForm from "../CarInfoForm";
+import { useQuery } from "react-query";
+import { CarExtraInfo } from "../../services/types";
+import { fetchExtraCarInfo } from "../../services/ninja";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
@@ -61,11 +64,28 @@ interface ButtonProps {
   buttonColor: string;
 }
 
-function ResultsTable() {
+function Car() {
   const theme = useTheme();
   const { carID } = useParams();
   const [isFavorite, setFavorite] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
+
+  const {
+    data: extraInfo,
+    isLoading: isLoadingExtraInfo,
+    error: errorFetchingExtraInfo,
+  } = useQuery<CarExtraInfo[], Error>(
+    ["extraCarInfo", carID],
+    () => fetchExtraCarInfo(carID ?? ""),
+    {
+      onSuccess: (data: CarExtraInfo[]): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
 
   const handleFavorite = (): void => {
     setFavorite(!isFavorite);
@@ -84,6 +104,9 @@ function ResultsTable() {
     }
   `;
 
+  const extraInfoFields = extraInfo ? Object.entries(extraInfo[0]) : [];
+
+  console.log(extraInfoFields);
   return (
     <>
       <Card
@@ -183,20 +206,24 @@ function ResultsTable() {
               justifyContent: "flex-start",
             }}
           >
-            {additionalInfo.map((field, index) => (
-              <Box component="span" key={index} mr={10}>
-                <Typography
-                  component="span"
-                  variant="subtitle2"
-                  color="text.secondary"
-                >
-                  {field.label}:{" "}
-                </Typography>
-                <Typography component="span" variant="h6">
-                  {field.value}
-                </Typography>
-              </Box>
-            ))}
+            {extraInfoFields ? (
+              extraInfoFields.map(([key, value], index) => (
+                <Box component="span" key={index} mr={10}>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    color="text.secondary"
+                  >
+                    {key}:{" "}
+                  </Typography>
+                  <Typography component="span" variant="h6">
+                    {value}
+                  </Typography>
+                </Box>
+              ))
+            ) : (
+              <></>
+            )}
           </Box>
           <Divider
             flexItem
@@ -224,4 +251,4 @@ function ResultsTable() {
   );
 }
 
-export default ResultsTable;
+export default Car;
