@@ -1,8 +1,8 @@
 export const fetchAllTypes = async (
   filterType: "make" | "model"
-): Promise<{ id: number; name: string }[]> =>
+): Promise<{ results: [] }> =>
   fetch(
-    `https://carapi.app/api/${filterType}s?page=1&limit=1000&sort=name`
+    `https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/all-vehicles-model/records?group_by=${filterType}&limit=5000`
   ).then((response) => {
     if (!response.ok) {
       throw new Error("Network response was not ok");

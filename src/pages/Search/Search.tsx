@@ -14,7 +14,7 @@ import {
   YEAR_STEP,
 } from "./consts";
 import { useQuery } from "react-query";
-import { fetchAllTypes } from "../../services/carapi";
+import { fetchAllTypes } from "../../services/opendatasoft";
 
 const top100Films = [
   { displayValue: "The Shawshank Redemption", value: "1" },
@@ -58,11 +58,11 @@ function Search() {
     data: allMakes,
     isLoading: isLoadingMakes,
     error: errorFetchingMakes,
-  } = useQuery<{ id: number; name: string }[], Error>(
+  } = useQuery<{ results: [] }, Error>(
     ["allMakes"],
     () => fetchAllTypes("make"),
     {
-      onSuccess: (data: { id: number; name: string }[]): void => {
+      onSuccess: (data: { results: [] }): void => {
         console.log("Data loaded successfully:", data);
       },
       onError: (error): void => {
@@ -75,11 +75,11 @@ function Search() {
     data: allModels,
     isLoading: isLoadingModels,
     error: errorFetchingModels,
-  } = useQuery<{ id: number; name: string }[], Error>(
+  } = useQuery<{ results: [] }, Error>(
     ["allModels"],
     () => fetchAllTypes("model"),
     {
-      onSuccess: (data: { id: number; name: string }[]): void => {
+      onSuccess: (data: { results: [] }): void => {
         console.log("Data loaded successfully:", data);
       },
       onError: (error): void => {
@@ -88,18 +88,32 @@ function Search() {
     }
   );
 
+  const allMakesOptions: { displayValue: string; value: string }[] = allMakes
+    ? allMakes.results.map((data: { [key: string]: string }) => ({
+        displayValue: data?.make,
+        value: data?.make,
+      }))
+    : [];
+
+  const allModelsOptions: { displayValue: string; value: string }[] = allModels
+    ? allModels.results.map((data: { [key: string]: string }) => ({
+        displayValue: data?.model,
+        value: data?.model,
+      }))
+    : [];
+
   const filterInputs = [
     {
       label: "יצרן",
       value: makeFilters,
       setValue: setMakeFilters,
-      options: top100Films,
+      options: allMakesOptions,
     },
     {
       label: "דגם",
       value: modelFilters,
       setValue: setModelFilters,
-      options: top100Films,
+      options: allModelsOptions,
     },
     {
       label: "איזור מכירה",
