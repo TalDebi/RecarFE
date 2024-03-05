@@ -84,6 +84,7 @@ function FilterInput({
         }[],
         getTagProps: AutocompleteRenderGetTagProps
       ): JSX.Element[] => renderTags(value, getTagProps)}
+      isOptionEqualToValue={(option, value) => option.value === value.value}
     />
   );
 }
