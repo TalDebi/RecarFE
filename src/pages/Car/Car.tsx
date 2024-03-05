@@ -24,18 +24,12 @@ import CarInfoForm from "../CarInfoForm";
 import { useQuery } from "react-query";
 import { CarExtraInfo } from "../../services/types";
 import { fetchExtraCarInfo } from "../../services/ninja";
+import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 
 const additionalInfo = [
   { label: "קילומטראג", value: "1231" },
-  { label: "קילומטראג", value: "32142" },
-  { label: "קילומטראג", value: "4234234" },
-  { label: "קילומטראג", value: "234234" },
-  { label: "קילומטראג", value: "32424" },
-  { label: "קילומטראג", value: "23423432" },
-  { label: "קילומטראג", value: "4234" },
-  { label: "קילומטראג", value: "43242" },
-  { label: "קילומטראג", value: "32432432" },
-  { label: "קילומטראג", value: "32432432" },
+  { label: "יד", value: 2 },
+  { label: "צבע", value: "צהוב" },
 ];
 
 const comments: Comment[] = [
@@ -104,9 +98,16 @@ function Car() {
     }
   `;
 
-  const extraInfoFields = extraInfo ? Object.entries(extraInfo[0]) : [];
+  const extraInfoFields = extraInfo
+    ? Object.entries(extraInfo[0])
+        .map(([key, value]) => ({ key, value }))
+        .filter(({ key }) => !["model", "make", "year"].includes(key))
+        .map(({ key, value }) => ({
+          label: CarExtraInfoHebrewDict[key],
+          value,
+        }))
+    : [];
 
-  console.log(extraInfoFields);
   return (
     <>
       <Card
@@ -206,23 +207,25 @@ function Car() {
               justifyContent: "flex-start",
             }}
           >
-            {extraInfoFields ? (
-              extraInfoFields.map(([key, value], index) => (
-                <Box component="span" key={index} mr={10}>
+            {[...additionalInfo, ...extraInfoFields].map(
+              ({ label, value }, index) => (
+                <Box component="span" key={index} mr={6}>
                   <Typography
                     component="span"
                     variant="subtitle2"
                     color="text.secondary"
                   >
-                    {key}:{" "}
+                    {label} :{" "}
                   </Typography>
-                  <Typography component="span" variant="h6">
+                  <Typography
+                    component="span"
+                    variant="subtitle1"
+                    fontWeight="500"
+                  >
                     {value}
                   </Typography>
                 </Box>
-              ))
-            ) : (
-              <></>
+              )
             )}
           </Box>
           <Divider

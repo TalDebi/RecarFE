@@ -1,6 +1,5 @@
 import { CacheProvider } from "@emotion/react";
 import Navbar from "./Navbar";
-import PostList from "./components/PostsList";
 import Registration from "./pages/Registration";
 import {
   BrowserRouter,
