@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Post from "./pages/Post"
+import Post from "./components/Post"
 import axios from "axios";
 
 

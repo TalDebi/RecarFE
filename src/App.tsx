@@ -1,6 +1,5 @@
 import { CacheProvider } from "@emotion/react";
 import Navbar from "./Navbar";
-import PostList from "./components/PostsList";
 import Registration from "./pages/Registration";
 import {
   BrowserRouter,
@@ -19,7 +18,6 @@ import Login from "./pages/Login";
 import MyCars from "./pages/MyCars/MyCars";
 import Car from "./pages/Car/Car";
 import BasePage from "./pages/BasePage";
-import User from "./pages/Profile";
 import Profile from "./pages/Profile";
 
 function App() {

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState, FormEvent } from "react";
+import { ChangeEvent, useRef, useState, FormEvent } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -11,8 +11,7 @@ import { useNavigate } from "react-router-dom";
 import RecarAvatar from "../assets/recarLogo.svg";
 import Copyright from "../customComponents/Copyright";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { uploadPhoto } from "../services/file-service";
-import { IUser, googleSignin, registrUser } from "../services/user-service";
+import {  googleSignin } from "../services/user-service";
 import { Badge, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CarIllustration from "../assets/CarIllustration.svg";
@@ -23,8 +22,6 @@ export default function Registration() {
   const [imgSrc, setImgSrc] = useState<File>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
@@ -36,19 +33,7 @@ export default function Registration() {
     fileInputRef.current?.click();
   };
 
-  const register = async (): Promise<void> => {
-    const url = await uploadPhoto(imgSrc!);
-    console.log("upload returned:" + url);
-    if (emailInputRef.current?.value && passwordInputRef.current?.value) {
-      const user: IUser = {
-        email: emailInputRef.current?.value,
-        password: passwordInputRef.current?.value,
-        imgUrl: url,
-      };
-      const res = await registrUser(user);
-      console.log(res);
-    }
-  };
+  
 
   const onGoogleLoginSuccess = async (
     credentialResponse: CredentialResponse

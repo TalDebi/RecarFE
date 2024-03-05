@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -27,12 +27,8 @@ const pages = [
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isEditMode, setEditMode] = useState<boolean>(false);
 
-  const handleEdit = (): void => {
-    setEditMode(!isEditMode);
-    handleCloseUserMenu();
-  };
+
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null

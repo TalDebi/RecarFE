@@ -1,7 +1,10 @@
-import React from "react";
 import { CssBaseline, Grid, useTheme } from "@mui/material";
+import { ReactNode } from "react";
+interface props {
+  children: ReactNode
+}
 
-const BasePage = ({ children }) => {
+const BasePage = ({ children }:props) => {
   const theme = useTheme();
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import Box from "@mui/material/Box";
 import carImage from "../../assets/toyotaExample.avif";
 import {
@@ -9,14 +9,11 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-import { useParams } from "react-router";
 import Carousel from "react-material-ui-carousel";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteFilledIcon from "@mui/icons-material/Favorite";
+
 import CommentsTree from "./CommentsTree";
 import Divider from "@mui/material/Divider";
 import { Comment } from "./CommentsTree";
-import { grey, red } from "@mui/material/colors";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import RecarDialog from "../../customComponents/RecarDialog";
@@ -63,13 +60,9 @@ interface ButtonProps {
 
 function ResultsTable() {
   const theme = useTheme();
-  const { carID } = useParams();
-  const [isFavorite, setFavorite] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
 
-  const handleFavorite = (): void => {
-    setFavorite(!isFavorite);
-  };
+
 
   const handleEdit = (): void => {
     setEditMode(!isEditMode);

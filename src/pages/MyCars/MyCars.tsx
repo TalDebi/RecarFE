@@ -1,5 +1,4 @@
-import React, { ReactNode, SyntheticEvent, useState } from "react";
-import { useTheme } from "@mui/material/styles";
+import  { ReactNode, SyntheticEvent, useState } from "react";
 import { Box, Button, Tab, Tabs, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CarInfoCard from "./CarInfoCard";
@@ -40,7 +39,6 @@ function a11yProps(index: number) {
 }
 
 function MyCars() {
-  const theme = useTheme();
   const [isOpen, setOpen] = useState<boolean>(false);
 
   const handleCreatePost = (): void => {

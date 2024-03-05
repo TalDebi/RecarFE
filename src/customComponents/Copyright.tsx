@@ -1,7 +1,7 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
+import Typography ,{TypographyProps }from "@mui/material/Typography";
 
-export default function Copyright(props) {
+
+export default function Copyright(props: TypographyProps) {
   return (
     <Typography
       variant="body2"

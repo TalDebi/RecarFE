@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from "react";
+import  { useState, FormEvent } from "react";
 import { Box, Button, TextField, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
@@ -79,7 +79,7 @@ function Search() {
   ];
 
   const handleOnSearchInput = (event: FormEvent<HTMLDivElement>): void => {
-    setSearchInput(event.target.value);
+    setSearchInput((event.target as HTMLInputElement).value);
   };
 
   const handleClearFilters = (): void => {
