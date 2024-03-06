@@ -12,10 +12,11 @@ import RecarAvatar from "../assets/recarLogo.svg";
 import Copyright from "../customComponents/Copyright";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { uploadPhoto } from "../services/file-service";
-import { IUser, googleSignin, registrUser } from "../services/user-service";
+import { googleSignin, register } from "../services/user";
 import { Badge, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CarIllustration from "../assets/CarIllustration.svg";
+import { User } from "../services/types";
 
 export default function Registration() {
   const navigate = useNavigate();
@@ -36,16 +37,16 @@ export default function Registration() {
     fileInputRef.current?.click();
   };
 
-  const register = async (): Promise<void> => {
+  const handleRegister = async (): Promise<void> => {
     const url = await uploadPhoto(imgSrc!);
     console.log("upload returned:" + url);
     if (emailInputRef.current?.value && passwordInputRef.current?.value) {
-      const user: IUser = {
+      const user: User = {
         email: emailInputRef.current?.value,
         password: passwordInputRef.current?.value,
         imgUrl: url,
       };
-      const res = await registrUser(user);
+      const res = await register(user);
       console.log(res);
     }
   };

@@ -12,3 +12,14 @@ export type CarExtraInfo = {
   transmission: string;
   year: number;
 };
+
+export type User = {
+  _id?: string;
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
+  imgUrl?: string;
+  refreshTokens?: string[];
+  likedPosts?: string[];
+};
