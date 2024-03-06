@@ -42,6 +42,7 @@ export default function Registration() {
     console.log("upload returned:" + url);
     if (emailInputRef.current?.value && passwordInputRef.current?.value) {
       const user: User = {
+        name: "בוב",
         email: emailInputRef.current?.value,
         password: passwordInputRef.current?.value,
         imgUrl: url,

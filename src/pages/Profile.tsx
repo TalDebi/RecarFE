@@ -19,7 +19,7 @@ interface ButtonProps {
   buttonColor: string;
 }
 
-function ResultsTable() {
+function Profile() {
   const theme = useTheme();
   const [isEditMode, setEditMode] = useState<boolean>(false);
 
@@ -115,4 +115,4 @@ function ResultsTable() {
   );
 }
 
-export default ResultsTable;
+export default Profile;
