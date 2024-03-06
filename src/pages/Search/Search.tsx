@@ -1,8 +1,18 @@
-import React, { useState, FormEvent, useEffect, useRef } from "react";
-import { Box, Button, TextField, useTheme, Menu, MenuItem, FormControlLabel, Checkbox } from "@mui/material";
+import React, { useState, FormEvent, useEffect } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  useTheme,
+  Menu,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
 import RangeSlider from "./RangeSlider";
+import { SearchQuery, getAllPosts } from "../../services/posts-service";
 import AddIcon from "@mui/icons-material/Add";
 import ResultsTable from "./ResultsTable";
 import {
@@ -28,6 +38,7 @@ const top100Films = [
 
 function Search() {
   const theme = useTheme();
+  const [filterQuery, setFilterQuery] = useState<SearchQuery>({});
   const [searchInput, setSearchInput] = useState<string>("");
   const [priceFilters, setPriceFilters] = useState<number[]>([
     MIN_PRICE,
@@ -59,18 +70,58 @@ function Search() {
   >([]);
   const [clearKey, setClearKey] = useState(0);
 
-  const [handOption, setHandOption] = useState<boolean>(false)
-  const [colorOption, setColorOption] = useState<boolean>(false)
-  const [milageOption, setMilageOption] = useState<boolean>(false)
-
-
+  const [handOption, setHandOption] = useState<boolean>(false);
+  const [colorOption, setColorOption] = useState<boolean>(false);
+  const [milageOption, setMilageOption] = useState<boolean>(false);
 
   const yearSliderText = (value: number): string => value.toString();
 
   const priceSliderText = (value: number): string => {
     return `₪ ${value}K`;
-
   };
+
+  useEffect(() => {
+    setFilterQuery({
+      make: makeFilters.map((item) => item.value),
+      model: modelFilters.map((item) => item.value),
+      city: cityFilters.map((item) => item.value),
+      color: colorFilters.map((item) => item.value),
+      hand: handFilters.map((item) => item.value),
+      milage: {
+        min: milageFilters[0],
+        max: milageFilters[1],
+      },
+      price: {
+        min: priceFilters[0] * 1000,
+        max: priceFilters[1] * 1000,
+      },
+      year: {
+        min: yearFilters[0],
+        max: yearFilters[1],
+      },
+    });
+  }, [
+    makeFilters,
+    modelFilters,
+    cityFilters,
+    colorFilters,
+    handFilters,
+    milageFilters,
+    yearFilters,
+    priceFilters,
+  ]);
+  const {
+    data: posts,
+    isLoading: isLoadingPosts,
+    error: errorFetchingPosts,
+  } = useQuery([filterQuery], () => getAllPosts(filterQuery).req, {
+    onSuccess: (data): void => {
+      console.log("Posts loaded successfully:", data.data);
+    },
+    onError: (error): void => {
+      console.error("Error fetching data:", error);
+    },
+  });
 
   const {
     data: allMakes,
@@ -106,12 +157,13 @@ function Search() {
     }
   );
 
-  const allMakesOptions: { displayValue: string; value: string }[] = allMakes
-    ? allMakes.results.map((data: { [key: string]: string }) => ({
-        displayValue: data?.make,
-        value: data?.make,
-      }))
-    : [];
+  const allMakesOptions: { displayValue: string; value: string }[] =
+    allMakes && allMakes.results
+      ? allMakes.results.map((data: { [key: string]: string }) => ({
+          displayValue: data?.make,
+          value: data?.make,
+        }))
+      : [];
 
   const allModelsOptions: { displayValue: string; value: string }[] = allModels
     ? allModels.results.map((data: { [key: string]: string }) => ({
@@ -120,18 +172,65 @@ function Search() {
       }))
     : [];
 
+  const postRows = posts?.data
+    ? posts.data.map((item) => ({
+        id: item._id,
+        make: item.car.make,
+        model: item.car.model,
+        year: item.car.year,
+        city: item.car.city,
+        price: item.car.price,
+      }))
+    : [];
 
   const milageSliderText = (value: number): string => value.toString();
 
-
   const filterObjects = [
-    { filterLabel: "יצרן", value: makeFilters,       setValue: setMakeFilters,
-    options: allMakesOptions, style: { width: 285, height: 50, mx: 2 }, key: "make", component: FilterInput },
-    { filterLabel: "דגם", value: modelFilters, setValue: setModelFilters,
-         options: allModelsOptions, style: { width: 285, height: 50, mx: 2 }, key: "model", component: FilterInput },
-    { filterLabel: "איזור מכירה", value: cityFilters, setValue: setCityFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "city", component: FilterInput },
-    { filterLabel: "צבע", value: colorFilters, setValue: setColorFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "color", component: FilterInput },
-    { filterLabel: "יד", value: handFilters, setValue: setHandFilters, options: top100Films, style: { width: 285, height: 50, mx: 2 }, key: "hand", component: FilterInput },
+    {
+      filterLabel: "יצרן",
+      value: makeFilters,
+      setValue: setMakeFilters,
+      options: allMakesOptions,
+      style: { width: 285, height: 50, mx: 2 },
+      key: "make",
+      component: FilterInput,
+    },
+    {
+      filterLabel: "דגם",
+      value: modelFilters,
+      setValue: setModelFilters,
+      options: allModelsOptions,
+      style: { width: 285, height: 50, mx: 2 },
+      key: "model",
+      component: FilterInput,
+    },
+    {
+      filterLabel: "איזור מכירה",
+      value: cityFilters,
+      setValue: setCityFilters,
+      options: top100Films,
+      style: { width: 285, height: 50, mx: 2 },
+      key: "city",
+      component: FilterInput,
+    },
+    {
+      filterLabel: "צבע",
+      value: colorFilters,
+      setValue: setColorFilters,
+      options: top100Films,
+      style: { width: 285, height: 50, mx: 2 },
+      key: "color",
+      component: FilterInput,
+    },
+    {
+      filterLabel: "יד",
+      value: handFilters,
+      setValue: setHandFilters,
+      options: top100Films,
+      style: { width: 285, height: 50, mx: 2 },
+      key: "hand",
+      component: FilterInput,
+    },
     {
       key: "year",
       label: "שנה",
@@ -142,7 +241,7 @@ function Search() {
       step: YEAR_STEP,
       valuetext: yearSliderText,
       component: RangeSlider,
-      style: { width: 200, pt: 3, mx: 5 }
+      style: { width: 200, pt: 3, mx: 5 },
     },
     {
       key: "price",
@@ -154,7 +253,7 @@ function Search() {
       step: PRICE_STEP,
       valuetext: priceSliderText,
       component: RangeSlider,
-      style: { width: 200, pt: 3, mx: 5 }
+      style: { width: 200, pt: 3, mx: 5 },
     },
     {
       key: "milage",
@@ -166,45 +265,68 @@ function Search() {
       step: PRICE_STEP,
       valuetext: milageSliderText,
       component: RangeSlider,
-      style: { width: 200, pt: 3, mx: 5 }
+      style: { width: 200, pt: 3, mx: 5 },
     },
+  ];
+  const [filterList, setFilterList] = useState([
+    "make",
+    "model",
+    "city",
+    "year",
+    "price",
+  ]);
 
-
-
-  ]
-  const [filterList, setFilterList] = useState(["make", "model", "city", "year", "price"])
-
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
-
-
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
 
   const handleCloseUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(event)
+    console.log(event);
     setAnchorElUser(null);
   };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
-
-
-  const handleAdvancedOptionChange = (event: React.ChangeEvent<HTMLInputElement>, option) => {
+  const handleAdvancedOptionChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    option
+  ) => {
     if (event.target.checked) {
-      setFilterList([...filterList, option.key])
+      setFilterList([...filterList, option.key]);
     } else {
-      option.setValue(undefined)
-      setFilterList(filterList.filter(item => item != option.key))
+      option.setValue(undefined);
+      setFilterList(filterList.filter((item) => item != option.key));
     }
-    option.setChecked(event.target.checked)
-
-  }
+    option.setChecked(event.target.checked);
+  };
 
   const advancedOptions = [
-    { key: "hand", label: "יד", value: handFilters, setValue: setHandFilters, isChecked: handOption, setChecked: setHandOption },
-    { key: "milage", label: "קילומטראז'", value: milageFilters, setValue: setMilageFilters, isChecked: milageOption, setChecked: setMilageOption },
-    { key: "color", label: "צבע", value: colorFilters, setValue: setColorFilters, isChecked: colorOption, setChecked: setColorOption },
-  ]
+    {
+      key: "hand",
+      label: "יד",
+      value: handFilters,
+      setValue: setHandFilters,
+      isChecked: handOption,
+      setChecked: setHandOption,
+    },
+    {
+      key: "milage",
+      label: "קילומטראז'",
+      value: milageFilters,
+      setValue: setMilageFilters,
+      isChecked: milageOption,
+      setChecked: setMilageOption,
+    },
+    {
+      key: "color",
+      label: "צבע",
+      value: colorFilters,
+      setValue: setColorFilters,
+      isChecked: colorOption,
+      setChecked: setColorOption,
+    },
+  ];
 
   const handleOnSearchInput = (event: FormEvent<HTMLDivElement>): void => {
     setSearchInput(event.target.value);
@@ -219,7 +341,7 @@ function Search() {
     setPriceFilters([MIN_PRICE, MAX_PRICE]);
     setHandFilters([]);
     setColorFilters([]);
-    setMilageFilters([MIN_YEAR, MAX_YEAR])
+    setMilageFilters([MIN_YEAR, MAX_YEAR]);
     setClearKey((prevKey): number => prevKey + 1);
   };
 
@@ -266,16 +388,23 @@ function Search() {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-start", flexWrap: "wrap" }}>
-
-          {
-            filterObjects.map((filter, index) => {
-              if (filterList.includes(filter.key)) {
-                return <filter.component clearKey={`${index}-${clearKey}`} {...filter} />
-
-              }
-            })
-          }
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            flexWrap: "wrap",
+          }}
+        >
+          {filterObjects.map((filter, index) => {
+            if (filterList.includes(filter.key)) {
+              return (
+                <filter.component
+                  clearKey={`${index}-${clearKey}`}
+                  {...filter}
+                />
+              );
+            }
+          })}
         </Box>
         <Box>
           <Button
@@ -287,31 +416,42 @@ function Search() {
             חיפוש מתקדם
           </Button>
           <Menu
-            sx={{ mt: '45px' }}
+            sx={{ mt: "45px" }}
             id="menu-appbar"
             anchorEl={anchorElUser}
             anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             keepMounted
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
             {advancedOptions.map((option) => (
-              <MenuItem >
-                <FormControlLabel control={<Checkbox inputProps={{ 'aria-label': 'controlled' }} checked={option.isChecked} onChange={event => handleAdvancedOptionChange(event, option)} />} label={option.label} />
+              <MenuItem>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      inputProps={{ "aria-label": "controlled" }}
+                      checked={option.isChecked}
+                      onChange={(event) =>
+                        handleAdvancedOptionChange(event, option)
+                      }
+                    />
+                  }
+                  label={option.label}
+                />
               </MenuItem>
             ))}
           </Menu>
         </Box>
       </Box>
       <Box width={1400} sx={{ mt: 3 }}>
-        <ResultsTable />
+        <ResultsTable rows={postRows} />
       </Box>
     </>
   );

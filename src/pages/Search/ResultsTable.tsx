@@ -115,7 +115,14 @@ const rows = [
   },
 ];
 
-function ResultsTable() {
+function ResultsTable({rows}:  {rows:{
+  _id: string,
+  make: string,
+  model: string,
+  year: string,
+  city: string,
+  price: string,
+}[]}) {
   const navigate = useNavigate();
 
   const handleRowDoubleclick = (carID: number): void => {
