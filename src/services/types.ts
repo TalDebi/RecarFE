@@ -23,3 +23,18 @@ export type User = {
   refreshTokens?: string[];
   likedPosts?: string[];
 };
+
+export type UserCredentials = {
+  email: string;
+  password: string;
+};
+
+export type Tokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type AuthorizedUser = {
+  user: User;
+  tokens: Tokens;
+};
