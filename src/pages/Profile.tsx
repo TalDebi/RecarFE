@@ -25,7 +25,7 @@ function Profile() {
   const [isEditMode, setEditMode] = useState<boolean>(false);
 
   const userInfo: SecuredUser =
-    JSON.parse(localStorage.getItem("authorizedUser") ?? "")?.user?._doc ?? {};
+    JSON.parse(localStorage.getItem("user") ?? "{}")?._doc ?? {};
 
   const handleEdit = (): void => {
     setEditMode(!isEditMode);
@@ -50,54 +50,52 @@ function Profile() {
         <CardContent
           sx={{
             display: "flex",
-            flexDirection: "column",
             p: 3,
+            height: 350,
           }}
         >
-          <Box sx={{ display: "flex", width: 1300, height: 400 }}>
-            <Box sx={{ width: 250, textAlign: "center" }} mr={3}>
-              <Avatar
-                sx={{
-                  mt: 2,
-                  width: 250,
-                  height: 250,
-                  border: "2px solid",
-                  borderColor: theme.palette.primary.main,
-                }}
-                src={AvaterPic}
-              />
-              <Typography variant="h3">{userInfo?.name}</Typography>
-            </Box>
+          <Avatar
+            sx={{
+              mt: 2,
+              mr: 3,
+              width: 275,
+              height: 275,
+              border: "2px solid",
+              borderColor: theme.palette.primary.main,
+            }}
+            src={AvaterPic}
+          />
+          <Box
+            sx={{
+              flex: "1 0 auto",
+              display: "flex",
+              justifyContent: "space-between",
+              pl: 3,
+              p: 1,
+            }}
+          >
             <Box
               sx={{
-                flex: "1 0 auto",
                 display: "flex",
-                justifyContent: "space-between",
-                p: 3,
+                flexDirection: "column",
+                justifyContent: "space-around",
+                height: 200,
+                pt: 3,
               }}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-around",
-                  height: 200,
-                }}
-              >
-                <Typography variant="h4">{userInfo?.name}</Typography>
-                <Typography variant="h6">{userInfo?.email}</Typography>
-                <Typography variant="h6">{userInfo?.phoneNumber}</Typography>
-              </Box>
-              <StyledButton
-                buttonColor={theme.palette.primary.main}
-                sx={{ height: "fit-content" }}
-                variant="contained"
-                endIcon={<EditIcon />}
-                onClick={handleEdit}
-              >
-                עריכה
-              </StyledButton>
+              <Typography variant="h3">{userInfo?.name}</Typography>
+              <Typography variant="h6">{userInfo?.email}</Typography>
+              <Typography variant="h6">{userInfo?.phoneNumber}</Typography>
             </Box>
+            <StyledButton
+              buttonColor={theme.palette.primary.main}
+              sx={{ height: "fit-content" }}
+              variant="contained"
+              endIcon={<EditIcon />}
+              onClick={handleEdit}
+            >
+              עריכה
+            </StyledButton>
           </Box>
         </CardContent>
       </Card>

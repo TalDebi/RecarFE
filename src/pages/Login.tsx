@@ -37,17 +37,13 @@ export default function Login() {
     navigate("/registration");
   };
 
-  const {
-    mutate: submitLogin,
-    isLoading,
-    isError,
-    error,
-  } = useMutation(login, {
+  const { mutate: submitLogin, isLoading } = useMutation(login, {
     onSuccess: (data) => {
       setSnackbarMessage("התחברת בהצלחה!");
       setSnackbarSeverity("success");
       console.log("Login successful:", data);
-      localStorage.setItem("authorizedUser", JSON.stringify(data));
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("tokens", JSON.stringify(data.tokens));
       navigate("/search");
     },
     onError: (error) => {
