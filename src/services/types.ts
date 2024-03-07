@@ -24,6 +24,15 @@ export type User = {
   likedPosts?: string[];
 };
 
+export type SecuredUser = {
+  _id?: string;
+  name: string;
+  email: string;
+  phoneNumber?: string;
+  imgUrl?: string;
+  likedPosts?: string[];
+};
+
 export type UserCredentials = {
   email: string;
   password: string;
@@ -35,6 +44,6 @@ export type Tokens = {
 };
 
 export type AuthorizedUser = {
-  user: User;
+  user: SecuredUser;
   tokens: Tokens;
 };

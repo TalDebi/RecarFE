@@ -14,6 +14,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import AvaterPic from "../assets/avatar.jpeg";
 import RecarDialog from "../customComponents/RecarDialog";
 import UserEditForm from "./UserEditForm";
+import { SecuredUser } from "../services/types";
 
 interface ButtonProps {
   buttonColor: string;
@@ -22,6 +23,9 @@ interface ButtonProps {
 function Profile() {
   const theme = useTheme();
   const [isEditMode, setEditMode] = useState<boolean>(false);
+
+  const userInfo: SecuredUser =
+    JSON.parse(localStorage.getItem("authorizedUser") ?? "")?.user?._doc ?? {};
 
   const handleEdit = (): void => {
     setEditMode(!isEditMode);
@@ -62,7 +66,7 @@ function Profile() {
                 }}
                 src={AvaterPic}
               />
-              <Typography variant="h3">Tal Debi</Typography>
+              <Typography variant="h3">{userInfo?.name}</Typography>
             </Box>
             <Box
               sx={{
@@ -80,9 +84,9 @@ function Profile() {
                   height: 200,
                 }}
               >
-                <Typography variant="h4">טל דבי</Typography>
-                <Typography variant="h6">taldebi@gmail.com</Typography>
-                <Typography variant="h6">055-5555555</Typography>
+                <Typography variant="h4">{userInfo?.name}</Typography>
+                <Typography variant="h6">{userInfo?.email}</Typography>
+                <Typography variant="h6">{userInfo?.phoneNumber}</Typography>
               </Box>
               <StyledButton
                 buttonColor={theme.palette.primary.main}

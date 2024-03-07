@@ -47,6 +47,7 @@ export default function Login() {
       setSnackbarMessage("התחברת בהצלחה!");
       setSnackbarSeverity("success");
       console.log("Login successful:", data);
+      localStorage.setItem("authorizedUser", JSON.stringify(data));
       navigate("/search");
     },
     onError: (error) => {
