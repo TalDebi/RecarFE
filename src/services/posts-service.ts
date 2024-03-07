@@ -14,7 +14,7 @@ export interface SearchQuery {
     max?: number;
     min?: number;
   };
-  milage?: {
+  mileage?: {
     max?: number;
     min?: number;
   };

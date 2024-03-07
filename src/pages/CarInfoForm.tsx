@@ -60,7 +60,7 @@ const CarInfoForm = ({ defaultValues }: CarInfoFormProps) => {
       type: "number"
     },
     {
-      name: "milage",
+      name: "mileage",
       label: "קילומטראז'",
       required: true,
       type: "number"

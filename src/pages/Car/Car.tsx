@@ -251,7 +251,7 @@ function Car() {
         <CarInfoForm defaultValues={{
           "year": 2010,
           "price": 30000,
-          "milage": 32142,
+          "mileage": 32142,
           "model" : "Camry",
           "make": "Toyota",
           "city": "חולון"

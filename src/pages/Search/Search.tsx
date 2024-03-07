@@ -1,15 +1,13 @@
-import React, { useState, FormEvent, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  TextField,
   useTheme,
   Menu,
   MenuItem,
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import FilterInput from "./FilterInput";
 import RangeSlider from "./RangeSlider";
 import { SearchQuery, getAllPosts } from "../../services/posts-service";
@@ -22,6 +20,9 @@ import {
   MIN_YEAR,
   PRICE_STEP,
   YEAR_STEP,
+  MAX_MILEAGE,
+  MILEAGE_STEP,
+  MIN_MILEAGE
 } from "./consts";
 import { useQuery } from "react-query";
 import { fetchAllTypes } from "../../services/opendatasoft";
@@ -48,9 +49,9 @@ function Search() {
     MIN_YEAR,
     MAX_YEAR,
   ]);
-  const [milageFilters, setMilageFilters] = useState<number[]>([
-    MIN_YEAR,
-    MAX_YEAR,
+  const [mileageFilters, setmileageFilters] = useState<number[]>([
+    MIN_MILEAGE,
+    MAX_MILEAGE,
   ]);
   const [makeFilters, setMakeFilters] = useState<
     { value: string; displayValue: string }[]
@@ -72,13 +73,17 @@ function Search() {
 
   const [handOption, setHandOption] = useState<boolean>(false);
   const [colorOption, setColorOption] = useState<boolean>(false);
-  const [milageOption, setMilageOption] = useState<boolean>(false);
+  const [mileageOption, setmileageOption] = useState<boolean>(false);
 
   const yearSliderText = (value: number): string => value.toString();
 
   const priceSliderText = (value: number): string => {
     return `₪ ${value}K`;
   };
+  const mileageSliderText = (value: number): string => {
+    return `${value}K`;
+  };
+
 
   useEffect(() => {
     setFilterQuery({
@@ -87,9 +92,9 @@ function Search() {
       city: cityFilters.map((item) => item.value),
       color: colorFilters.map((item) => item.value),
       hand: handFilters.map((item) => item.value),
-      milage: {
-        min: milageFilters[0],
-        max: milageFilters[1],
+      mileage: {
+        min: mileageFilters[0]*1000,
+        max: mileageFilters[1]*1000,
       },
       price: {
         min: priceFilters[0] * 1000,
@@ -106,7 +111,7 @@ function Search() {
     cityFilters,
     colorFilters,
     handFilters,
-    milageFilters,
+    mileageFilters,
     yearFilters,
     priceFilters,
   ]);
@@ -160,30 +165,29 @@ function Search() {
   const allMakesOptions: { displayValue: string; value: string }[] =
     allMakes && allMakes.results
       ? allMakes.results.map((data: { [key: string]: string }) => ({
-          displayValue: data?.make,
-          value: data?.make,
-        }))
+        displayValue: data?.make,
+        value: data?.make,
+      }))
       : [];
 
   const allModelsOptions: { displayValue: string; value: string }[] = allModels
     ? allModels.results.map((data: { [key: string]: string }) => ({
-        displayValue: data?.model,
-        value: data?.model,
-      }))
+      displayValue: data?.model,
+      value: data?.model,
+    }))
     : [];
 
   const postRows = posts?.data
     ? posts.data.map((item) => ({
-        id: item._id,
-        make: item.car.make,
-        model: item.car.model,
-        year: item.car.year,
-        city: item.car.city,
-        price: item.car.price,
-      }))
+      id: item._id,
+      make: item.car.make,
+      model: item.car.model,
+      year: item.car.year,
+      city: item.car.city,
+      price: item.car.price,
+    }))
     : [];
 
-  const milageSliderText = (value: number): string => value.toString();
 
   const filterObjects = [
     {
@@ -256,14 +260,14 @@ function Search() {
       style: { width: 200, pt: 3, mx: 5 },
     },
     {
-      key: "milage",
+      key: "mileage",
       label: "קילומטראז'",
-      value: milageFilters,
-      setValue: setMilageFilters,
-      min: MIN_PRICE,
-      max: MAX_PRICE,
-      step: PRICE_STEP,
-      valuetext: milageSliderText,
+      value: mileageFilters,
+      setValue: setmileageFilters,
+      min: MIN_MILEAGE,
+      max: MAX_MILEAGE,
+      step: MILEAGE_STEP,
+      valuetext: mileageSliderText,
       component: RangeSlider,
       style: { width: 200, pt: 3, mx: 5 },
     },
@@ -295,7 +299,7 @@ function Search() {
     if (event.target.checked) {
       setFilterList([...filterList, option.key]);
     } else {
-      option.setValue(undefined);
+      option.setValue([]);
       setFilterList(filterList.filter((item) => item != option.key));
     }
     option.setChecked(event.target.checked);
@@ -311,12 +315,12 @@ function Search() {
       setChecked: setHandOption,
     },
     {
-      key: "milage",
+      key: "mileage",
       label: "קילומטראז'",
-      value: milageFilters,
-      setValue: setMilageFilters,
-      isChecked: milageOption,
-      setChecked: setMilageOption,
+      value: mileageFilters,
+      setValue: setmileageFilters,
+      isChecked: mileageOption,
+      setChecked: setmileageOption,
     },
     {
       key: "color",
@@ -328,9 +332,6 @@ function Search() {
     },
   ];
 
-  const handleOnSearchInput = (event: FormEvent<HTMLDivElement>): void => {
-    setSearchInput(event.target.value);
-  };
 
   const handleClearFilters = (): void => {
     setSearchInput("");
@@ -341,44 +342,32 @@ function Search() {
     setPriceFilters([MIN_PRICE, MAX_PRICE]);
     setHandFilters([]);
     setColorFilters([]);
-    setMilageFilters([MIN_YEAR, MAX_YEAR]);
+    setmileageFilters([MIN_MILEAGE, MAX_MILEAGE]);
     setClearKey((prevKey): number => prevKey + 1);
   };
 
-  const handleSearch = (): void => {
-    console.log(searchInput);
-    console.log(makeFilters);
-    console.log(modelFilters);
-    console.log(cityFilters);
-    console.log(yearFilters);
-    console.log(priceFilters);
-  };
 
   return (
     <>
       <Box width={1400}>
         <Box
-          sx={{ display: "flex", justifyContent: "center", height: 40, mb: 2 }}
+          sx={{ display: "flex", justifyContent: "flexStart", flexWrap: "wrap", height: 100, mb: 2 }}
         >
-          <TextField
-            id="searchInput"
-            variant="outlined"
-            size="small"
-            placeholder="חיפוש..."
-            sx={{ backgroundColor: "white", width: "100%", mr: 2 }}
-            value={searchInput}
-            onInput={(event: FormEvent<HTMLDivElement>): void =>
-              handleOnSearchInput(event)
-            }
-          />
+            {filterObjects.map((filter, index) => {
+              if (filterList.includes(filter.key)) {
+                console.log(filter)
+                return (
+                  <filter.component
+                    clearKey={`${index}-${clearKey}`}
+                    {...filter}
+                  />
+                );
+              }
+            })}
+        </Box>
+        <Box
+         sx={{ display: "flex", justifyContent: "flexStart", flexWrap: "wrap", height: 40, mb: 2 }}>
           <Box display="flex">
-            <Button
-              variant="contained"
-              sx={{ height: "100%" }}
-              onClick={handleSearch}
-            >
-              <SearchIcon sx={{ color: theme.palette.secondary.light }} />
-            </Button>
             <Button
               variant="text"
               sx={{ color: theme.palette.primary.dark }}
@@ -387,26 +376,6 @@ function Search() {
               נקה
             </Button>
           </Box>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-start",
-            flexWrap: "wrap",
-          }}
-        >
-          {filterObjects.map((filter, index) => {
-            if (filterList.includes(filter.key)) {
-              return (
-                <filter.component
-                  clearKey={`${index}-${clearKey}`}
-                  {...filter}
-                />
-              );
-            }
-          })}
-        </Box>
-        <Box>
           <Button
             startIcon={<AddIcon />}
             variant="text"
