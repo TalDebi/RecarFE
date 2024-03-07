@@ -12,3 +12,38 @@ export type CarExtraInfo = {
   transmission: string;
   year: number;
 };
+
+export type User = {
+  _id?: string;
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
+  imgUrl?: string;
+  refreshTokens?: string[];
+  likedPosts?: string[];
+};
+
+export type SecuredUser = {
+  _id?: string;
+  name: string;
+  email: string;
+  phoneNumber?: string;
+  imgUrl?: string;
+  likedPosts?: string[];
+};
+
+export type UserCredentials = {
+  email: string;
+  password: string;
+};
+
+export type Tokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type AuthorizedUser = {
+  user: SecuredUser;
+  tokens: Tokens;
+};

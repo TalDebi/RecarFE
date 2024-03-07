@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CssBaseline, Grid, useTheme } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const BasePage = ({ children }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const tokens: string = localStorage.getItem("tokens") ?? "";
+
+  useEffect(() => {
+    if (!tokens) navigate(`/login`, { replace: true });
+  }, [tokens]);
 
   return (
     <Grid
