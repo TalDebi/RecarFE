@@ -12,7 +12,6 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import AvaterPic from "../assets/avatar.jpeg";
-import RecarDialog from "../customComponents/RecarDialog";
 import UserEditForm from "./UserEditForm";
 import { SecuredUser } from "../services/types";
 
@@ -23,7 +22,6 @@ interface ButtonProps {
 function Profile() {
   const theme = useTheme();
   const [isEditMode, setEditMode] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState<boolean>(false);
 
   const userInfo: SecuredUser = JSON.parse(
     localStorage.getItem("user") ?? "{}"
@@ -101,21 +99,15 @@ function Profile() {
           </Box>
         </CardContent>
       </Card>
-      <RecarDialog
+      <UserEditForm
         open={isEditMode}
         setOpen={setEditMode}
-        isLoading={isLoading}
-        dialogType="Edit"
-        dialogTitle="עריכת פרטי משתמש"
-      >
-        <UserEditForm
-          defaultValues={{
-            phoneNumber: userInfo?.phoneNumber ?? "",
-            email: userInfo?.email ?? "",
-            name: userInfo?.name ?? "",
-          }}
-        />
-      </RecarDialog>
+        defaultValues={{
+          phoneNumber: userInfo?.phoneNumber ?? "",
+          email: userInfo?.email ?? "",
+          name: userInfo?.name ?? "",
+        }}
+      />
     </>
   );
 }

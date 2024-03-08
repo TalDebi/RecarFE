@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
 import {
   Avatar,
   Badge,
@@ -14,6 +14,8 @@ import RecarSnackbar, {
 } from "../customComponents/RecarSnackbar";
 import { useMutation } from "react-query";
 import { editUser } from "../services/user";
+import RecarDialog from "../customComponents/RecarDialog";
+import { User } from "../services/types";
 
 const fields = [
   {
@@ -52,9 +54,11 @@ interface defaultValue {
 
 interface UserEditFormProps {
   defaultValues?: defaultValue;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-const UserEditForm = ({ defaultValues }: UserEditFormProps) => {
+const UserEditForm = ({ defaultValues, open, setOpen }: UserEditFormProps) => {
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -74,7 +78,7 @@ const UserEditForm = ({ defaultValues }: UserEditFormProps) => {
     fileInputRef.current?.click();
   };
 
-  const { mutate: submitRegister, isLoading } = useMutation(editUser, {
+  const { mutate: submitEditUser, isLoading } = useMutation(editUser, {
     onSuccess: (data) => {
       setSnackbarMessage("הפרטים נערכו בהצלחה");
       setSnackbarSeverity("success");
@@ -105,87 +109,96 @@ const UserEditForm = ({ defaultValues }: UserEditFormProps) => {
       // imgUrl: url,
     };
     try {
-      await submitRegister(user);
+      await submitEditUser(user);
     } catch (error) {
-      console.log("error register: ", error);
+      console.log("error edit user: ", error);
       throw error;
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
+    <RecarDialog
+      open={open}
+      setOpen={setOpen}
+      isLoading={isLoading}
+      dialogType="Edit"
+      dialogTitle="עריכת פרטי משתמש"
+      submitAction={handleSubmit}
     >
-      <Badge
-        overlap="circular"
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        badgeContent={
-          <IconButton
-            onClick={selectImg}
-            sx={{
-              bgcolor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-        }
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        <Avatar
-          sx={{
-            mt: 2,
-            width: 150,
-            height: 150,
-            border: "2px solid",
-            borderColor: theme.palette.primary.main,
-          }}
-          src={imgSrc ? URL.createObjectURL(imgSrc) : ""}
+        <Badge
+          overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          badgeContent={
+            <IconButton
+              onClick={selectImg}
+              sx={{
+                bgcolor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          }
+        >
+          <Avatar
+            sx={{
+              mt: 2,
+              width: 150,
+              height: 150,
+              border: "2px solid",
+              borderColor: theme.palette.primary.main,
+            }}
+            src={imgSrc ? URL.createObjectURL(imgSrc) : ""}
+          />
+        </Badge>
+        <input
+          style={{ display: "none" }}
+          ref={fileInputRef}
+          type="file"
+          onChange={imgSelected}
         />
-      </Badge>
-      <input
-        style={{ display: "none" }}
-        ref={fileInputRef}
-        type="file"
-        onChange={imgSelected}
-      />
-      <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 2 }}>
-        <Grid item container spacing={2}>
-          <Grid item xs={3} />
-          <Grid item xs={6}>
-            <TextField
-              autoComplete="given-name"
-              name="name"
-              required
-              fullWidth
-              id="name"
-              label="שם פרטי"
-              autoFocus
-              defaultValue={defaultValues && defaultValues["name"]}
-            />
-          </Grid>
-          <Grid item xs={3} />
-          {fields.map((field) => (
+        <Box sx={{ mt: 2 }}>
+          <Grid item container spacing={2}>
+            <Grid item xs={3} />
             <Grid item xs={6}>
               <TextField
-                {...field}
+                autoComplete="given-name"
+                name="name"
+                required
                 fullWidth
-                defaultValue={defaultValues && defaultValues[field.name]}
+                id="name"
+                label="שם פרטי"
+                autoFocus
+                defaultValue={defaultValues && defaultValues["name"]}
               />
             </Grid>
-          ))}
-        </Grid>
+            <Grid item xs={3} />
+            {fields.map((field) => (
+              <Grid item xs={6}>
+                <TextField
+                  {...field}
+                  fullWidth
+                  defaultValue={defaultValues && defaultValues[field.name]}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+        <RecarSnackbar
+          isSnackbarOpen={isSnackbarOpen}
+          setSnackbarOpen={setSnackbarOpen}
+          snackbarSeverity={snackbarSeverity}
+          snackbarMessage={snackbarMessage}
+        />
       </Box>
-      <RecarSnackbar
-        isSnackbarOpen={isSnackbarOpen}
-        setSnackbarOpen={setSnackbarOpen}
-        snackbarSeverity={snackbarSeverity}
-        snackbarMessage={snackbarMessage}
-      />
-    </Box>
+    </RecarDialog>
   );
 };
 
