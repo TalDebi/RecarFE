@@ -1,5 +1,5 @@
 import { CredentialResponse } from "@react-oauth/google";
-import { AuthorizedUser, User, UserCredentials } from "./types";
+import { AuthorizedUser, SecuredUser, User, UserCredentials } from "./types";
 
 const uri = "http://localhost:3001";
 
@@ -86,7 +86,7 @@ export const logout = async (refreshToken: string): Promise<void> => {
   }
 };
 
-export const editUser = async (user: User): Promise<User> => {
+export const editUser = async (user: User): Promise<SecuredUser> => {
   try {
     const response = await fetch(`${uri}/auth/${user._id}`, {
       method: "PUT",

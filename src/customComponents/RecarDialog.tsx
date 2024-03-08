@@ -4,12 +4,14 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { CircularProgress } from "@mui/material";
 
 interface RecarDialogProps {
   open: boolean;
   setOpen(open: boolean): void;
   dialogType: "Creation" | "Edit";
   dialogTitle: string;
+  isLoading: boolean;
   children: JSX.Element;
 }
 
@@ -18,6 +20,7 @@ const RecarDialog = ({
   setOpen,
   dialogType,
   dialogTitle,
+  isLoading,
   children,
 }: RecarDialogProps) => {
   const handleClose = () => {
@@ -28,6 +31,8 @@ const RecarDialog = ({
     console.log("submit");
     setOpen(false);
   };
+
+  const submitButtonMessage = dialogType === "Creation" ? "צור" : "ערוך";
 
   return (
     <Dialog open={open} onClose={handleClose} scroll="paper">
@@ -40,7 +45,7 @@ const RecarDialog = ({
           סגור
         </Button>
         <Button onClick={handleSubmit} variant="contained">
-          {dialogType === "Creation" ? "צור" : "ערוך"}
+          {isLoading ? <CircularProgress size={24} /> : submitButtonMessage}
         </Button>
       </DialogActions>
     </Dialog>

@@ -23,9 +23,11 @@ interface ButtonProps {
 function Profile() {
   const theme = useTheme();
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
-  const userInfo: SecuredUser =
-    JSON.parse(localStorage.getItem("user") ?? "{}")?._doc ?? {};
+  const userInfo: SecuredUser = JSON.parse(
+    localStorage.getItem("user") ?? "{}"
+  );
 
   const handleEdit = (): void => {
     setEditMode(!isEditMode);
@@ -102,14 +104,15 @@ function Profile() {
       <RecarDialog
         open={isEditMode}
         setOpen={setEditMode}
+        isLoading={isLoading}
         dialogType="Edit"
         dialogTitle="עריכת פרטי משתמש"
       >
         <UserEditForm
           defaultValues={{
-            phone: "055555555",
-            email: "taldebi@gmail.com",
-            name: "טל דבי",
+            phoneNumber: userInfo?.phoneNumber ?? "",
+            email: userInfo?.email ?? "",
+            name: userInfo?.name ?? "",
           }}
         />
       </RecarDialog>

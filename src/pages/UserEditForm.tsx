@@ -9,6 +9,43 @@ import {
   useTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../customComponents/RecarSnackbar";
+import { useMutation } from "react-query";
+import { editUser } from "../services/user";
+
+const fields = [
+  {
+    id: "phoneNumber",
+    name: "phoneNumber",
+    label: "מספר טלפון",
+    required: true,
+    type: "tel",
+  },
+  {
+    id: "email",
+    name: "email",
+    label: "אימייל",
+    required: true,
+    type: "email",
+  },
+  {
+    id: "password",
+    name: "password",
+    label: "סיסמה",
+    required: true,
+    type: "password",
+  },
+  {
+    id: "varifyPassword",
+    name: "varifyPassword",
+    label: "אימות סיסמה",
+    required: true,
+    type: "password",
+  },
+];
+
 interface defaultValue {
   [key: string]: string | number;
 }
@@ -21,6 +58,10 @@ const UserEditForm = ({ defaultValues }: UserEditFormProps) => {
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertSeverity>("info");
 
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
@@ -32,102 +73,119 @@ const UserEditForm = ({ defaultValues }: UserEditFormProps) => {
     console.log("Selecting image...");
     fileInputRef.current?.click();
   };
-  const fields = [
-    {
-      name: "phone",
-      label: "מספר טלפון",
-      required: true,
-      type: "tel",
+
+  const { mutate: submitRegister, isLoading } = useMutation(editUser, {
+    onSuccess: (data) => {
+      setSnackbarMessage("הפרטים נערכו בהצלחה");
+      setSnackbarSeverity("success");
+      console.log("edit successful:", data);
+      localStorage.setItem("user", JSON.stringify(data));
     },
-    {
-      name: "email",
-      label: "אימייל",
-      required: true,
-      type: "email",
+    onError: (error) => {
+      setSnackbarMessage("הפרטים שהוזנו לא נכונים");
+      setSnackbarSeverity("error");
+      console.error("Login failed:", error);
     },
-    {
-      name: "password",
-      label: "סיסמה",
-      required: true,
-      type: "password",
+    onSettled: () => {
+      setSnackbarOpen(true);
     },
-    {
-      name: "varifyPassword",
-      label: "אימות סיסמה",
-      required: true,
-      type: "password",
-    },
-  ];
+  });
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    // const url = await uploadPhoto(imgSrc!);
+    const user: User = {
+      name: data.get("name")?.toString() ?? "",
+      email: data.get("email")?.toString() ?? "",
+      password: data.get("password")?.toString() ?? "",
+      phoneNumber: data.get("phoneNumber")?.toString() ?? "",
+      // imgUrl: url,
+    };
+    try {
+      await submitRegister(user);
+    } catch (error) {
+      console.log("error register: ", error);
+      throw error;
+    }
+  };
+
   return (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Badge
-          overlap="circular"
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          badgeContent={
-            <IconButton
-              onClick={selectImg}
-              sx={{
-                bgcolor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-          }
-        >
-          <Avatar
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        badgeContent={
+          <IconButton
+            onClick={selectImg}
             sx={{
-              mt: 2,
-              width: 150,
-              height: 150,
-              border: "2px solid",
-              borderColor: theme.palette.primary.main,
+              bgcolor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
             }}
-            src={imgSrc ? URL.createObjectURL(imgSrc) : ""}
-          />
-        </Badge>
-        <input
-          style={{ display: "none" }}
-          ref={fileInputRef}
-          type="file"
-          onChange={imgSelected}
+          >
+            <EditIcon />
+          </IconButton>
+        }
+      >
+        <Avatar
+          sx={{
+            mt: 2,
+            width: 150,
+            height: 150,
+            border: "2px solid",
+            borderColor: theme.palette.primary.main,
+          }}
+          src={imgSrc ? URL.createObjectURL(imgSrc) : ""}
         />
-        <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 2 }}>
-          <Grid item container spacing={2}>
-            <Grid item xs={3} />
+      </Badge>
+      <input
+        style={{ display: "none" }}
+        ref={fileInputRef}
+        type="file"
+        onChange={imgSelected}
+      />
+      <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 2 }}>
+        <Grid item container spacing={2}>
+          <Grid item xs={3} />
+          <Grid item xs={6}>
+            <TextField
+              autoComplete="given-name"
+              name="name"
+              required
+              fullWidth
+              id="name"
+              label="שם פרטי"
+              autoFocus
+              defaultValue={defaultValues && defaultValues["name"]}
+            />
+          </Grid>
+          <Grid item xs={3} />
+          {fields.map((field) => (
             <Grid item xs={6}>
               <TextField
-                autoComplete="given-name"
-                name="name"
-                required
+                {...field}
                 fullWidth
-                id="name"
-                label="שם פרטי"
-                autoFocus
-                defaultValue={defaultValues && defaultValues["name"]}
+                defaultValue={defaultValues && defaultValues[field.name]}
               />
             </Grid>
-            <Grid item xs={3} />
-            {fields.map((field) => (
-              <Grid item xs={6}>
-                <TextField
-                  {...field}
-                  fullWidth
-                  defaultValue={defaultValues && defaultValues[field.name]}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+          ))}
+        </Grid>
       </Box>
-    </>
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
+      />
+    </Box>
   );
 };
 

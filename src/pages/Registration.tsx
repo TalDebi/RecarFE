@@ -13,19 +13,25 @@ import Copyright from "../customComponents/Copyright";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { uploadPhoto } from "../services/file-service";
 import { googleSignin, register } from "../services/user";
-import { Badge, IconButton, useTheme } from "@mui/material";
+import { Badge, CircularProgress, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CarIllustration from "../assets/CarIllustration.svg";
 import { User } from "../services/types";
+import { useMutation } from "react-query";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../customComponents/RecarSnackbar";
 
 export default function Registration() {
   const navigate = useNavigate();
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
+  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertSeverity>("info");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
@@ -35,21 +41,6 @@ export default function Registration() {
   const selectImg = (): void => {
     console.log("Selecting image...");
     fileInputRef.current?.click();
-  };
-
-  const handleRegister = async (): Promise<void> => {
-    const url = await uploadPhoto(imgSrc!);
-    console.log("upload returned:" + url);
-    if (emailInputRef.current?.value && passwordInputRef.current?.value) {
-      const user: User = {
-        name: "בוב",
-        email: emailInputRef.current?.value,
-        password: passwordInputRef.current?.value,
-        imgUrl: url,
-      };
-      const res = await register(user);
-      console.log(res);
-    }
   };
 
   const onGoogleLoginSuccess = async (
@@ -72,13 +63,44 @@ export default function Registration() {
     navigate("/login");
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+  const { mutate: submitRegister, isLoading } = useMutation(register, {
+    onSuccess: (data) => {
+      setSnackbarMessage("נרשמת בהצלחה!");
+      setSnackbarSeverity("success");
+      console.log("Login successful:", data);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("tokens", JSON.stringify(data.tokens));
+      navigate("/search");
+    },
+    onError: (error) => {
+      setSnackbarMessage("הפרטים שהוזנו לא נכונים");
+      setSnackbarSeverity("error");
+      console.error("Login failed:", error);
+    },
+    onSettled: () => {
+      setSnackbarOpen(true);
+    },
+  });
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    // const url = await uploadPhoto(imgSrc!);
+    const user: User = {
+      name: data.get("name")?.toString() ?? "",
+      email: data.get("email")?.toString() ?? "",
+      password: data.get("password")?.toString() ?? "",
+      phoneNumber: data.get("phoneNumber")?.toString() ?? "",
+      // imgUrl: url,
+    };
+    try {
+      await submitRegister(user);
+    } catch (error) {
+      console.log("error register: ", error);
+      throw error;
+    }
   };
 
   return (
@@ -183,7 +205,7 @@ export default function Registration() {
                   required
                   fullWidth
                   name="confirmPassword"
-                  label="אמת סיסמא"
+                  label="אימות סיסמה"
                   type="password"
                   id="confirmPassword"
                   autoComplete="new-password"
@@ -191,7 +213,7 @@ export default function Registration() {
               </Grid>
               <Grid item xs={12}>
                 <Button type="submit" fullWidth variant="contained">
-                  הירשם
+                  {isLoading ? <CircularProgress size={24} /> : "הירשם"}
                 </Button>
               </Grid>
               <Grid item xs={8}>
@@ -237,6 +259,12 @@ export default function Registration() {
           backgroundColor: theme.palette.background.default,
           backgroundPosition: "center",
         }}
+      />
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
       />
     </Grid>
   );

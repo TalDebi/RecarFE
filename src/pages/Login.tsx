@@ -11,27 +11,20 @@ import RecarAvatar from "../assets/recarLogo.svg";
 import CarIllustration from "../assets/CarIllustration.svg";
 import { useNavigate } from "react-router-dom";
 import Copyright from "../customComponents/Copyright";
-import { Alert, CircularProgress, Snackbar, useTheme } from "@mui/material";
+import { CircularProgress, useTheme } from "@mui/material";
 import { useMutation } from "react-query";
 import { login } from "../services/user";
-
-type AlertSeverity = "error" | "success" | "warning" | "info";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../customComponents/RecarSnackbar";
 
 export default function Login() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
-
-  const closeSnackbar = (_?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSnackbar(false);
-  };
 
   const navigateToRegistration = (): void => {
     navigate("/registration");
@@ -47,12 +40,12 @@ export default function Login() {
       navigate("/search");
     },
     onError: (error) => {
-      setSnackbarMessage("הייתה שגיאה בהתחברות");
+      setSnackbarMessage("מייל או סיסמא שגויים");
       setSnackbarSeverity("error");
       console.error("Login failed:", error);
     },
     onSettled: () => {
-      setOpenSnackbar(true);
+      setSnackbarOpen(true);
     },
   });
 
@@ -61,10 +54,6 @@ export default function Login() {
   ): Promise<void> => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
     try {
       await submitLogin({
         email: data.get("email")?.toString() ?? "",
@@ -158,20 +147,12 @@ export default function Login() {
           }}
         />
       </Grid>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={closeSnackbar}
-      >
-        <Alert
-          onClose={closeSnackbar}
-          severity={snackbarSeverity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
+      />
     </>
   );
 }
