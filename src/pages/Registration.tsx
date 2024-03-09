@@ -12,15 +12,16 @@ import RecarAvatar from "../assets/recarLogo.svg";
 import Copyright from "../customComponents/Copyright";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { uploadPhoto } from "../services/file-service";
-import { googleSignin, register } from "../services/user";
+import { googleSignin, registerUser } from "../services/user";
 import { Badge, CircularProgress, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CarIllustration from "../assets/CarIllustration.svg";
-import { User } from "../services/types";
+import { AuthorizedUser, User } from "../services/types";
 import { useMutation } from "react-query";
 import RecarSnackbar, {
   AlertSeverity,
 } from "../customComponents/RecarSnackbar";
+import { useForm } from "react-hook-form";
 
 export default function Registration() {
   const navigate = useNavigate();
@@ -30,8 +31,21 @@ export default function Registration() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
-
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
+  const password = useRef({});
+  password.current = watch("password", "");
+
+  const validateConfirmPassword = (value: string) => {
+    const { password } = watch();
+    return value === password;
+  };
+
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
@@ -63,8 +77,8 @@ export default function Registration() {
     navigate("/login");
   };
 
-  const { mutate: submitRegister, isLoading } = useMutation(register, {
-    onSuccess: (data) => {
+  const { mutate: submitRegister, isLoading } = useMutation(registerUser, {
+    onSuccess: (data: AuthorizedUser) => {
       setSnackbarMessage("נרשמת בהצלחה!");
       setSnackbarSeverity("success");
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -80,9 +94,7 @@ export default function Registration() {
     },
   });
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     // const url = await uploadPhoto(imgSrc!);
@@ -145,7 +157,7 @@ export default function Registration() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 2 }}
           >
             <Grid item container spacing={2}>
@@ -153,55 +165,65 @@ export default function Registration() {
               <Grid item xs={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="name"
-                  required
                   fullWidth
                   id="name"
                   label="שם פרטי"
                   autoFocus
+                  {...register("name", { required: true })}
+                  error={errors.name ? true : false}
+                  helperText={errors.name ? "שדה חובה" : ""}
                 />
               </Grid>
               <Grid item xs={3} />
               <Grid item xs={6}>
                 <TextField
-                  required
                   fullWidth
                   id="phoneNumber"
                   label="מספר טלפון"
-                  name="phoneNumber"
                   autoComplete="tel"
+                  {...register("phoneNumber", { required: true })}
+                  error={errors.phoneNumber ? true : false}
+                  helperText={errors.phoneNumber ? "שדה חובה" : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  required
                   fullWidth
                   id="email"
                   label="אימייל"
-                  name="email"
                   autoComplete="email"
+                  {...register("email", { required: true })}
+                  error={errors.email ? true : false}
+                  helperText={errors.email ? "שדה חובה" : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  required
                   fullWidth
-                  name="password"
                   label="סיסמא"
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  {...register("password", { required: true })}
+                  error={errors.password ? true : false}
+                  helperText={errors.password ? "שדה חובה" : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  required
                   fullWidth
-                  name="confirmPassword"
                   label="אימות סיסמה"
                   type="password"
                   id="confirmPassword"
                   autoComplete="new-password"
+                  {...register("confirmPassword", {
+                    required: true,
+                    validate: validateConfirmPassword,
+                  })}
+                  error={errors.confirmPassword ? true : false}
+                  helperText={
+                    errors.confirmPassword ? "הסיסמאות חייבות להיות זהות" : ""
+                  }
                 />
               </Grid>
               <Grid item xs={12}>

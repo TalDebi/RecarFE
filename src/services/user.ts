@@ -11,7 +11,7 @@ const uri = "http://localhost:3001";
 
 const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
 
-export const register = async (user: User): Promise<AuthorizedUser> => {
+export const registerUser = async (user: User): Promise<AuthorizedUser> => {
   try {
     const response = await fetch(`${uri}/auth/register`, {
       method: "POST",
