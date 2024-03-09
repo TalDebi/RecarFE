@@ -1,7 +1,5 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import carImage from "../../assets/toyotaExample.avif";
 import { IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
@@ -76,44 +74,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    picture: carImage,
-    make: "Toyota",
-    model: "camry",
-    year: "2014",
-    city: "Holon",
-    price: "40000",
-  },
-  {
-    id: 2,
-    picture: carImage,
-    make: "Toyota",
-    model: "camry",
-    year: "2014",
-    city: "Holon",
-    price: "40000",
-  },
-  {
-    id: 3,
-    picture: carImage,
-    make: "Toyota",
-    model: "camry",
-    year: "2014",
-    city: "Holon",
-    price: "40000",
-  },
-  {
-    id: 4,
-    picture: carImage,
-    make: "Toyota",
-    model: "camry",
-    year: "2014",
-    city: "Holon",
-    price: "40000",
-  },
-];
+
 
 function ResultsTable({rows}:  {rows:{
   _id: string,
@@ -122,6 +83,7 @@ function ResultsTable({rows}:  {rows:{
   year: string,
   city: string,
   price: string,
+  picture:string
 }[]}) {
   const navigate = useNavigate();
 
