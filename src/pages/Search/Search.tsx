@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  ReactNode,
+  JSXElementConstructor,
+  ReactElement,
+} from "react";
 import {
   Box,
   Button,
@@ -40,7 +46,42 @@ const handOptions = [
   { displayValue: "5", value: "5" },
   { displayValue: "6", value: "6" },
 ];
+interface filterObject {
+  filterLabel?: string;
+  value:
+    | {
+        value: string;
+        displayValue: string;
+      }[]
+    | number[];
+  setValue: Function;
+  options?: {
+    displayValue: string;
+    value: string;
+  }[];
+  style: Object;
+  key: string;
+  component: (props: any) => ReactElement<any, any>;
+  label?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  valuetext?: Function;
+}
 
+interface advancedOption {
+  key: string;
+  label: string;
+  value:
+    | {
+        displayValue: string;
+        value: string;
+      }[]
+    | number[];
+  setValue: Function;
+  isChecked: boolean;
+  setChecked: Function;
+}
 function Search() {
   const theme = useTheme();
   const [filterQuery, setFilterQuery] = useState<SearchQuery>({});
@@ -217,17 +258,18 @@ function Search() {
     : [];
 
   const postRows = posts?.data
-    ? posts.data.map((item) => ({
+    ? posts.data.map((item: any) => ({
         id: item._id,
         make: item.car.make,
         model: item.car.model,
         year: item.car.year,
         city: item.car.city,
         price: item.car.price,
+        picture: item.car.imgsUrls[0],
       }))
     : [];
 
-  const filterObjects = [
+  const filterObjects: filterObject[] = [
     {
       filterLabel: "יצרן",
       value: makeFilters,
@@ -332,7 +374,7 @@ function Search() {
 
   const handleAdvancedOptionChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    option
+    option: advancedOption
   ) => {
     if (event.target.checked) {
       setFilterList([...filterList, option.key]);
@@ -343,7 +385,7 @@ function Search() {
     option.setChecked(event.target.checked);
   };
 
-  const advancedOptions = [
+  const advancedOptions: advancedOption[] = [
     {
       key: "hand",
       label: "יד",
