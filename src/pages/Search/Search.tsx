@@ -10,7 +10,12 @@ import {
 } from "@mui/material";
 import FilterInput from "./FilterInput";
 import RangeSlider from "./RangeSlider";
-import { SearchQuery, getAllPosts } from "../../services/posts-service";
+import {
+  SearchQuery,
+  getAllPosts,
+  getAllColors,
+  getAllCities,
+} from "../../services/posts-service";
 import AddIcon from "@mui/icons-material/Add";
 import ResultsTable from "./ResultsTable";
 import {
@@ -22,25 +27,23 @@ import {
   YEAR_STEP,
   MAX_MILEAGE,
   MILEAGE_STEP,
-  MIN_MILEAGE
+  MIN_MILEAGE,
 } from "./consts";
 import { useQuery } from "react-query";
 import { fetchAllTypes } from "../../services/opendatasoft";
 
-const top100Films = [
-  { displayValue: "The Shawshank Redemption", value: "1" },
-  { displayValue: "The Godfather", value: "2" },
-  { displayValue: "The Godfather: Part II", value: "3" },
-  { displayValue: "The Dark Knight", value: "4" },
-  { displayValue: "12 Angry Men", value: "5" },
-  { displayValue: "Schindler's List", value: "6" },
-  { displayValue: "Pulp Fiction", value: "7" },
+const handOptions = [
+  { displayValue: "1", value: "1" },
+  { displayValue: "2", value: "2" },
+  { displayValue: "3", value: "3" },
+  { displayValue: "4", value: "4" },
+  { displayValue: "5", value: "5" },
+  { displayValue: "6", value: "6" },
 ];
 
 function Search() {
   const theme = useTheme();
   const [filterQuery, setFilterQuery] = useState<SearchQuery>({});
-  const [searchInput, setSearchInput] = useState<string>("");
   const [priceFilters, setPriceFilters] = useState<number[]>([
     MIN_PRICE,
     MAX_PRICE,
@@ -84,7 +87,6 @@ function Search() {
     return `${value}K`;
   };
 
-
   useEffect(() => {
     setFilterQuery({
       make: makeFilters.map((item) => item.value),
@@ -93,8 +95,8 @@ function Search() {
       color: colorFilters.map((item) => item.value),
       hand: handFilters.map((item) => item.value),
       mileage: {
-        min: mileageFilters[0]*1000,
-        max: mileageFilters[1]*1000,
+        min: mileageFilters[0] * 1000,
+        max: mileageFilters[1] * 1000,
       },
       price: {
         min: priceFilters[0] * 1000,
@@ -161,33 +163,69 @@ function Search() {
       },
     }
   );
+  const {
+    data: allColors,
+    isLoading: isLoadingColors,
+    error: errorFetchingColors,
+  } = useQuery(["allColors"], () => getAllColors().req, {
+    onSuccess: (data: { data: string[] }): void => {
+      console.log("Data loaded successfully:", data);
+    },
+    onError: (error): void => {
+      console.error("Error fetching data:", error);
+    },
+  });
+  const {
+    data: allCities,
+    isLoading: isLoadingCities,
+    error: errorFetchingCities,
+  } = useQuery(["allCities"], () => getAllCities().req, {
+    onSuccess: (data: { data: string[] }): void => {
+      console.log("Data loaded successfully:", data);
+    },
+    onError: (error): void => {
+      console.error("Error fetching data:", error);
+    },
+  });
 
   const allMakesOptions: { displayValue: string; value: string }[] =
     allMakes && allMakes.results
       ? allMakes.results.map((data: { [key: string]: string }) => ({
-        displayValue: data?.make,
-        value: data?.make,
-      }))
+          displayValue: data?.make,
+          value: data?.make,
+        }))
       : [];
 
   const allModelsOptions: { displayValue: string; value: string }[] = allModels
     ? allModels.results.map((data: { [key: string]: string }) => ({
-      displayValue: data?.model,
-      value: data?.model,
-    }))
+        displayValue: data?.model,
+        value: data?.model,
+      }))
+    : [];
+
+  const allColorsOptions: { displayValue: string; value: string }[] = allColors
+    ? allColors.data.map((data: string) => ({
+        displayValue: data,
+        value: data,
+      }))
+    : [];
+  const allCitiesOptions: { displayValue: string; value: string }[] = allCities
+    ? allCities.data.map((data: string) => ({
+        displayValue: data,
+        value: data,
+      }))
     : [];
 
   const postRows = posts?.data
     ? posts.data.map((item) => ({
-      id: item._id,
-      make: item.car.make,
-      model: item.car.model,
-      year: item.car.year,
-      city: item.car.city,
-      price: item.car.price,
-    }))
+        id: item._id,
+        make: item.car.make,
+        model: item.car.model,
+        year: item.car.year,
+        city: item.car.city,
+        price: item.car.price,
+      }))
     : [];
-
 
   const filterObjects = [
     {
@@ -212,7 +250,7 @@ function Search() {
       filterLabel: "איזור מכירה",
       value: cityFilters,
       setValue: setCityFilters,
-      options: top100Films,
+      options: allCitiesOptions,
       style: { width: 285, height: 50, mx: 2 },
       key: "city",
       component: FilterInput,
@@ -221,7 +259,7 @@ function Search() {
       filterLabel: "צבע",
       value: colorFilters,
       setValue: setColorFilters,
-      options: top100Films,
+      options: allColorsOptions,
       style: { width: 285, height: 50, mx: 2 },
       key: "color",
       component: FilterInput,
@@ -230,7 +268,7 @@ function Search() {
       filterLabel: "יד",
       value: handFilters,
       setValue: setHandFilters,
-      options: top100Films,
+      options: handOptions,
       style: { width: 285, height: 50, mx: 2 },
       key: "hand",
       component: FilterInput,
@@ -332,9 +370,7 @@ function Search() {
     },
   ];
 
-
   const handleClearFilters = (): void => {
-    setSearchInput("");
     setMakeFilters([]);
     setModelFilters([]);
     setCityFilters([]);
@@ -346,27 +382,39 @@ function Search() {
     setClearKey((prevKey): number => prevKey + 1);
   };
 
-
   return (
     <>
       <Box width={1400}>
         <Box
-          sx={{ display: "flex", justifyContent: "flexStart", flexWrap: "wrap", height: 100, mb: 2 }}
+          sx={{
+            display: "flex",
+            justifyContent: "flexStart",
+            flexWrap: "wrap",
+            height: 100,
+            mb: 2,
+          }}
         >
-            {filterObjects.map((filter, index) => {
-              if (filterList.includes(filter.key)) {
-                console.log(filter)
-                return (
-                  <filter.component
-                    clearKey={`${index}-${clearKey}`}
-                    {...filter}
-                  />
-                );
-              }
-            })}
+          {filterObjects.map((filter, index) => {
+            if (filterList.includes(filter.key)) {
+              console.log(filter);
+              return (
+                <filter.component
+                  clearKey={`${index}-${clearKey}`}
+                  {...filter}
+                />
+              );
+            }
+          })}
         </Box>
         <Box
-         sx={{ display: "flex", justifyContent: "flexStart", flexWrap: "wrap", height: 40, mb: 2 }}>
+          sx={{
+            display: "flex",
+            justifyContent: "flexStart",
+            flexWrap: "wrap",
+            height: 40,
+            mb: 2,
+          }}
+        >
           <Box display="flex">
             <Button
               variant="text"

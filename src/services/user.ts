@@ -1,7 +1,7 @@
 import { CredentialResponse } from "@react-oauth/google";
 import { AuthorizedUser, User, UserCredentials } from "./types";
 
-const uri = "http://localhost:3001";
+const uri = "http://localhost:3000";
 
 export const register = async (user: User): Promise<AuthorizedUser> => {
   try {

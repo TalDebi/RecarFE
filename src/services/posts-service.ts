@@ -38,3 +38,11 @@ export const getAllColors = () => {
   });
   return { req, abort: () => abortController.abort() };
 };
+
+export const getAllCities = () => {
+  const abortController = new AbortController();
+  const req = apiClient.get("car/cities", {
+    signal: abortController.signal
+  });
+  return { req, abort: () => abortController.abort() };
+};
