@@ -29,22 +29,17 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const refreshToken: string =
-    JSON.parse(localStorage.getItem("tokens") ?? "{}")?.refreshToken ?? "";
-
   const {
     mutate: submitLogout,
     isLoading,
     isError,
   } = useMutation(logout, {
-    onSuccess: (data) => {
-      console.log("Logout successful:", data);
+    onSuccess: () => {
       localStorage.removeItem("user");
       localStorage.removeItem("tokens");
       navigate(`/login`);
     },
     onError: (error) => {
-      console.error("Logout failed:", error);
       throw error;
     },
     onSettled: () => {
@@ -89,7 +84,7 @@ function Navbar() {
 
   const settings = [
     { label: "פרופיל", action: navigateToProfile },
-    { label: "התנתקות", action: () => submitLogout(refreshToken) },
+    { label: "התנתקות", action: () => submitLogout() },
   ];
 
   return showNavbar ? (

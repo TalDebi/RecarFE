@@ -9,9 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import RecarSnackbar, {
-  AlertSeverity,
-} from "../customComponents/RecarSnackbar";
+import { AlertSeverity } from "../customComponents/RecarSnackbar";
 import { useMutation } from "react-query";
 import { editUser } from "../services/user";
 import RecarDialog from "../customComponents/RecarDialog";
@@ -56,16 +54,26 @@ interface UserEditFormProps {
   defaultValues?: defaultValue;
   open: boolean;
   setOpen: (open: boolean) => void;
+  setSnackbarOpen: (isSnackbarOpen: boolean) => void;
+  setSnackbarMessage: (snackbarMessage: string) => void;
+  setSnackbarSeverity: (snackbarSeverity: AlertSeverity) => void;
 }
 
-const UserEditForm = ({ defaultValues, open, setOpen }: UserEditFormProps) => {
+const UserEditForm = ({
+  defaultValues,
+  open,
+  setOpen,
+  setSnackbarOpen,
+  setSnackbarMessage,
+  setSnackbarSeverity,
+}: UserEditFormProps) => {
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] =
-    useState<AlertSeverity>("info");
+
+  const userInfo: SecuredUser = JSON.parse(
+    localStorage.getItem("user") ?? "{}"
+  );
 
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
@@ -82,13 +90,11 @@ const UserEditForm = ({ defaultValues, open, setOpen }: UserEditFormProps) => {
     onSuccess: (data) => {
       setSnackbarMessage("הפרטים נערכו בהצלחה");
       setSnackbarSeverity("success");
-      console.log("edit successful:", data);
       localStorage.setItem("user", JSON.stringify(data));
     },
-    onError: (error) => {
+    onError: () => {
       setSnackbarMessage("הפרטים שהוזנו לא נכונים");
       setSnackbarSeverity("error");
-      console.error("Login failed:", error);
     },
     onSettled: () => {
       setSnackbarOpen(true);
@@ -102,18 +108,14 @@ const UserEditForm = ({ defaultValues, open, setOpen }: UserEditFormProps) => {
     const data = new FormData(event.currentTarget);
     // const url = await uploadPhoto(imgSrc!);
     const user: User = {
+      _id: userInfo?._id,
       name: data.get("name")?.toString() ?? "",
       email: data.get("email")?.toString() ?? "",
       password: data.get("password")?.toString() ?? "",
       phoneNumber: data.get("phoneNumber")?.toString() ?? "",
       // imgUrl: url,
     };
-    try {
-      await submitEditUser(user);
-    } catch (error) {
-      console.log("error edit user: ", error);
-      throw error;
-    }
+    await submitEditUser(user);
   };
 
   return (
@@ -191,12 +193,6 @@ const UserEditForm = ({ defaultValues, open, setOpen }: UserEditFormProps) => {
             ))}
           </Grid>
         </Box>
-        <RecarSnackbar
-          isSnackbarOpen={isSnackbarOpen}
-          setSnackbarOpen={setSnackbarOpen}
-          snackbarSeverity={snackbarSeverity}
-          snackbarMessage={snackbarMessage}
-        />
       </Box>
     </RecarDialog>
   );

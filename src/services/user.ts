@@ -1,7 +1,15 @@
 import { CredentialResponse } from "@react-oauth/google";
-import { AuthorizedUser, SecuredUser, User, UserCredentials } from "./types";
+import {
+  AuthorizedUser,
+  SecuredUser,
+  Tokens,
+  User,
+  UserCredentials,
+} from "./types";
 
 const uri = "http://localhost:3001";
+
+const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
 
 export const register = async (user: User): Promise<AuthorizedUser> => {
   try {
@@ -68,12 +76,12 @@ export const login = async (user: UserCredentials): Promise<AuthorizedUser> => {
   }
 };
 
-export const logout = async (refreshToken: string): Promise<void> => {
+export const logout = async (): Promise<void> => {
   try {
     const response = await fetch(`${uri}/auth/logout`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${refreshToken}`,
+        Authorization: `Bearer ${tokens?.refreshToken}`,
       },
     });
 
@@ -92,6 +100,7 @@ export const editUser = async (user: User): Promise<SecuredUser> => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${tokens?.accessToken}`,
       },
       body: JSON.stringify(user),
     });
@@ -102,7 +111,7 @@ export const editUser = async (user: User): Promise<SecuredUser> => {
 
     return response.json();
   } catch (error) {
-    console.error("Error during registration:", error);
+    console.error("Error during edit user details:", error);
     throw error;
   }
 };

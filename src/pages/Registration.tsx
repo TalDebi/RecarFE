@@ -67,15 +67,13 @@ export default function Registration() {
     onSuccess: (data) => {
       setSnackbarMessage("נרשמת בהצלחה!");
       setSnackbarSeverity("success");
-      console.log("Login successful:", data);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("tokens", JSON.stringify(data.tokens));
       navigate("/search");
     },
-    onError: (error) => {
+    onError: () => {
       setSnackbarMessage("הפרטים שהוזנו לא נכונים");
       setSnackbarSeverity("error");
-      console.error("Login failed:", error);
     },
     onSettled: () => {
       setSnackbarOpen(true);
@@ -95,12 +93,7 @@ export default function Registration() {
       phoneNumber: data.get("phoneNumber")?.toString() ?? "",
       // imgUrl: url,
     };
-    try {
-      await submitRegister(user);
-    } catch (error) {
-      console.log("error register: ", error);
-      throw error;
-    }
+    await submitRegister(user);
   };
 
   return (

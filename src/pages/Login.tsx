@@ -21,8 +21,8 @@ import RecarSnackbar, {
 export default function Login() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isSnackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
 
@@ -34,15 +34,13 @@ export default function Login() {
     onSuccess: (data) => {
       setSnackbarMessage("התחברת בהצלחה!");
       setSnackbarSeverity("success");
-      console.log("Login successful:", data);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("tokens", JSON.stringify(data.tokens));
       navigate("/search");
     },
-    onError: (error) => {
+    onError: () => {
       setSnackbarMessage("מייל או סיסמא שגויים");
       setSnackbarSeverity("error");
-      console.error("Login failed:", error);
     },
     onSettled: () => {
       setSnackbarOpen(true);
@@ -54,15 +52,10 @@ export default function Login() {
   ): Promise<void> => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    try {
-      await submitLogin({
-        email: data.get("email")?.toString() ?? "",
-        password: data.get("password")?.toString() ?? "",
-      });
-    } catch (error) {
-      console.log("error login: ", error);
-      throw error;
-    }
+    await submitLogin({
+      email: data.get("email")?.toString() ?? "",
+      password: data.get("password")?.toString() ?? "",
+    });
   };
 
   return (

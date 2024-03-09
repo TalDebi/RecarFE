@@ -14,6 +14,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import AvaterPic from "../assets/avatar.jpeg";
 import UserEditForm from "./UserEditForm";
 import { SecuredUser } from "../services/types";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../customComponents/RecarSnackbar";
 
 interface ButtonProps {
   buttonColor: string;
@@ -22,6 +25,10 @@ interface ButtonProps {
 function Profile() {
   const theme = useTheme();
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertSeverity>("info");
 
   const userInfo: SecuredUser = JSON.parse(
     localStorage.getItem("user") ?? "{}"
@@ -102,11 +109,20 @@ function Profile() {
       <UserEditForm
         open={isEditMode}
         setOpen={setEditMode}
+        setSnackbarOpen={setSnackbarOpen}
+        setSnackbarMessage={setSnackbarMessage}
+        setSnackbarSeverity={setSnackbarSeverity}
         defaultValues={{
           phoneNumber: userInfo?.phoneNumber ?? "",
           email: userInfo?.email ?? "",
           name: userInfo?.name ?? "",
         }}
+      />
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
       />
     </>
   );

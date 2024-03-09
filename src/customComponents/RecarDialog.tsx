@@ -39,12 +39,18 @@ const RecarDialog = ({
   const submitButtonMessage = dialogType === "Creation" ? "צור" : "ערוך";
 
   return (
-    <Dialog open={open} onClose={handleClose} scroll="paper">
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      scroll="paper"
+      PaperProps={{
+        component: "form",
+        onSubmit: handleSubmit,
+      }}
+    >
       <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent dividers sx={{ width: 600, height: 510 }}>
-        <Box component="form" noValidate onSubmit={handleSubmit}>
-          {children}
-        </Box>
+        {children}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: "text.secondary" }}>
