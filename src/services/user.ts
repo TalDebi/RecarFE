@@ -9,8 +9,6 @@ import {
 
 const uri = "http://localhost:3001";
 
-const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-
 export const registerUser = async (user: User): Promise<AuthorizedUser> => {
   try {
     const response = await fetch(`${uri}/auth/register`, {
@@ -77,6 +75,7 @@ export const login = async (user: UserCredentials): Promise<AuthorizedUser> => {
 };
 
 export const logout = async (): Promise<void> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
   try {
     const response = await fetch(`${uri}/auth/logout`, {
       method: "GET",
@@ -95,6 +94,7 @@ export const logout = async (): Promise<void> => {
 };
 
 export const editUser = async (user: User): Promise<SecuredUser> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
   try {
     const response = await fetch(`${uri}/auth/${user._id}`, {
       method: "PUT",

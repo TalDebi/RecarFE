@@ -16,7 +16,7 @@ import { googleSignin, registerUser } from "../services/user";
 import { Badge, CircularProgress, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CarIllustration from "../assets/CarIllustration.svg";
-import { AuthorizedUser, User } from "../services/types";
+import { AuthorizedUser, SecuredUser, User } from "../services/types";
 import { useMutation } from "react-query";
 import RecarSnackbar, {
   AlertSeverity,
@@ -94,15 +94,14 @@ export default function Registration() {
     },
   });
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = async (data: User) => {
     // const url = await uploadPhoto(imgSrc!);
+    console.log(data);
     const user: User = {
-      name: data.get("name")?.toString() ?? "",
-      email: data.get("email")?.toString() ?? "",
-      password: data.get("password")?.toString() ?? "",
-      phoneNumber: data.get("phoneNumber")?.toString() ?? "",
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      phoneNumber: data.phoneNumber,
       // imgUrl: url,
     };
     await submitRegister(user);
@@ -192,6 +191,7 @@ export default function Registration() {
                   id="email"
                   label="אימייל"
                   autoComplete="email"
+                  type="email"
                   {...register("email", { required: true })}
                   error={errors.email ? true : false}
                   helperText={errors.email ? "שדה חובה" : ""}
