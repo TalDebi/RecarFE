@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState, FormEvent } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -16,12 +16,12 @@ import { googleSignin, registerUser } from "../services/user";
 import { Badge, CircularProgress, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CarIllustration from "../assets/CarIllustration.svg";
-import { AuthorizedUser, SecuredUser, User } from "../services/types";
+import { AuthorizedUser, User } from "../services/types";
 import { useMutation } from "react-query";
 import RecarSnackbar, {
   AlertSeverity,
 } from "../customComponents/RecarSnackbar";
-import { useForm } from "react-hook-form";
+import { FieldErrors, FieldValues, useForm } from "react-hook-form";
 
 export default function Registration() {
   const navigate = useNavigate();
@@ -45,6 +45,62 @@ export default function Registration() {
     const { password } = watch();
     return value === password;
   };
+
+  const fields = [
+    {
+      name: "phoneNumber",
+      label: "מספר טלפון",
+      type: "tel",
+      autoComplete: "tel",
+      register: {
+        required: true,
+        pattern: /^0\d{9}$/,
+      },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.phoneNumber
+          ? errors.phoneNumber.type === "pattern"
+            ? "מספר טלפון לא חוקי"
+            : "שדה חובה"
+          : "",
+    },
+    {
+      name: "email",
+      label: "אימייל",
+      type: "email",
+      autoComplete: "email",
+      register: {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.email
+          ? errors.email.type === "pattern"
+            ? 'כתובת דוא"ל לא חוקית'
+            : "שדה חובה"
+          : "",
+    },
+    {
+      name: "password",
+      label: "סיסמה",
+      type: "password",
+      autoComplete: "new-password",
+      register: { required: true },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.password ? "שדה חובה" : "",
+    },
+    {
+      name: "confirmPassword",
+      label: "אימות סיסמה",
+      type: "password",
+      autoComplete: "new-password",
+      register: {
+        required: true,
+        validate: validateConfirmPassword,
+      },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.confirmPassword ? "הסיסמאות חייבות להיות זהות" : "",
+    },
+  ];
 
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
@@ -94,7 +150,7 @@ export default function Registration() {
     },
   });
 
-  const onSubmit = async (data: User) => {
+  const onSubmit = async (data: FieldValues) => {
     // const url = await uploadPhoto(imgSrc!);
     console.log(data);
     const user: User = {
@@ -165,70 +221,34 @@ export default function Registration() {
                 <TextField
                   autoComplete="given-name"
                   fullWidth
-                  id="name"
                   label="שם פרטי"
                   autoFocus
                   {...register("name", { required: true })}
-                  error={errors.name ? true : false}
+                  error={!!errors.name}
                   helperText={errors.name ? "שדה חובה" : ""}
                 />
               </Grid>
               <Grid item xs={3} />
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  id="phoneNumber"
-                  label="מספר טלפון"
-                  autoComplete="tel"
-                  {...register("phoneNumber", { required: true })}
-                  error={errors.phoneNumber ? true : false}
-                  helperText={errors.phoneNumber ? "שדה חובה" : ""}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  id="email"
-                  label="אימייל"
-                  autoComplete="email"
-                  type="email"
-                  {...register("email", { required: true })}
-                  error={errors.email ? true : false}
-                  helperText={errors.email ? "שדה חובה" : ""}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="סיסמא"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  {...register("password", { required: true })}
-                  error={errors.password ? true : false}
-                  helperText={errors.password ? "שדה חובה" : ""}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="אימות סיסמה"
-                  type="password"
-                  id="confirmPassword"
-                  autoComplete="new-password"
-                  {...register("confirmPassword", {
-                    required: true,
-                    validate: validateConfirmPassword,
-                  })}
-                  error={errors.confirmPassword ? true : false}
-                  helperText={
-                    errors.confirmPassword ? "הסיסמאות חייבות להיות זהות" : ""
-                  }
-                />
-              </Grid>
+              {fields.map((field, index: number) => (
+                <Grid item xs={6} key={index}>
+                  <TextField
+                    fullWidth
+                    label={field.label}
+                    type={field.type}
+                    autoComplete={field.autoComplete}
+                    {...register(field.name, field.register)}
+                    error={!!errors[field.name]}
+                    helperText={field.helperText(errors)}
+                  />
+                </Grid>
+              ))}
               <Grid item xs={12}>
                 <Button type="submit" fullWidth variant="contained">
-                  {isLoading ? <CircularProgress size={24} /> : "הירשם"}
+                  {isLoading ? (
+                    <CircularProgress size={24} color="secondary" />
+                  ) : (
+                    "הירשם"
+                  )}
                 </Button>
               </Grid>
               <Grid item xs={8}>

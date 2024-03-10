@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Badge,
@@ -13,38 +13,8 @@ import { AlertSeverity } from "../customComponents/RecarSnackbar";
 import { useMutation } from "react-query";
 import { editUser } from "../services/user";
 import RecarDialog from "../customComponents/RecarDialog";
-import { User } from "../services/types";
-
-const fields = [
-  {
-    id: "phoneNumber",
-    name: "phoneNumber",
-    label: "מספר טלפון",
-    required: true,
-    type: "tel",
-  },
-  {
-    id: "email",
-    name: "email",
-    label: "אימייל",
-    required: true,
-    type: "email",
-  },
-  {
-    id: "password",
-    name: "password",
-    label: "סיסמה",
-    required: true,
-    type: "password",
-  },
-  {
-    id: "varifyPassword",
-    name: "varifyPassword",
-    label: "אימות סיסמה",
-    required: true,
-    type: "password",
-  },
-];
+import { SecuredUser, User } from "../services/types";
+import { FieldErrors, FieldValues, useForm } from "react-hook-form";
 
 interface defaultValue {
   [key: string]: string | number;
@@ -75,6 +45,76 @@ const UserEditForm = ({
     localStorage.getItem("user") ?? "{}"
   );
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
+  const password = useRef({});
+  password.current = watch("password", "");
+
+  const validateConfirmPassword = (value: string) => {
+    const { password } = watch();
+    return value === password;
+  };
+
+  const fields = [
+    {
+      name: "phoneNumber",
+      label: "מספר טלפון",
+      type: "tel",
+      autoComplete: "tel",
+      register: {
+        required: true,
+        pattern: /^0\d{9}$/,
+      },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.phoneNumber
+          ? errors.phoneNumber.type === "pattern"
+            ? "מספר טלפון לא חוקי"
+            : "שדה חובה"
+          : "",
+    },
+    {
+      name: "email",
+      label: "אימייל",
+      type: "email",
+      autoComplete: "email",
+      register: {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.email
+          ? errors.email.type === "pattern"
+            ? 'כתובת דוא"ל לא חוקית'
+            : "שדה חובה"
+          : "",
+    },
+    {
+      name: "password",
+      label: "סיסמה",
+      type: "password",
+      autoComplete: "new-password",
+      register: { required: true },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.password ? "שדה חובה" : "",
+    },
+    {
+      name: "confirmPassword",
+      label: "אימות סיסמה",
+      type: "password",
+      autoComplete: "new-password",
+      register: {
+        required: true,
+        validate: validateConfirmPassword,
+      },
+      helperText: (errors: FieldErrors<FieldValues>) =>
+        errors.confirmPassword ? "הסיסמאות חייבות להיות זהות" : "",
+    },
+  ];
+
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
     console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
@@ -101,18 +141,14 @@ const UserEditForm = ({
     },
   });
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = async (data: FieldValues) => {
     // const url = await uploadPhoto(imgSrc!);
     const user: User = {
       _id: userInfo?._id,
-      name: data.get("name")?.toString() ?? "",
-      email: data.get("email")?.toString() ?? "",
-      password: data.get("password")?.toString() ?? "",
-      phoneNumber: data.get("phoneNumber")?.toString() ?? "",
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      phoneNumber: data.phoneNumber,
       // imgUrl: url,
     };
     await submitEditUser(user);
@@ -125,7 +161,8 @@ const UserEditForm = ({
       isLoading={isLoading}
       dialogType="Edit"
       dialogTitle="עריכת פרטי משתמש"
-      submitAction={handleSubmit}
+      submitAction={handleSubmit(onSubmit)}
+      isValid={Object.keys(errors).length === 0}
     >
       <Box
         sx={{
@@ -172,12 +209,12 @@ const UserEditForm = ({
             <Grid item xs={6}>
               <TextField
                 autoComplete="given-name"
-                name="name"
-                required
                 fullWidth
-                id="name"
                 label="שם פרטי"
                 autoFocus
+                {...register("name", { required: true })}
+                error={!!errors.name}
+                helperText={errors.name ? "שדה חובה" : ""}
                 defaultValue={defaultValues && defaultValues["name"]}
               />
             </Grid>
@@ -185,8 +222,13 @@ const UserEditForm = ({
             {fields.map((field) => (
               <Grid item xs={6}>
                 <TextField
-                  {...field}
                   fullWidth
+                  label={field.label}
+                  type={field.type}
+                  autoComplete={field.autoComplete}
+                  {...register(field.name, field.register)}
+                  error={!!errors[field.name]}
+                  helperText={field.helperText(errors)}
                   defaultValue={defaultValues && defaultValues[field.name]}
                 />
               </Grid>

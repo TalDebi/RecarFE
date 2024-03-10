@@ -13,6 +13,7 @@ interface RecarDialogProps {
   dialogTitle: string;
   isLoading: boolean;
   submitAction: (event: FormEvent<HTMLFormElement>) => Promise<void>;
+  isValid: boolean;
   children: JSX.Element;
 }
 
@@ -23,6 +24,7 @@ const RecarDialog = ({
   dialogTitle,
   isLoading,
   submitAction,
+  isValid,
   children,
 }: RecarDialogProps) => {
   const handleClose = () => {
@@ -33,7 +35,7 @@ const RecarDialog = ({
     event: FormEvent<HTMLFormElement>
   ): Promise<void> => {
     await submitAction(event);
-    setOpen(false);
+    if (isValid) setOpen(false);
   };
 
   const submitButtonMessage = dialogType === "Creation" ? "צור" : "ערוך";
@@ -57,7 +59,11 @@ const RecarDialog = ({
           סגור
         </Button>
         <Button type="submit" variant="contained">
-          {isLoading ? <CircularProgress size={24} /> : submitButtonMessage}
+          {isLoading ? (
+            <CircularProgress size={24} color="secondary" />
+          ) : (
+            submitButtonMessage
+          )}
         </Button>
       </DialogActions>
     </Dialog>
