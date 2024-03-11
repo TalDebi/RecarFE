@@ -7,7 +7,7 @@ import {
   UserCredentials,
 } from "./types";
 
-const uri = "http://localhost:3001";
+const uri = "http://localhost:3000";
 
 export const registerUser = async (user: User): Promise<AuthorizedUser> => {
   try {
@@ -114,4 +114,21 @@ export const editUser = async (user: User): Promise<SecuredUser> => {
     console.error("Error during edit user details:", error);
     throw error;
   }
+};
+
+export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
+
+  const response = await fetch(`${uri}/user/likedPosts/${userID}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokens?.accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("cannot get user liked posts!");
+  }
+
+  return response.json()?.likedPosts;
 };
