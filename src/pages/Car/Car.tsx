@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import carImage from "../../assets/toyotaExample.avif";
 import {
@@ -11,12 +11,9 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router";
 import Carousel from "react-material-ui-carousel";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteFilledIcon from "@mui/icons-material/Favorite";
 import CommentsTree from "./CommentsTree";
 import Divider from "@mui/material/Divider";
 import { Comment } from "./CommentsTree";
-import { grey, red } from "@mui/material/colors";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import RecarDialog from "../../customComponents/RecarDialog";
@@ -25,12 +22,9 @@ import { useQuery } from "react-query";
 import { CarExtraInfo } from "../../services/types";
 import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
+import { getPost } from "../../services/posts-service";
 
-const additionalInfo = [
-  { label: "קילומטראג", value: "1231" },
-  { label: "יד", value: 2 },
-  { label: "צבע", value: "צהוב" },
-];
+
 
 const comments: Comment[] = [
   {
@@ -57,12 +51,28 @@ const comments: Comment[] = [
 interface ButtonProps {
   buttonColor: string;
 }
+const getCarId = () => {
+  const urlParts = window.location.href.split("/")
+  return urlParts[urlParts.length - 1]
+}
 
 function Car() {
   const theme = useTheme();
   const { carID } = useParams();
   const [isFavorite, setFavorite] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const {
+    data: post,
+    isLoading: isLoadingPost,
+    error: errorFetchingPost,
+  } = useQuery(["post"], () => getPost(getCarId()).req, {
+    onSuccess: (data): void => {
+      console.log("Posts loaded successfully:", data.data);
+    },
+    onError: (error): void => {
+      console.error("Error fetching data:", error);
+    },
+  });
 
   const {
     data: extraInfo,
@@ -80,6 +90,11 @@ function Car() {
       },
     }
   );
+  const additionalInfo = [
+    { label: "קילומטראג", value: post?.data.car.mileage },
+    { label: "יד", value: post?.data.car.hand },
+    { label: "צבע", value: post?.data.car.color },
+  ];
 
   const handleFavorite = (): void => {
     setFavorite(!isFavorite);
@@ -89,7 +104,7 @@ function Car() {
     setEditMode(!isEditMode);
   };
 
-  const StyledButton = styled(Button)<ButtonProps>`
+  const StyledButton = styled(Button) <ButtonProps>`
     background-color: ${({ buttonColor }) => buttonColor};
     border-color: ${({ buttonColor }) => buttonColor};
 
@@ -100,12 +115,12 @@ function Car() {
 
   const extraInfoFields = extraInfo
     ? Object.entries(extraInfo[0])
-        .map(([key, value]) => ({ key, value }))
-        .filter(({ key }) => !["model", "make", "year"].includes(key))
-        .map(({ key, value }) => ({
-          label: CarExtraInfoHebrewDict[key],
-          value,
-        }))
+      .map(([key, value]) => ({ key, value }))
+      .filter(({ key }) => !["model", "make", "year"].includes(key))
+      .map(({ key, value }) => ({
+        label: CarExtraInfoHebrewDict[key],
+        value,
+      }))
     : [];
 
   return (
@@ -125,20 +140,13 @@ function Car() {
           <Box sx={{ display: "flex", width: 1300, height: 225 }}>
             <Box sx={{ width: 400 }} mr={3}>
               <Carousel>
-                {[
-                  carImage,
-                  carImage,
-                  carImage,
-                  carImage,
-                  carImage,
-                  carImage,
-                ].map(
+                {post?.data.car.imgsUrls.map(
                   (image, index: number): JSX.Element => (
                     <img
                       key={index}
                       src={image}
                       alt="no image"
-                      style={{ width: "100%" }}
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
                     />
                   )
                 )}
@@ -156,21 +164,21 @@ function Car() {
               }}
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h4">Toyota</Typography>
-                <Typography variant="h4">Camry</Typography>
+                <Typography variant="h4">{post?.data.car.make}</Typography>
+                <Typography variant="h4">{post?.data.car.model}</Typography>
                 <Typography variant="h6" mt={1}>
-                  שנת 2010
+                  {post?.data.car.year}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon color="primary" />
-                  <Typography variant="h6">חולון</Typography>
+                  <Typography variant="h6">{post?.data.car.city}</Typography>
                 </Box>
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="h5" color="text.secondary">
                   מחיר
                 </Typography>
-                <Typography variant="h3">30,000₪</Typography>
+                <Typography variant="h3">{post?.data.car.price}₪</Typography>
               </Box>
               {/* <StyledButton
               buttonColor={red[600]}
@@ -248,14 +256,9 @@ function Car() {
         dialogType="Edit"
         dialogTitle="עריכת פרטי מכונית"
       >
-        <CarInfoForm defaultValues={{
-          "year": 2010,
-          "price": 30000,
-          "mileage": 32142,
-          "model" : "Camry",
-          "make": "Toyota",
-          "city": "חולון"
-        }} />
+        <CarInfoForm defaultValues={
+          post?.data.car
+        } />
       </RecarDialog>
     </>
   );
