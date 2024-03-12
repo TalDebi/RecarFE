@@ -5,10 +5,10 @@ import PageNotFoundIllustration from "../assets/PageNotFound.svg";
 const NoPage = () => (
   <Container
     sx={{
+      width: "100vw",
       height: "80vh",
       backgroundImage: `url(${PageNotFoundIllustration})`,
       backgroundRepeat: "no-repeat",
-      backgroundSize: "",
       backgroundPosition: "center",
     }}
   />

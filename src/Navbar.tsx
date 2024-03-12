@@ -17,7 +17,8 @@ import RecarLogo from "./assets/recarLogo.svg";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
-
+import { useMutation } from "react-query";
+import { logout } from "./services/user";
 
 const pages = [
   { title: "חיפוש רכבים", route: "search", icon: <SearchIcon /> },
@@ -27,12 +28,29 @@ const pages = [
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isEditMode, setEditMode] = useState<boolean>(false);
 
-  const handleEdit = (): void => {
-    setEditMode(!isEditMode);
-    handleCloseUserMenu();
-  };
+  const refreshToken: string =
+    JSON.parse(localStorage.getItem("tokens") ?? "{}")?.refreshToken ?? "";
+
+  const {
+    mutate: submitLogout,
+    isLoading,
+    isError,
+  } = useMutation(logout, {
+    onSuccess: (data) => {
+      console.log("Logout successful:", data);
+      localStorage.removeItem("user");
+      localStorage.removeItem("tokens");
+      navigate(`/login`);
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+      throw error;
+    },
+    onSettled: () => {
+      handleCloseUserMenu();
+    },
+  });
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -61,7 +79,7 @@ function Navbar() {
 
   const navigateToProfile = (): void => {
     handleCloseUserMenu();
-    navigate(`/profile`);;
+    navigate(`/profile`);
   };
 
   const handleNavMenuClick = (route: string): void => {
@@ -71,7 +89,7 @@ function Navbar() {
 
   const settings = [
     { label: "פרופיל", action: navigateToProfile },
-    { label: "התנתקות", action: handleCloseUserMenu },
+    { label: "התנתקות", action: () => submitLogout(refreshToken) },
   ];
 
   return showNavbar ? (

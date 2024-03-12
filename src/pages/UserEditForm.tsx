@@ -10,15 +10,14 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 interface defaultValue {
-  [key: string]: string | number
+  [key: string]: string | number;
 }
 
 interface UserEditFormProps {
-  defaultValues?: defaultValue
+  defaultValues?: defaultValue;
 }
 
-
-const UserEditForm = ({defaultValues}: UserEditFormProps) => {
+const UserEditForm = ({ defaultValues }: UserEditFormProps) => {
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,32 +32,32 @@ const UserEditForm = ({defaultValues}: UserEditFormProps) => {
     console.log("Selecting image...");
     fileInputRef.current?.click();
   };
-const fields = [
-  {
-    name: "phone",
-    label: "מספר טלפון",
-    required: true,
-    type: "tel"
-  },
-  {
-    name: "email",
-    label: "אימייל",
-    required: true,
-    type: "email"
-  },
-  {
-    name: "password",
-    label: "סיסמה",
-    required: true,
-    type: "password"
-  },
-  {
-    name: "varifyPassword",
-    label: "אימות סיסמה",
-    required: true,
-    type: "password"
-  }
-]
+  const fields = [
+    {
+      name: "phone",
+      label: "מספר טלפון",
+      required: true,
+      type: "tel",
+    },
+    {
+      name: "email",
+      label: "אימייל",
+      required: true,
+      type: "email",
+    },
+    {
+      name: "password",
+      label: "סיסמה",
+      required: true,
+      type: "password",
+    },
+    {
+      name: "varifyPassword",
+      label: "אימות סיסמה",
+      required: true,
+      type: "password",
+    },
+  ];
   return (
     <>
       <Box
@@ -102,7 +101,7 @@ const fields = [
         />
         <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 2 }}>
           <Grid item container spacing={2}>
-          <Grid item xs={3} />
+            <Grid item xs={3} />
             <Grid item xs={6}>
               <TextField
                 autoComplete="given-name"
@@ -113,19 +112,18 @@ const fields = [
                 label="שם פרטי"
                 autoFocus
                 defaultValue={defaultValues && defaultValues["name"]}
-                />
+              />
             </Grid>
             <Grid item xs={3} />
-            {
-              fields.map(field =>
-                <Grid item xs={6}>
-                  <TextField
-                    {...field}
-                    fullWidth
-                    defaultValue={defaultValues && defaultValues[field.name]}
-                  />
-                </Grid>)
-            }
+            {fields.map((field) => (
+              <Grid item xs={6}>
+                <TextField
+                  {...field}
+                  fullWidth
+                  defaultValue={defaultValues && defaultValues[field.name]}
+                />
+              </Grid>
+            ))}
           </Grid>
         </Box>
       </Box>

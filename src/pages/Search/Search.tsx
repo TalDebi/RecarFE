@@ -13,6 +13,8 @@ import {
   PRICE_STEP,
   YEAR_STEP,
 } from "./consts";
+import { useQuery } from "react-query";
+import { fetchAllTypes } from "../../services/opendatasoft";
 
 const top100Films = [
   { displayValue: "The Shawshank Redemption", value: "1" },
@@ -52,10 +54,73 @@ function Search() {
     return `₪ ${value}K`;
   };
 
+  const {
+    data: allMakes,
+    isLoading: isLoadingMakes,
+    error: errorFetchingMakes,
+  } = useQuery<{ results: [] }, Error>(
+    ["allMakes"],
+    () => fetchAllTypes("make"),
+    {
+      onSuccess: (data: { results: [] }): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
+
+  const {
+    data: allModels,
+    isLoading: isLoadingModels,
+    error: errorFetchingModels,
+  } = useQuery<{ results: [] }, Error>(
+    ["allModels"],
+    () => fetchAllTypes("model"),
+    {
+      onSuccess: (data: { results: [] }): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
+
+  const allMakesOptions: { displayValue: string; value: string }[] = allMakes
+    ? allMakes.results.map((data: { [key: string]: string }) => ({
+        displayValue: data?.make,
+        value: data?.make,
+      }))
+    : [];
+
+  const allModelsOptions: { displayValue: string; value: string }[] = allModels
+    ? allModels.results.map((data: { [key: string]: string }) => ({
+        displayValue: data?.model,
+        value: data?.model,
+      }))
+    : [];
+
   const filterInputs = [
-    { label: "יצרן", value: makeFilters, setValue: setMakeFilters },
-    { label: "דגם", value: modelFilters, setValue: setModelFilters },
-    { label: "איזור מכירה", value: cityFilters, setValue: setCityFilters },
+    {
+      label: "יצרן",
+      value: makeFilters,
+      setValue: setMakeFilters,
+      options: allMakesOptions,
+    },
+    {
+      label: "דגם",
+      value: modelFilters,
+      setValue: setModelFilters,
+      options: allModelsOptions,
+    },
+    {
+      label: "איזור מכירה",
+      value: cityFilters,
+      setValue: setCityFilters,
+      options: top100Films,
+    },
   ];
   const filterSliders = [
     {
@@ -141,7 +206,7 @@ function Search() {
               <FilterInput
                 key={index}
                 clearKey={`${index}-${clearKey}`}
-                options={top100Films}
+                options={filter.options}
                 filterLabel={filter.label}
                 value={filter.value}
                 setValue={filter.setValue}

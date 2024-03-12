@@ -1,6 +1,5 @@
 import { CacheProvider } from "@emotion/react";
 import Navbar from "./Navbar";
-import PostList from "./components/PostsList";
 import Registration from "./pages/Registration";
 import {
   BrowserRouter,
@@ -19,10 +18,12 @@ import Login from "./pages/Login";
 import MyCars from "./pages/MyCars/MyCars";
 import Car from "./pages/Car/Car";
 import BasePage from "./pages/BasePage";
-import User from "./pages/Profile";
 import Profile from "./pages/Profile";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 function App() {
+  const queryClient = new QueryClient();
+
   const cacheRtl = createCache({
     key: "muirtl",
     stylisPlugins: [prefixer, rtlPlugin],
@@ -66,56 +67,58 @@ function App() {
   return (
     <CacheProvider value={cacheRtl}>
       <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Outlet />}>
-              <Route index element={<Navigate to="/login" />} />
-              <Route path="login" element={<Login />} />
-              <Route path="registration" element={<Registration />} />
-              <Route
-                path="search"
-                element={
-                  <BasePage>
-                    <Search />
-                  </BasePage>
-                }
-              />
-              <Route
-                path="Car/:carID"
-                element={
-                  <BasePage>
-                    <Car />
-                  </BasePage>
-                }
-              />
-              <Route
-                path="myCars"
-                element={
-                  <BasePage>
-                    <MyCars />
-                  </BasePage>
-                }
-              />
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Outlet />}>
+                <Route index element={<Navigate to="/login" />} />
+                <Route path="login" element={<Login />} />
+                <Route path="registration" element={<Registration />} />
                 <Route
-                path="profile"
-                element={
-                  <BasePage>
-                   <Profile/>
-                  </BasePage>
-                }
-              />
-              <Route
-                path="*"
-                element={
-                  <BasePage>
-                    <NoPage />
-                  </BasePage>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+                  path="search"
+                  element={
+                    <BasePage>
+                      <Search />
+                    </BasePage>
+                  }
+                />
+                <Route
+                  path="Car/:carID"
+                  element={
+                    <BasePage>
+                      <Car />
+                    </BasePage>
+                  }
+                />
+                <Route
+                  path="myCars"
+                  element={
+                    <BasePage>
+                      <MyCars />
+                    </BasePage>
+                  }
+                />
+                <Route
+                  path="profile"
+                  element={
+                    <BasePage>
+                      <Profile />
+                    </BasePage>
+                  }
+                />
+                <Route
+                  path="*"
+                  element={
+                    <BasePage>
+                      <NoPage />
+                    </BasePage>
+                  }
+                />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
       </ThemeProvider>
     </CacheProvider>
   );
