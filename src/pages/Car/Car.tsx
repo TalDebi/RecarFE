@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+
 import Box from "@mui/material/Box";
-import carImage from "../../assets/toyotaExample.avif";
 import {
   Button,
   Card,
@@ -23,8 +24,6 @@ import { CarExtraInfo } from "../../services/types";
 import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
-
-
 
 const comments: Comment[] = [
   {
@@ -52,9 +51,9 @@ interface ButtonProps {
   buttonColor: string;
 }
 const getCarId = () => {
-  const urlParts = window.location.href.split("/")
-  return urlParts[urlParts.length - 1]
-}
+  const urlParts = window.location.href.split("/");
+  return urlParts[urlParts.length - 1];
+};
 
 function Car() {
   const theme = useTheme();
@@ -104,7 +103,7 @@ function Car() {
     setEditMode(!isEditMode);
   };
 
-  const StyledButton = styled(Button) <ButtonProps>`
+  const StyledButton = styled(Button)<ButtonProps>`
     background-color: ${({ buttonColor }) => buttonColor};
     border-color: ${({ buttonColor }) => buttonColor};
 
@@ -115,12 +114,12 @@ function Car() {
 
   const extraInfoFields = extraInfo
     ? Object.entries(extraInfo[0])
-      .map(([key, value]) => ({ key, value }))
-      .filter(({ key }) => !["model", "make", "year"].includes(key))
-      .map(({ key, value }) => ({
-        label: CarExtraInfoHebrewDict[key],
-        value,
-      }))
+        .map(([key, value]) => ({ key, value }))
+        .filter(({ key }) => !["model", "make", "year"].includes(key))
+        .map(({ key, value }) => ({
+          label: CarExtraInfoHebrewDict[key],
+          value,
+        }))
     : [];
 
   return (
@@ -139,14 +138,25 @@ function Car() {
         >
           <Box sx={{ display: "flex", width: 1300, height: 225 }}>
             <Box sx={{ width: 400 }} mr={3}>
-              <Carousel animation="slide" autoPlay stopAutoPlayOnHover>
+              <Carousel
+                NextIcon={<ChevronLeft />}
+                PrevIcon={<ChevronRight />}
+                animation="slide"
+                autoPlay
+                stopAutoPlayOnHover
+                sx={{ direction: "ltr" }}
+              >
                 {post?.data.car.imgsUrls.map(
-                  (image, index: number): JSX.Element => (
+                  (image: string, index: number): JSX.Element => (
                     <img
                       key={index}
                       src={image}
                       alt="no image"
-                      style={{ width: "100%", height: 225, objectFit: "contain"}}
+                      style={{
+                        width: "100%",
+                        height: 225,
+                        objectFit: "contain",
+                      }}
                     />
                   )
                 )}
@@ -256,9 +266,7 @@ function Car() {
         dialogType="Edit"
         dialogTitle="עריכת פרטי מכונית"
       >
-        <CarInfoForm defaultValues={
-          post?.data.car
-        } />
+        <CarInfoForm defaultValues={post?.data.car} />
       </RecarDialog>
     </>
   );
