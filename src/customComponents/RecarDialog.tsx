@@ -11,6 +11,8 @@ interface RecarDialogProps {
   dialogType: "Creation" | "Edit";
   dialogTitle: string;
   children: JSX.Element;
+  width?: number;
+  height?: number;
 }
 
 const RecarDialog = ({
@@ -19,12 +21,18 @@ const RecarDialog = ({
   dialogType,
   dialogTitle,
   children,
+  height,
+  width,
 }: RecarDialogProps) => {
-  const handleClose = () => {
+  const handleClose = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.stopPropagation();
     setOpen(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
     console.log("submit");
     setOpen(false);
   };
@@ -32,7 +40,10 @@ const RecarDialog = ({
   return (
     <Dialog open={open} onClose={handleClose} scroll="paper">
       <DialogTitle>{dialogTitle}</DialogTitle>
-      <DialogContent dividers sx={{ width: 600, height: 510 }}>
+      <DialogContent
+        dividers
+        sx={{ width: width ? width : 600, height: height ? height : 510 }}
+      >
         {children}
       </DialogContent>
       <DialogActions>

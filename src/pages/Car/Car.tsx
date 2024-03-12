@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { ChevronLeft, ChevronRight, Favorite } from "@mui/icons-material";
 
 import Box from "@mui/material/Box";
 import {
@@ -24,28 +24,32 @@ import { CarExtraInfo } from "../../services/types";
 import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
+import { red } from "@mui/material/colors";
 
-const comments: Comment[] = [
-  {
-    id: "1",
-    user: { imgUrl: "/static/images/avatar/2.jpg", username: "טל" },
-    text: "האם הרכב עבר תאונה?",
-    replies: [
-      {
-        id: "1.1",
-        user: { imgUrl: "/static/images/avatar/2.jpg", username: "ניר" },
-        text: "כן מלא תאונות...אני בכלל מופתע שאתה רוצה לקנות את האוטו.",
-        replies: [],
-      },
-    ],
-  },
-  {
-    id: "2",
-    user: { imgUrl: "user3.jpg", username: "ניר" },
-    text: "בלה בלה בלה",
-    replies: [],
-  },
-];
+// const comments: Comment[] = [
+//   {
+//     _id: "1",
+//     publisher: { imgUrl: "/static/images/avatar/2.jpg", name: "טל" },
+//     text: "האם הרכב עבר תאונה?",
+//     replies: [
+//       {
+//         _id: "1.1",
+//         publisher: { imgUrl: "/static/images/avatar/2.jpg", name: "ניר" },
+//         text: "כן מלא תאונות...אני בכלל מופתע שאתה רוצה לקנות את האוטו.",
+//         replies: [],
+//       },
+//     ],
+//   },
+//   {
+//     _id: "2",
+//     publisher: { imgUrl: "user3.jpg", name: "ניר" },
+//     text: "בלה בלה בלה",
+//     replies: [],
+//   },
+// ];
+
+const userId: string =
+  JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "";
 
 interface ButtonProps {
   buttonColor: string;
@@ -190,26 +194,27 @@ function Car() {
                 </Typography>
                 <Typography variant="h3">{post?.data.car.price}₪</Typography>
               </Box>
-              {/* <StyledButton
-              buttonColor={red[600]}
-              sx={{ height: "fit-content", width: 160 }}
-              variant="outlined"
-              endIcon={
-                isFavorite ? <FavoriteFilledIcon /> : <FavoriteBorderIcon />
-              }
-              onClick={handleFavorite}
-            >
-              {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
-            </StyledButton> */}
-              <StyledButton
-                buttonColor={theme.palette.primary.main}
-                sx={{ height: "fit-content" }}
-                variant="contained"
-                endIcon={<EditIcon />}
-                onClick={handleEdit}
-              >
-                עריכה
-              </StyledButton>
+              {userId !== post?.data.publisher._id ? (
+                <StyledButton
+                  buttonColor={red[600]}
+                  sx={{ height: "fit-content", width: 160 }}
+                  variant="outlined"
+                  endIcon={isFavorite ? <Favorite /> : <Favorite />}
+                  onClick={handleFavorite}
+                >
+                  {isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
+                </StyledButton>
+              ) : (
+                <StyledButton
+                  buttonColor={theme.palette.primary.main}
+                  sx={{ height: "fit-content" }}
+                  variant="contained"
+                  endIcon={<EditIcon />}
+                  onClick={handleEdit}
+                >
+                  עריכה
+                </StyledButton>
+              )}
             </Box>
           </Box>
           <Typography variant="h5" mt={7}>
@@ -257,7 +262,9 @@ function Car() {
           <Typography variant="h5" mt={3}>
             תגובות:
           </Typography>
-          <CommentsTree style={{ mt: 1 }} comments={comments} />
+          {post?.data.comments && (
+            <CommentsTree style={{ mt: 1 }} comments={post?.data.comments} />
+          )}
         </CardContent>
       </Card>
       <RecarDialog
