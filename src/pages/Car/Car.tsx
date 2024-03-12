@@ -139,14 +139,14 @@ function Car() {
         >
           <Box sx={{ display: "flex", width: 1300, height: 225 }}>
             <Box sx={{ width: 400 }} mr={3}>
-              <Carousel>
+              <Carousel animation="slide" autoPlay stopAutoPlayOnHover>
                 {post?.data.car.imgsUrls.map(
                   (image, index: number): JSX.Element => (
                     <img
                       key={index}
                       src={image}
                       alt="no image"
-                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                      style={{ width: "100%", height: 225, objectFit: "contain"}}
                     />
                   )
                 )}
