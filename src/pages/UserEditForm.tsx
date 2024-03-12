@@ -153,18 +153,21 @@ const UserEditForm = ({
     data: uploadedPhotoSrc,
   } = useMutation(uploadPhoto);
 
+  console.log(uploadedPhotoSrc);
   const onSubmit = async (data: FieldValues) => {
-    await submitPhotoUpload(imgSrc!);
-    const url = uploadedPhotoSrc;
-    const user: User = {
-      _id: userInfo?._id,
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      phoneNumber: data.phoneNumber,
-      imgUrl: url,
-    };
-    await submitEditUser(user);
+    // let uploadedPhotoSrc = userImage;
+    if (imgSrc) {
+      await submitPhotoUpload(imgSrc);
+    }
+    // const user: User = {
+    //   _id: userInfo?._id,
+    //   name: data.name,
+    //   email: data.email,
+    //   password: data.password,
+    //   phoneNumber: data.phoneNumber,
+    //   imgUrl: uploadedPhotoSrc,
+    // };
+    // await submitEditUser(user);
   };
 
   return (

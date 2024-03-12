@@ -13,7 +13,6 @@ export const uploadPhoto = async (photo: File): Promise<string> => {
         "Content-Type": "image/jpeg",
       },
     });
-    console.log(response);
     return response.data.url;
   } else {
     throw new Error("No photo provided");
