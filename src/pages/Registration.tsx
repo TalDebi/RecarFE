@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import RecarAvatar from "../assets/recarLogo.svg";
 import Copyright from "../customComponents/Copyright";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { uploadPhoto } from "../services/file-service";
+import { uploadPhoto } from "../services/file";
 import { googleSignin, registerUser } from "../services/user";
 import { Badge, CircularProgress, IconButton, useTheme } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -59,7 +59,7 @@ export default function Registration() {
       helperText: (errors: FieldErrors<FieldValues>) =>
         errors.phoneNumber
           ? errors.phoneNumber.type === "pattern"
-            ? "מספר טלפון לא חוקי"
+            ? "במספר טלפון 10 ספרות בלבד"
             : "שדה חובה"
           : "",
     },
@@ -102,14 +102,13 @@ export default function Registration() {
     },
   ];
 
-  const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.target.value);
+  const handleImageInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files.length > 0) {
       setImgSrc(e.target.files[0]);
     }
   };
-  const selectImg = (): void => {
-    console.log("Selecting image...");
+
+  const handleImageSelect = (): void => {
     fileInputRef.current?.click();
   };
 
@@ -133,32 +132,41 @@ export default function Registration() {
     navigate("/login");
   };
 
-  const { mutate: submitRegister, isLoading } = useMutation(registerUser, {
-    onSuccess: (data: AuthorizedUser) => {
-      setSnackbarMessage("נרשמת בהצלחה!");
-      setSnackbarSeverity("success");
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("tokens", JSON.stringify(data.tokens));
-      navigate("/search");
-    },
-    onError: () => {
-      setSnackbarMessage("הפרטים שהוזנו לא נכונים");
-      setSnackbarSeverity("error");
-    },
-    onSettled: () => {
-      setSnackbarOpen(true);
-    },
-  });
+  const { mutate: submitRegister, isLoading: isLoadingUserEdit } = useMutation(
+    registerUser,
+    {
+      onSuccess: (data: AuthorizedUser) => {
+        setSnackbarMessage("נרשמת בהצלחה!");
+        setSnackbarSeverity("success");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("tokens", JSON.stringify(data.tokens));
+        navigate("/search");
+      },
+      onError: () => {
+        setSnackbarMessage("הפרטים שהוזנו לא נכונים");
+        setSnackbarSeverity("error");
+      },
+      onSettled: () => {
+        setSnackbarOpen(true);
+      },
+    }
+  );
+
+  const {
+    mutate: submitPhotoUpload,
+    isLoading: loadingPhotoUpload,
+    data: uploadedPhotoSrc,
+  } = useMutation(uploadPhoto);
 
   const onSubmit = async (data: FieldValues) => {
-    // const url = await uploadPhoto(imgSrc!);
-    console.log(data);
+    await submitPhotoUpload(imgSrc!);
+    const url = uploadedPhotoSrc;
     const user: User = {
       name: data.name,
       email: data.email,
       password: data.password,
       phoneNumber: data.phoneNumber,
-      // imgUrl: url,
+      imgUrl: url,
     };
     await submitRegister(user);
   };
@@ -182,7 +190,7 @@ export default function Registration() {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             badgeContent={
               <IconButton
-                onClick={selectImg}
+                onClick={handleImageSelect}
                 sx={{
                   bgcolor: theme.palette.primary.main,
                   color: theme.palette.primary.contrastText,
@@ -207,7 +215,7 @@ export default function Registration() {
             style={{ display: "none" }}
             ref={fileInputRef}
             type="file"
-            onChange={imgSelected}
+            onChange={handleImageInputChange}
           />
           <Box
             component="form"
@@ -244,7 +252,7 @@ export default function Registration() {
               ))}
               <Grid item xs={12}>
                 <Button type="submit" fullWidth variant="contained">
-                  {isLoading ? (
+                  {isLoadingUserEdit || loadingPhotoUpload ? (
                     <CircularProgress size={24} color="secondary" />
                   ) : (
                     "הירשם"

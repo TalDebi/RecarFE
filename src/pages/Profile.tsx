@@ -9,9 +9,7 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-
 import EditIcon from "@mui/icons-material/Edit";
-import AvaterPic from "../assets/avatar.jpeg";
 import UserEditForm from "./UserEditForm";
 import { SecuredUser } from "../services/types";
 import RecarSnackbar, {
@@ -70,7 +68,7 @@ function Profile() {
               border: "2px solid",
               borderColor: theme.palette.primary.main,
             }}
-            src={AvaterPic}
+            src={userInfo?.imgUrl ?? ""}
           />
           <Box
             sx={{
@@ -112,6 +110,7 @@ function Profile() {
         setSnackbarOpen={setSnackbarOpen}
         setSnackbarMessage={setSnackbarMessage}
         setSnackbarSeverity={setSnackbarSeverity}
+        userImage={userInfo?.imgUrl ?? ""}
         defaultValues={{
           phoneNumber: userInfo?.phoneNumber ?? "",
           email: userInfo?.email ?? "",

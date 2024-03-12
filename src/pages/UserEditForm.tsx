@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import {
   Avatar,
   Badge,
@@ -15,6 +15,7 @@ import { editUser } from "../services/user";
 import RecarDialog from "../customComponents/RecarDialog";
 import { SecuredUser, User } from "../services/types";
 import { FieldErrors, FieldValues, useForm } from "react-hook-form";
+import { uploadPhoto } from "../services/file";
 
 interface defaultValue {
   [key: string]: string | number;
@@ -27,6 +28,7 @@ interface UserEditFormProps {
   setSnackbarOpen: (isSnackbarOpen: boolean) => void;
   setSnackbarMessage: (snackbarMessage: string) => void;
   setSnackbarSeverity: (snackbarSeverity: AlertSeverity) => void;
+  userImage: string;
 }
 
 const UserEditForm = ({
@@ -36,6 +38,7 @@ const UserEditForm = ({
   setSnackbarOpen,
   setSnackbarMessage,
   setSnackbarSeverity,
+  userImage,
 }: UserEditFormProps) => {
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
@@ -72,7 +75,7 @@ const UserEditForm = ({
       helperText: (errors: FieldErrors<FieldValues>) =>
         errors.phoneNumber
           ? errors.phoneNumber.type === "pattern"
-            ? "מספר טלפון לא חוקי"
+            ? "במספר טלפון 10 ספרות בלבד"
             : "שדה חובה"
           : "",
     },
@@ -115,41 +118,51 @@ const UserEditForm = ({
     },
   ];
 
-  const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.target.value);
+  const handleImageInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files.length > 0) {
       setImgSrc(e.target.files[0]);
     }
   };
-  const selectImg = (): void => {
-    console.log("Selecting image...");
+
+  const handleImageSelect = (): void => {
     fileInputRef.current?.click();
   };
 
-  const { mutate: submitEditUser, isLoading } = useMutation(editUser, {
-    onSuccess: (data) => {
-      setSnackbarMessage("הפרטים נערכו בהצלחה");
-      setSnackbarSeverity("success");
-      localStorage.setItem("user", JSON.stringify(data));
-    },
-    onError: () => {
-      setSnackbarMessage("הפרטים שהוזנו לא נכונים");
-      setSnackbarSeverity("error");
-    },
-    onSettled: () => {
-      setSnackbarOpen(true);
-    },
-  });
+  const { mutate: submitEditUser, isLoading: isLoadingUserEdit } = useMutation(
+    editUser,
+    {
+      onSuccess: (data) => {
+        setSnackbarMessage("הפרטים נערכו בהצלחה");
+        setSnackbarSeverity("success");
+        localStorage.setItem("user", JSON.stringify(data));
+        setOpen(false);
+      },
+      onError: () => {
+        setSnackbarMessage("הפרטים שהוזנו לא נכונים");
+        setSnackbarSeverity("error");
+      },
+      onSettled: () => {
+        setSnackbarOpen(true);
+      },
+    }
+  );
+
+  const {
+    mutate: submitPhotoUpload,
+    isLoading: loadingPhotoUpload,
+    data: uploadedPhotoSrc,
+  } = useMutation(uploadPhoto);
 
   const onSubmit = async (data: FieldValues) => {
-    // const url = await uploadPhoto(imgSrc!);
+    await submitPhotoUpload(imgSrc!);
+    const url = uploadedPhotoSrc;
     const user: User = {
       _id: userInfo?._id,
       name: data.name,
       email: data.email,
       password: data.password,
       phoneNumber: data.phoneNumber,
-      // imgUrl: url,
+      imgUrl: url,
     };
     await submitEditUser(user);
   };
@@ -158,7 +171,7 @@ const UserEditForm = ({
     <RecarDialog
       open={open}
       setOpen={setOpen}
-      isLoading={isLoading}
+      isLoading={isLoadingUserEdit || loadingPhotoUpload}
       dialogType="Edit"
       dialogTitle="עריכת פרטי משתמש"
       submitAction={handleSubmit(onSubmit)}
@@ -176,7 +189,7 @@ const UserEditForm = ({
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           badgeContent={
             <IconButton
-              onClick={selectImg}
+              onClick={handleImageSelect}
               sx={{
                 bgcolor: theme.palette.primary.main,
                 color: theme.palette.primary.contrastText,
@@ -194,14 +207,14 @@ const UserEditForm = ({
               border: "2px solid",
               borderColor: theme.palette.primary.main,
             }}
-            src={imgSrc ? URL.createObjectURL(imgSrc) : ""}
+            src={imgSrc ? URL.createObjectURL(imgSrc) : userImage}
           />
         </Badge>
         <input
           style={{ display: "none" }}
           ref={fileInputRef}
           type="file"
-          onChange={imgSelected}
+          onChange={handleImageInputChange}
         />
         <Box sx={{ mt: 2 }}>
           <Grid item container spacing={2}>

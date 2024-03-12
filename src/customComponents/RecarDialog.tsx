@@ -35,7 +35,6 @@ const RecarDialog = ({
     event: FormEvent<HTMLFormElement>
   ): Promise<void> => {
     await submitAction(event);
-    if (isValid) setOpen(false);
   };
 
   const submitButtonMessage = dialogType === "Creation" ? "צור" : "ערוך";
