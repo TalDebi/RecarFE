@@ -33,24 +33,19 @@ export const registerUser = async (user: User): Promise<AuthorizedUser> => {
 export const googleSignin = async (
   credentialResponse: CredentialResponse
 ): Promise<User> => {
-  try {
-    const response = await fetch(`${uri}/auth/google`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentialResponse),
-    });
+  const response = await fetch(`${uri}/auth/google`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentialResponse),
+  });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error during Google Signin:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
   }
+
+  return response.json();
 };
 
 export const login = async (user: UserCredentials): Promise<AuthorizedUser> => {

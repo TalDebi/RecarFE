@@ -5,7 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { CssBaseline } from "@mui/material";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <GoogleOAuthProvider clientId="764938356434-9sg7heli6dv8nj6rlobhhjlq18ui5dpr.apps.googleusercontent.com">
+  <GoogleOAuthProvider clientId="31419708780-e47tk22a08u23kafo5hquochcef253b1.apps.googleusercontent.com">
     <React.StrictMode>
       <CssBaseline />
       <App />
