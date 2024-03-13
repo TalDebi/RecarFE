@@ -116,17 +116,20 @@ export default function Registration() {
   const onGoogleLoginSuccess = async (
     credentialResponse: CredentialResponse
   ): Promise<void> => {
-    console.log(credentialResponse);
-    try {
-      const res = await googleSignin(credentialResponse);
-      console.log(res);
-    } catch (e) {
-      console.log(e);
-    }
+    const res: AuthorizedUser = await googleSignin(credentialResponse);
+    setSnackbarMessage("נרשמת בהצלחה!");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
+    localStorage.setItem("user", JSON.stringify(res.user));
+    localStorage.setItem("tokens", JSON.stringify(res.tokens));
+    window.dispatchEvent(new Event("storage"));
+    navigate("/search");
   };
 
   const onGoogleLoginFailure = (): void => {
-    console.log("Google login failed");
+    setSnackbarMessage("ההירשמות דרך גוגל נכשלה");
+    setSnackbarSeverity("error");
+    setSnackbarOpen(true);
   };
 
   const navigateToLogin = (): void => {

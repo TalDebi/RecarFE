@@ -13,10 +13,12 @@ import { useNavigate } from "react-router-dom";
 import Copyright from "../customComponents/Copyright";
 import { CircularProgress, useTheme } from "@mui/material";
 import { useMutation } from "react-query";
-import { login } from "../services/user";
+import { googleSignin, login } from "../services/user";
 import RecarSnackbar, {
   AlertSeverity,
 } from "../customComponents/RecarSnackbar";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { AuthorizedUser } from "../services/types";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,6 +32,24 @@ export default function Login() {
     navigate("/registration");
   };
 
+  const onGoogleLoginSuccess = async (
+    credentialResponse: CredentialResponse
+  ): Promise<void> => {
+    const res: AuthorizedUser = await googleSignin(credentialResponse);
+    setSnackbarMessage("התחברת בהצלחה!");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
+    localStorage.setItem("user", JSON.stringify(res.user));
+    localStorage.setItem("tokens", JSON.stringify(res.tokens));
+    window.dispatchEvent(new Event("storage"));
+    navigate("/search");
+  };
+
+  const onGoogleLoginFailure = (): void => {
+    setSnackbarMessage("ההתחברות דרך גוגל נכשלה");
+    setSnackbarSeverity("error");
+    setSnackbarOpen(true);
+  };
   const { mutate: submitLogin, isLoading } = useMutation(login, {
     onSuccess: (data) => {
       setSnackbarMessage("התחברת בהצלחה!");
@@ -118,15 +138,23 @@ export default function Login() {
                   "התחבר"
                 )}
               </Button>
-              <Grid item>
-                <Link
-                  href=""
-                  onClick={navigateToRegistration}
-                  variant="body2"
-                  color="primary.dark"
-                >
-                  נרשמת בעבר? הירשם!{" "}
-                </Link>
+              <Grid container xs={12} justifyContent="space-between">
+                <Grid item xs={8}>
+                  <GoogleLogin
+                    onSuccess={onGoogleLoginSuccess}
+                    onError={onGoogleLoginFailure}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Link
+                    href=""
+                    onClick={navigateToRegistration}
+                    variant="body2"
+                    color="primary.dark"
+                  >
+                    נרשמת בעבר? הירשם!{" "}
+                  </Link>
+                </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
             </Box>
