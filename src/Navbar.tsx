@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -28,19 +28,27 @@ const pages = [
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userInfo, setUserInfo] = useState<string | undefined>(
+    JSON.parse(localStorage.getItem("user") ?? "{}")?.imgUrl
+  );
 
-  const {
-    mutate: submitLogout,
-    isLoading,
-    isError,
-  } = useMutation(logout, {
+  useEffect(() => {
+    const handleLocalStorageChange = () => {
+      setUserInfo(JSON.parse(localStorage.getItem("user") ?? "{}")?.imgUrl);
+    };
+
+    window.addEventListener("storage", handleLocalStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleLocalStorageChange);
+    };
+  }, []);
+
+  const { mutate: submitLogout } = useMutation(logout, {
     onSuccess: () => {
       localStorage.removeItem("user");
       localStorage.removeItem("tokens");
       navigate(`/login`);
-    },
-    onError: (error) => {
-      throw error;
     },
     onSettled: () => {
       handleCloseUserMenu();
@@ -210,7 +218,7 @@ function Navbar() {
             </IconButton>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar src={userInfo ?? ""} />
               </IconButton>
             </Tooltip>
             <Menu

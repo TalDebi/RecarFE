@@ -42,6 +42,7 @@ const UserEditForm = ({
 }: UserEditFormProps) => {
   const theme = useTheme();
   const [imgSrc, setImgSrc] = useState<File>();
+  const [loadingPhotoUpload, setLoadingPhotoUpload] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userInfo: SecuredUser = JSON.parse(
@@ -135,6 +136,7 @@ const UserEditForm = ({
         setSnackbarMessage("הפרטים נערכו בהצלחה");
         setSnackbarSeverity("success");
         localStorage.setItem("user", JSON.stringify(data));
+        window.dispatchEvent(new Event("storage"));
         setOpen(false);
       },
       onError: () => {
@@ -147,27 +149,22 @@ const UserEditForm = ({
     }
   );
 
-  const {
-    mutate: submitPhotoUpload,
-    isLoading: loadingPhotoUpload,
-    data: uploadedPhotoSrc,
-  } = useMutation(uploadPhoto);
-
-  console.log(uploadedPhotoSrc);
   const onSubmit = async (data: FieldValues) => {
-    // let uploadedPhotoSrc = userImage;
+    let newImageSrc = userImage;
     if (imgSrc) {
-      await submitPhotoUpload(imgSrc);
+      setLoadingPhotoUpload(true);
+      newImageSrc = await uploadPhoto(imgSrc);
+      setLoadingPhotoUpload(false);
     }
-    // const user: User = {
-    //   _id: userInfo?._id,
-    //   name: data.name,
-    //   email: data.email,
-    //   password: data.password,
-    //   phoneNumber: data.phoneNumber,
-    //   imgUrl: uploadedPhotoSrc,
-    // };
-    // await submitEditUser(user);
+    const user: User = {
+      _id: userInfo?._id,
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      phoneNumber: data.phoneNumber,
+      imgUrl: newImageSrc,
+    };
+    await submitEditUser(user);
   };
 
   return (

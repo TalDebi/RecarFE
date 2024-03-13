@@ -36,6 +36,7 @@ export default function Login() {
       setSnackbarSeverity("success");
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("tokens", JSON.stringify(data.tokens));
+      window.dispatchEvent(new Event("storage"));
       navigate("/search");
     },
     onError: () => {

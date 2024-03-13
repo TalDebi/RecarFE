@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -29,6 +29,7 @@ export default function Registration() {
   const [imgSrc, setImgSrc] = useState<File>();
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [loadingPhotoUpload, setLoadingPhotoUpload] = useState<boolean>(false);
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -140,6 +141,7 @@ export default function Registration() {
         setSnackbarSeverity("success");
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("tokens", JSON.stringify(data.tokens));
+        window.dispatchEvent(new Event("storage"));
         navigate("/search");
       },
       onError: () => {
@@ -152,21 +154,19 @@ export default function Registration() {
     }
   );
 
-  const {
-    mutate: submitPhotoUpload,
-    isLoading: loadingPhotoUpload,
-    data: uploadedPhotoSrc,
-  } = useMutation(uploadPhoto);
-
   const onSubmit = async (data: FieldValues) => {
-    await submitPhotoUpload(imgSrc!);
-    const url = uploadedPhotoSrc;
+    let newImageSrc;
+    if (imgSrc) {
+      setLoadingPhotoUpload(true);
+      newImageSrc = await uploadPhoto(imgSrc);
+      setLoadingPhotoUpload(false);
+    }
     const user: User = {
       name: data.name,
       email: data.email,
       password: data.password,
       phoneNumber: data.phoneNumber,
-      imgUrl: url,
+      imgUrl: newImageSrc,
     };
     await submitRegister(user);
   };
