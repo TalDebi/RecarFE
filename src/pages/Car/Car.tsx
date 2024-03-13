@@ -263,7 +263,7 @@ function Car() {
             תגובות:
           </Typography>
           {post?.data.comments && (
-            <CommentsTree style={{ mt: 1 }} comments={post?.data.comments} />
+            <CommentsTree style={{ mt: 1 }} comments={post?.data.comments} postId={post?.data._id} />
           )}
         </CardContent>
       </Card>

@@ -14,8 +14,7 @@ import { Avatar, Button, IconButton, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
-import RecarDialog from "../../customComponents/RecarDialog";
-import CommentInputForm from "./CommentInputForm";
+import { Check, Close } from "@mui/icons-material";
 
 export type Comment = {
   _id: string;
@@ -28,9 +27,13 @@ type StyledTreeItemProps = TreeItemProps & {
   commentText: string;
   username: string;
   userId: string;
+  postId: string;
+  commentId?: string;
+  replyId?: string;
   avatarUrl?: string;
   isReply?: boolean;
   index: number;
+  addNewComment?: Function;
 };
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
@@ -77,14 +80,20 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
     isReply = false,
     index,
     userId,
+    postId,
+    commentId,
+    replyId,
+    addNewComment,
     ...other
   } = props;
+  const inputRef = React.useRef(null);
 
   const handleReply = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void => {
     event.stopPropagation();
-    setIsReplyMode(true)
+    setIsReplyMode(true);
+    addNewComment && addNewComment()
   };
 
   const handleEdit = (
@@ -92,6 +101,14 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   ): void => {
     event.stopPropagation();
     setIsEditMode(true);
+  };
+
+  const submitComment = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
+    event.stopPropagation();
+    setIsEditMode(false);
+    // inputRef.value
   };
 
   const handleDelete = (
@@ -104,7 +121,6 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
     isReply: boolean,
     handleReply: Function,
     handleDelete: Function,
-
     handleEdit: Function
   ) => {
     const currUserId: string =
@@ -180,37 +196,29 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
                 {username}
               </Typography>
 
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: "inherit", flexGrow: 1 }}
-              >
-                {commentText}
-              </Typography>
+              {!isEditMode ? (
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: "inherit", flexGrow: 1 }}
+                >
+                  {commentText}
+                </Typography>
+              ) : (
+                <Box sx={{ display: "flex" }}>
+                  <TextField inputRef={inputRef} defaultValue={commentText} />
+                  <Button onClick={submitComment}>
+                    <Check />
+                  </Button>
+                  <Button onClick={() => setIsEditMode(false)}>
+                    <Close color="error" />
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Box>
           <Box sx={{ display: "flex" }}>
             {bottoms(userId, isReply, handleReply, handleDelete, handleEdit)}
           </Box>
-          <RecarDialog
-            open={isEditMode}
-            setOpen={setIsEditMode}
-            dialogType="Edit"
-            dialogTitle="עריכת תגובה"
-            width={300}
-            height={100}
-          >
-            <CommentInputForm defaultValue={commentText} />
-          </RecarDialog>
-          <RecarDialog
-            open={isReplyMode}
-            setOpen={setIsReplyMode}
-            dialogType="Creation"
-            dialogTitle="שליחת תגובה"
-            width={300}
-            height={100}
-          >
-            <CommentInputForm/>
-          </RecarDialog>
         </Box>
       }
       {...other}
@@ -221,10 +229,40 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
 
 interface CommentsTreeProps {
   comments: Comment[];
+  postId: string;
   style?: SxProps<Theme>;
 }
 
-export default function CommentsTree({ comments, style }: CommentsTreeProps) {
+export default function CommentsTree({
+  comments,
+  style,
+  postId,
+}: CommentsTreeProps) {
+  const [currComments, setCurrComments] = useState(comments);
+
+  const addNewComment = (index: number, isReply: boolean = true) => {
+    const currUser = JSON.parse(localStorage.getItem("user") ?? "{}");
+    return () => {
+      const newComment: Comment = {
+        publisher: {
+          imgUrl: currUser.imgUrl,
+          name: currUser.name,
+          _id: currUser._id,
+        },
+        text: "",
+        replies: [],
+        _id: Math.random().toString(36)
+      };
+
+      if (isReply) {
+        currComments[index]?.replies.push(newComment);
+      } else {
+        currComments.push(newComment);
+      }
+
+      setCurrComments(currComments);
+    };
+  };
   return (
     <TreeView
       defaultCollapseIcon={<ArrowDropDownIcon />}
@@ -235,7 +273,7 @@ export default function CommentsTree({ comments, style }: CommentsTreeProps) {
         ...style,
       }}
     >
-      {comments.map((comment, commentIndex: number) => (
+      {currComments.map((comment, commentIndex: number) => (
         <StyledTreeItem
           key={commentIndex}
           nodeId={comment._id}
@@ -244,6 +282,8 @@ export default function CommentsTree({ comments, style }: CommentsTreeProps) {
           userId={comment.publisher._id}
           avatarUrl={comment.publisher?.imgUrl ?? comment.publisher.imgUrl}
           index={commentIndex}
+          postId={postId}
+          addNewComment={addNewComment(commentIndex)}
         >
           {comment.replies.map((reply, replyIndex: number) => (
             <StyledTreeItem
@@ -254,6 +294,7 @@ export default function CommentsTree({ comments, style }: CommentsTreeProps) {
               avatarUrl={reply.publisher?.imgUrl ?? reply.publisher.imgUrl}
               userId={reply.publisher._id}
               index={replyIndex}
+              postId={postId}
               isReply={true}
             />
           ))}
