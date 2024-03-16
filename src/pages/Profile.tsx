@@ -9,12 +9,12 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-
 import EditIcon from "@mui/icons-material/Edit";
-import AvaterPic from "../assets/avatar.jpeg";
-import RecarDialog from "../customComponents/RecarDialog";
 import UserEditForm from "./UserEditForm";
 import { SecuredUser } from "../services/types";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../customComponents/RecarSnackbar";
 
 interface ButtonProps {
   buttonColor: string;
@@ -23,9 +23,14 @@ interface ButtonProps {
 function Profile() {
   const theme = useTheme();
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertSeverity>("info");
 
-  const userInfo: SecuredUser =
-    JSON.parse(localStorage.getItem("user") ?? "{}")?._doc ?? {};
+  const userInfo: SecuredUser = JSON.parse(
+    localStorage.getItem("user") ?? "{}"
+  );
 
   const handleEdit = (): void => {
     setEditMode(!isEditMode);
@@ -63,7 +68,7 @@ function Profile() {
               border: "2px solid",
               borderColor: theme.palette.primary.main,
             }}
-            src={AvaterPic}
+            src={userInfo?.imgUrl ?? ""}
           />
           <Box
             sx={{
@@ -99,20 +104,25 @@ function Profile() {
           </Box>
         </CardContent>
       </Card>
-      <RecarDialog
+      <UserEditForm
         open={isEditMode}
         setOpen={setEditMode}
-        dialogType="Edit"
-        dialogTitle="עריכת פרטי משתמש"
-      >
-        <UserEditForm
-          defaultValues={{
-            phone: "055555555",
-            email: "taldebi@gmail.com",
-            name: "טל דבי",
-          }}
-        />
-      </RecarDialog>
+        setSnackbarOpen={setSnackbarOpen}
+        setSnackbarMessage={setSnackbarMessage}
+        setSnackbarSeverity={setSnackbarSeverity}
+        userImage={userInfo?.imgUrl ?? ""}
+        defaultValues={{
+          phoneNumber: userInfo?.phoneNumber ?? "",
+          email: userInfo?.email ?? "",
+          name: userInfo?.name ?? "",
+        }}
+      />
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
+      />
     </>
   );
 }

@@ -1,108 +1,109 @@
 import { CredentialResponse } from "@react-oauth/google";
-import { AuthorizedUser, User, UserCredentials } from "./types";
+import {
+  AuthorizedUser,
+  SecuredUser,
+  Tokens,
+  User,
+  UserCredentials,
+} from "./types";
 
 const uri = "http://localhost:3000";
 
-export const register = async (user: User): Promise<AuthorizedUser> => {
-  try {
-    const response = await fetch(`${uri}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
+export const registerUser = async (user: User): Promise<AuthorizedUser> => {
+  const response = await fetch(`${uri}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error during registration:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
   }
+
+  return response.json();
 };
 
 export const googleSignin = async (
   credentialResponse: CredentialResponse
-): Promise<User> => {
-  try {
-    const response = await fetch(`${uri}/auth/google`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentialResponse),
-    });
+): Promise<AuthorizedUser> => {
+  const response = await fetch(`${uri}/auth/google`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentialResponse),
+  });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error during Google Signin:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
   }
+
+  return response.json();
 };
 
 export const login = async (user: UserCredentials): Promise<AuthorizedUser> => {
-  try {
-    const response = await fetch(`${uri}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
+  const response = await fetch(`${uri}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
 
-    return response.json();
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    throw error;
+  return response.json();
+};
+
+export const logout = async (): Promise<void> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
+  const response = await fetch(`${uri}/auth/logout`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokens?.refreshToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
   }
 };
 
-export const logout = async (refreshToken: string): Promise<void> => {
-  try {
-    const response = await fetch(`${uri}/auth/logout`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-      },
-    });
+export const editUser = async (user: User): Promise<SecuredUser> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
+  const response = await fetch(`${uri}/auth/${user._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${tokens?.accessToken}`,
+    },
+    body: JSON.stringify(user),
+  });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-  } catch (error) {
-    console.error("Error logging out user:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
   }
+
+  return response.json();
 };
 
-export const editUser = async (user: User): Promise<User> => {
-  try {
-    const response = await fetch(`${uri}/auth/${user._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
+export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+  const response = await fetch(`${uri}/user/likedPosts/${userID}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokens?.accessToken}`,
+    },
+  });
 
-    return response.json();
-  } catch (error) {
-    console.error("Error during registration:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("cannot get user liked posts!");
   }
+
+  return response.json()?.likedPosts;
 };

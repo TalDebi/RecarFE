@@ -5,6 +5,9 @@ import AddIcon from "@mui/icons-material/Add";
 import CarInfoCard from "./CarInfoCard";
 import RecarDialog from "../../customComponents/RecarDialog";
 import CarInfoForm from "../CarInfoForm";
+import { useQuery } from "react-query";
+import { fetchLikedPostsInfo } from "../../services/user";
+import { SecuredUser } from "../../services/types";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -42,6 +45,12 @@ function a11yProps(index: number) {
 function MyCars() {
   const theme = useTheme();
   const [isOpen, setOpen] = useState<boolean>(false);
+  const user: SecuredUser = JSON.parse(localStorage.getItem("user") ?? "{}");
+
+  const { data: likedPosts } = useQuery<[], Error>(
+    ["likedPosts", user?._id],
+    () => fetchLikedPostsInfo(user?._id ?? "")
+  );
 
   const handleCreatePost = (): void => {
     setOpen(!isOpen);
@@ -89,10 +98,14 @@ function MyCars() {
           )}
         </CustomTabPanel>
         <CustomTabPanel value={tabIndex} index={1}>
-          {[1, 2, 3, 4].map(
-            (index: number): JSX.Element => (
-              <CarInfoCard key={index} postId={"2"} />
+          {likedPosts ? (
+            likedPosts.map(
+              (post, index: number): JSX.Element => (
+                <CarInfoCard key={index} postId={"postid"} />
+              )
             )
+          ) : (
+            <></>
           )}
         </CustomTabPanel>
       </Box>

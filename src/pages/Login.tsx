@@ -11,48 +11,60 @@ import RecarAvatar from "../assets/recarLogo.svg";
 import CarIllustration from "../assets/CarIllustration.svg";
 import { useNavigate } from "react-router-dom";
 import Copyright from "../customComponents/Copyright";
-import { Alert, CircularProgress, Snackbar, useTheme } from "@mui/material";
+import { CircularProgress, useTheme } from "@mui/material";
 import { useMutation } from "react-query";
-import { login } from "../services/user";
-
-type AlertSeverity = "error" | "success" | "warning" | "info";
+import { googleSignin, login } from "../services/user";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../customComponents/RecarSnackbar";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { AuthorizedUser } from "../services/types";
 
 export default function Login() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isSnackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
-
-  const closeSnackbar = (_?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSnackbar(false);
-  };
 
   const navigateToRegistration = (): void => {
     navigate("/registration");
   };
 
+  const onGoogleLoginSuccess = async (
+    credentialResponse: CredentialResponse
+  ): Promise<void> => {
+    const res: AuthorizedUser = await googleSignin(credentialResponse);
+    setSnackbarMessage("התחברת בהצלחה!");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
+    localStorage.setItem("user", JSON.stringify(res.user));
+    localStorage.setItem("tokens", JSON.stringify(res.tokens));
+    window.dispatchEvent(new Event("storage"));
+    navigate("/search");
+  };
+
+  const onGoogleLoginFailure = (): void => {
+    setSnackbarMessage("ההתחברות דרך גוגל נכשלה");
+    setSnackbarSeverity("error");
+    setSnackbarOpen(true);
+  };
   const { mutate: submitLogin, isLoading } = useMutation(login, {
     onSuccess: (data) => {
       setSnackbarMessage("התחברת בהצלחה!");
       setSnackbarSeverity("success");
-      console.log("Login successful:", data);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("tokens", JSON.stringify(data.tokens));
+      window.dispatchEvent(new Event("storage"));
       navigate("/search");
     },
-    onError: (error) => {
-      setSnackbarMessage("הייתה שגיאה בהתחברות");
+    onError: () => {
+      setSnackbarMessage("מייל או סיסמא שגויים");
       setSnackbarSeverity("error");
-      console.error("Login failed:", error);
     },
     onSettled: () => {
-      setOpenSnackbar(true);
+      setSnackbarOpen(true);
     },
   });
 
@@ -61,19 +73,10 @@ export default function Login() {
   ): Promise<void> => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+    await submitLogin({
+      email: data.get("email")?.toString() ?? "",
+      password: data.get("password")?.toString() ?? "",
     });
-    try {
-      await submitLogin({
-        email: data.get("email")?.toString() ?? "",
-        password: data.get("password")?.toString() ?? "",
-      });
-    } catch (error) {
-      console.log("error login: ", error);
-      throw error;
-    }
   };
 
   return (
@@ -129,17 +132,29 @@ export default function Login() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                {isLoading ? <CircularProgress size={24} /> : "התחבר"}
+                {isLoading ? (
+                  <CircularProgress size={24} color="secondary" />
+                ) : (
+                  "התחבר"
+                )}
               </Button>
-              <Grid item>
-                <Link
-                  href=""
-                  onClick={navigateToRegistration}
-                  variant="body2"
-                  color="primary.dark"
-                >
-                  נרשמת בעבר? הירשם!{" "}
-                </Link>
+              <Grid container xs={12} justifyContent="space-between">
+                <Grid item xs={8}>
+                  <GoogleLogin
+                    onSuccess={onGoogleLoginSuccess}
+                    onError={onGoogleLoginFailure}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Link
+                    href=""
+                    onClick={navigateToRegistration}
+                    variant="body2"
+                    color="primary.dark"
+                  >
+                    נרשמת בעבר? הירשם!{" "}
+                  </Link>
+                </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
             </Box>
@@ -158,20 +173,12 @@ export default function Login() {
           }}
         />
       </Grid>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={closeSnackbar}
-      >
-        <Alert
-          onClose={closeSnackbar}
-          severity={snackbarSeverity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
+      />
     </>
   );
 }
