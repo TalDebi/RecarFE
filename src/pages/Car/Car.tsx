@@ -14,7 +14,6 @@ import { useParams } from "react-router";
 import Carousel from "react-material-ui-carousel";
 import CommentsTree from "./CommentsTree";
 import Divider from "@mui/material/Divider";
-import { Comment } from "./CommentsTree";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import RecarDialog from "../../customComponents/RecarDialog";
@@ -26,28 +25,6 @@ import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
 import { red } from "@mui/material/colors";
 
-// const comments: Comment[] = [
-//   {
-//     _id: "1",
-//     publisher: { imgUrl: "/static/images/avatar/2.jpg", name: "טל" },
-//     text: "האם הרכב עבר תאונה?",
-//     replies: [
-//       {
-//         _id: "1.1",
-//         publisher: { imgUrl: "/static/images/avatar/2.jpg", name: "ניר" },
-//         text: "כן מלא תאונות...אני בכלל מופתע שאתה רוצה לקנות את האוטו.",
-//         replies: [],
-//       },
-//     ],
-//   },
-//   {
-//     _id: "2",
-//     publisher: { imgUrl: "user3.jpg", name: "ניר" },
-//     text: "בלה בלה בלה",
-//     replies: [],
-//   },
-// ];
-
 const userId: string =
   JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "";
 
@@ -58,7 +35,14 @@ const getCarId = () => {
   const urlParts = window.location.href.split("/");
   return urlParts[urlParts.length - 1];
 };
+export const StyledButton = styled(Button)<ButtonProps>`
+  background-color: ${({ buttonColor }) => buttonColor};
+  border-color: ${({ buttonColor }) => buttonColor};
 
+  &:hover {
+    border-color: ${({ buttonColor }) => buttonColor};
+  }
+`;
 function Car() {
   const theme = useTheme();
   const { carID } = useParams();
@@ -66,8 +50,9 @@ function Car() {
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const {
     data: post,
-    isLoading: isLoadingPost,
-    error: errorFetchingPost,
+    isLoading: _isLoadingPost,
+    error: _errorFetchingPost,
+    refetch,
   } = useQuery(["post"], () => getPost(getCarId()).req, {
     onSuccess: (data): void => {
       console.log("Posts loaded successfully:", data.data);
@@ -75,14 +60,16 @@ function Car() {
     onError: (error): void => {
       console.error("Error fetching data:", error);
     },
+    retry: false,
+    refetchInterval: 5000,
   });
 
   const {
     data: extraInfo,
-    isLoading: isLoadingExtraInfo,
-    error: errorFetchingExtraInfo,
+    isLoading: _isLoadingExtraInfo,
+    error: _errorFetchingExtraInfo,
   } = useQuery<CarExtraInfo[], Error>(
-    ["extraCarInfo", carID],
+    ["extraInfo"],
     () => fetchExtraCarInfo(carID ?? ""),
     {
       onSuccess: (data: CarExtraInfo[]): void => {
@@ -91,6 +78,8 @@ function Car() {
       onError: (error): void => {
         console.error("Error fetching data:", error);
       },
+      retry: false,
+      staleTime: Infinity,
     }
   );
   const additionalInfo = [
@@ -106,15 +95,6 @@ function Car() {
   const handleEdit = (): void => {
     setEditMode(!isEditMode);
   };
-
-  const StyledButton = styled(Button)<ButtonProps>`
-    background-color: ${({ buttonColor }) => buttonColor};
-    border-color: ${({ buttonColor }) => buttonColor};
-
-    &:hover {
-      border-color: ${({ buttonColor }) => buttonColor};
-    }
-  `;
 
   const extraInfoFields = extraInfo
     ? Object.entries(extraInfo[0])
@@ -263,7 +243,12 @@ function Car() {
             תגובות:
           </Typography>
           {post?.data.comments && (
-            <CommentsTree style={{ mt: 1 }} comments={post?.data.comments} postId={post?.data._id} />
+            <CommentsTree
+              style={{ mt: 1 }}
+              comments={post?.data.comments}
+              postId={post?.data._id}
+              refetch={refetch}
+            />
           )}
         </CardContent>
       </Card>

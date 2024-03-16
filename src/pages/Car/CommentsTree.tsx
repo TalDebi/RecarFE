@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SxProps, Theme, styled } from "@mui/material/styles";
+
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -10,11 +11,21 @@ import {
   TreeItemProps,
   treeItemClasses,
 } from "@mui/x-tree-view/TreeItem";
-import { Avatar, Button, IconButton, TextField } from "@mui/material";
+import { Avatar, Button, IconButton, TextField, useTheme } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useState } from "react";
-import { Check, Close } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { AddComment, Check, Close } from "@mui/icons-material";
+import { StyledButton } from "./Car";
+import { useMutation } from "react-query";
+import {
+  addComment,
+  addReply,
+  deleteComment,
+  deleteReply,
+  editComment as editCommentRequest,
+  editReply,
+} from "../../services/posts-service";
 
 export type Comment = {
   _id: string;
@@ -28,12 +39,15 @@ type StyledTreeItemProps = TreeItemProps & {
   username: string;
   userId: string;
   postId: string;
-  commentId?: string;
+  commentId: string;
   replyId?: string;
   avatarUrl?: string;
   isReply?: boolean;
   index: number;
   addNewComment?: Function;
+  removeNewComment: Function;
+  object: Comment;
+  refetch: Function;
 };
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
@@ -71,8 +85,6 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   props: StyledTreeItemProps,
   ref: React.Ref<HTMLLIElement>
 ) {
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isReplyMode, setIsReplyMode] = useState(false);
   const {
     avatarUrl,
     commentText,
@@ -84,8 +96,34 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
     commentId,
     replyId,
     addNewComment,
+    removeNewComment,
+    refetch,
+    object,
     ...other
   } = props;
+
+  const editItem = useMutation({
+    mutationFn: (comment: Comment) =>
+      isReply
+        ? editReply(postId, commentId, replyId as string, comment).req
+        : editCommentRequest(postId, commentId, comment).req,
+  });
+
+  const createItem = useMutation({
+    mutationFn: (comment: Comment) =>
+      isReply
+        ? addReply(postId, commentId, comment).req
+        : addComment(postId, comment).req,
+  });
+
+  const deleteItem = useMutation({
+    mutationFn: () =>
+      isReply
+        ? deleteReply(postId, commentId, replyId as string).req
+        : deleteComment(postId, commentId).req,
+  });
+  const [isEditMode, setIsEditMode] = useState(commentText === "");
+  const [isReplyMode, setIsReplyMode] = useState(false);
   const inputRef = React.useRef(null);
 
   const handleReply = (
@@ -93,7 +131,7 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   ): void => {
     event.stopPropagation();
     setIsReplyMode(true);
-    addNewComment && addNewComment()
+    addNewComment && addNewComment();
   };
 
   const handleEdit = (
@@ -108,13 +146,49 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   ): void => {
     event.stopPropagation();
     setIsEditMode(false);
-    // inputRef.value
+    const comment: any = structuredClone(object);
+    delete comment["_id"];
+    let newText = inputRef.current
+      ? (inputRef.current as HTMLInputElement).value
+      : "";
+    removeNewComment();
+    newText &&
+      createItem.mutate({
+        ...comment,
+        publisher: comment.publisher._id,
+        text: newText,
+      });
+
+    refetch();
+  };
+
+  const editComment = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    setIsEditMode(false);
+    const comment: any = structuredClone(object);
+    delete comment["_id"];
+    let newText = inputRef.current
+      ? (inputRef.current as HTMLInputElement).value
+      : "";
+    if (newText !== commentText) {
+      newText &&
+        editItem.mutate({
+          ...comment,
+          publisher: comment.publisher._id,
+          text: newText,
+        });
+    }
+    refetch();
   };
 
   const handleDelete = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void => {
     event.stopPropagation();
+    deleteItem.mutate()
+    refetch();
   };
   const bottoms = (
     userId: string,
@@ -128,7 +202,6 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
     if (currUserId !== userId) {
       return <></>;
     }
-
     return !isReply ? (
       <>
         <Button
@@ -206,10 +279,24 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
               ) : (
                 <Box sx={{ display: "flex" }}>
                   <TextField inputRef={inputRef} defaultValue={commentText} />
-                  <Button onClick={submitComment}>
+                  <Button
+                    onClick={(event) =>
+                      object._id.startsWith("new:")
+                        ? submitComment(event)
+                        : editComment(event)
+                    }
+                  >
                     <Check />
                   </Button>
-                  <Button onClick={() => setIsEditMode(false)}>
+                  <Button
+                    onClick={() => {
+                      if (commentText === "") {
+                        removeNewComment();
+                      } else {
+                        setIsEditMode(false);
+                      }
+                    }}
+                  >
                     <Close color="error" />
                   </Button>
                 </Box>
@@ -231,16 +318,50 @@ interface CommentsTreeProps {
   comments: Comment[];
   postId: string;
   style?: SxProps<Theme>;
+  refetch: Function;
 }
 
 export default function CommentsTree({
   comments,
   style,
   postId,
+  refetch,
 }: CommentsTreeProps) {
-  const [currComments, setCurrComments] = useState(comments);
+  const theme = useTheme();
+  const [currComments, setCurrComments] = useState(structuredClone(comments));
+  const [expanded, setExpanded] = useState<string[]>([]);
 
-  const addNewComment = (index: number, isReply: boolean = true) => {
+  useEffect(() => {
+    if (!checkIfNewCommentExists(currComments)) {
+      setCurrComments(comments);
+    }
+  }, [comments]);
+
+  const handleToggle = (_event: React.SyntheticEvent, nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  };
+
+  const checkIfNewCommentExists = (comments: Comment[]): boolean => {
+    for (let comment of comments) {
+      if (comment._id.startsWith("new:")) {
+        return true;
+      }
+      for (let reply of comment.replies) {
+        if (reply._id.startsWith("new:")) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
+  const addNewComment = (
+    index: number,
+    nodeId: string,
+    isReply: boolean = true
+  ) => {
+    const newComments = [...currComments];
     const currUser = JSON.parse(localStorage.getItem("user") ?? "{}");
     return () => {
       const newComment: Comment = {
@@ -251,55 +372,98 @@ export default function CommentsTree({
         },
         text: "",
         replies: [],
-        _id: Math.random().toString(36)
+        _id: "new:" + Math.random().toString(36),
       };
+      if (!checkIfNewCommentExists(newComments)) {
+        if (isReply) {
+          newComments[index]?.replies.push(newComment);
+        } else {
+          newComments.push(newComment);
+        }
 
-      if (isReply) {
-        currComments[index]?.replies.push(newComment);
-      } else {
-        currComments.push(newComment);
+        setCurrComments(newComments);
+        setExpanded([...new Set([...expanded, nodeId])]);
       }
-
-      setCurrComments(currComments);
+    };
+  };
+  const removeNewComment = (
+    commentIndex: number,
+    isReply: boolean = false,
+    replyIndex?: number
+  ) => {
+    const newComments = [...currComments];
+    return () => {
+      if (isReply && replyIndex) {
+        newComments[commentIndex]?.replies.splice(replyIndex);
+      } else {
+        newComments.splice(commentIndex);
+      }
+      setCurrComments(newComments);
     };
   };
   return (
-    <TreeView
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      sx={{
-        flexGrow: 1,
-        overflowY: "auto",
-        ...style,
-      }}
-    >
-      {currComments.map((comment, commentIndex: number) => (
-        <StyledTreeItem
-          key={commentIndex}
-          nodeId={comment._id}
-          commentText={comment.text}
-          username={comment.publisher.name}
-          userId={comment.publisher._id}
-          avatarUrl={comment.publisher?.imgUrl ?? comment.publisher.imgUrl}
-          index={commentIndex}
-          postId={postId}
-          addNewComment={addNewComment(commentIndex)}
-        >
-          {comment.replies.map((reply, replyIndex: number) => (
-            <StyledTreeItem
-              key={`${commentIndex}-${replyIndex}`}
-              nodeId={reply._id}
-              commentText={reply.text}
-              username={reply.publisher.name}
-              avatarUrl={reply.publisher?.imgUrl ?? reply.publisher.imgUrl}
-              userId={reply.publisher._id}
-              index={replyIndex}
-              postId={postId}
-              isReply={true}
-            />
-          ))}
-        </StyledTreeItem>
-      ))}
-    </TreeView>
+    <>
+      <StyledButton
+        buttonColor={theme.palette.primary.main}
+        sx={{ height: "fit-content", width: "fit-content" }}
+        variant="contained"
+        endIcon={<AddComment />}
+        onClick={addNewComment(currComments.length, "", false)}
+      >
+        הגב
+      </StyledButton>
+      <TreeView
+        defaultCollapseIcon={<ArrowDropDownIcon />}
+        defaultExpandIcon={<ArrowRightIcon />}
+        expanded={expanded}
+        onNodeToggle={handleToggle}
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          ...style,
+        }}
+      >
+        {currComments.map((comment, commentIndex: number) => (
+          <StyledTreeItem
+            key={commentIndex}
+            nodeId={comment._id}
+            commentText={comment.text}
+            username={comment.publisher.name}
+            userId={comment.publisher._id}
+            avatarUrl={comment.publisher?.imgUrl ?? comment.publisher.imgUrl}
+            index={commentIndex}
+            postId={postId}
+            commentId={comment._id}
+            addNewComment={addNewComment(commentIndex, comment._id)}
+            removeNewComment={removeNewComment(commentIndex)}
+            refetch={refetch}
+            object={comment}
+          >
+            {comment.replies.map((reply, replyIndex: number) => (
+              <StyledTreeItem
+                key={`${commentIndex}-${replyIndex}`}
+                nodeId={reply._id}
+                commentText={reply.text}
+                username={reply.publisher.name}
+                avatarUrl={reply.publisher?.imgUrl ?? reply.publisher.imgUrl}
+                userId={reply.publisher._id}
+                index={replyIndex}
+                postId={postId}
+                commentId={comment._id}
+                replyId={reply._id}
+                isReply={true}
+                refetch={refetch}
+                object={reply}
+                removeNewComment={removeNewComment(
+                  commentIndex,
+                  true,
+                  replyIndex
+                )}
+              />
+            ))}
+          </StyledTreeItem>
+        ))}
+      </TreeView>
+    </>
   );
 }
