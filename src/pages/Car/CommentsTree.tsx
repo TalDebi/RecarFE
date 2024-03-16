@@ -130,14 +130,12 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
   const [isEditMode, setIsEditMode] = useState(commentText === "");
-  const [isReplyMode, setIsReplyMode] = useState(false);
   const inputRef = React.useRef(null);
 
   const handleReply = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void => {
     event.stopPropagation();
-    setIsReplyMode(true);
     addNewComment && addNewComment();
   };
 
@@ -148,9 +146,9 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
     setIsEditMode(true);
   };
 
-  const submitComment = (
+  const submitComment = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void => {
+  ) => {
     event.stopPropagation();
     setIsEditMode(false);
     const comment: any = structuredClone(object);
@@ -160,18 +158,18 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
       : "";
     removeNewComment();
     newText &&
-      createItem.mutate({
+      (await createItem.mutateAsync({
         ...comment,
         publisher: comment.publisher._id,
         text: newText,
-      });
-      setSnackbarMessage("התגובה פורסמה")
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
+      }));
+    setSnackbarMessage("התגובה פורסמה");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
     refetch();
   };
 
-  const editComment = (
+  const editComment = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
@@ -183,24 +181,24 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
       : "";
     if (newText !== commentText) {
       newText &&
-        editItem.mutate({
+        (await editItem.mutateAsync({
           ...comment,
           publisher: comment.publisher._id,
           text: newText,
-        });
+        }));
     }
-    setSnackbarMessage("התגובה נערכה")
+    setSnackbarMessage("התגובה נערכה");
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
     refetch();
   };
 
-  const handleDelete = (
+  const handleDelete = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void => {
+  ) => {
     event.stopPropagation();
-    deleteItem.mutate();
-    setSnackbarMessage("התגובה נמחקה")
+    await deleteItem.mutateAsync();
+    setSnackbarMessage("התגובה נמחקה");
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
     refetch();
@@ -417,9 +415,9 @@ export default function CommentsTree({
     const newComments = [...currComments];
     return () => {
       if (isReply && replyIndex !== undefined) {
-        newComments[commentIndex]?.replies.splice(replyIndex,1);
+        newComments[commentIndex]?.replies.splice(replyIndex, 1);
       } else {
-        newComments.splice(commentIndex,1);
+        newComments.splice(commentIndex, 1);
       }
       setCurrComments(newComments);
     };

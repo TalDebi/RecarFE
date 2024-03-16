@@ -24,6 +24,21 @@ import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
 import { red } from "@mui/material/colors";
+import { useForm } from "react-hook-form";
+
+export interface Car {
+  _id?: string
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  hand: number;
+  color: string;
+  mileage: number;
+  city: string;
+  owner:  string;
+  imgsUrls?: string[];
+}
 
 const userId: string =
   JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "";
@@ -45,6 +60,7 @@ export const StyledButton = styled(Button)<ButtonProps>`
 `;
 function Car() {
   const theme = useTheme();
+
   const { carID } = useParams();
   const [isFavorite, setFavorite] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
@@ -252,14 +268,11 @@ function Car() {
           )}
         </CardContent>
       </Card>
-      <RecarDialog
+      <CarInfoForm
         open={isEditMode}
         setOpen={setEditMode}
-        dialogType="Edit"
-        dialogTitle="עריכת פרטי מכונית"
-      >
-        <CarInfoForm defaultValues={post?.data.car} />
-      </RecarDialog>
+        defaultValues={post?.data.car}
+      />
     </>
   );
 }
