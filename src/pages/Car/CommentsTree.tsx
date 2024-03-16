@@ -26,6 +26,9 @@ import {
   editComment as editCommentRequest,
   editReply,
 } from "../../services/posts-service";
+import RecarSnackbar, {
+  AlertSeverity,
+} from "../../customComponents/RecarSnackbar";
 
 export type Comment = {
   _id: string;
@@ -122,6 +125,10 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
         ? deleteReply(postId, commentId, replyId as string).req
         : deleteComment(postId, commentId).req,
   });
+  const [isSnackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+  const [snackbarSeverity, setSnackbarSeverity] =
+    useState<AlertSeverity>("info");
   const [isEditMode, setIsEditMode] = useState(commentText === "");
   const [isReplyMode, setIsReplyMode] = useState(false);
   const inputRef = React.useRef(null);
@@ -158,7 +165,9 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
         publisher: comment.publisher._id,
         text: newText,
       });
-
+      setSnackbarMessage("התגובה פורסמה")
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     refetch();
   };
 
@@ -180,6 +189,9 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
           text: newText,
         });
     }
+    setSnackbarMessage("התגובה נערכה")
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
     refetch();
   };
 
@@ -187,7 +199,10 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void => {
     event.stopPropagation();
-    deleteItem.mutate()
+    deleteItem.mutate();
+    setSnackbarMessage("התגובה נמחקה")
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
     refetch();
   };
   const bottoms = (
@@ -248,69 +263,77 @@ const StyledTreeItem = React.forwardRef(function StyledTreeItem(
   };
 
   return (
-    <StyledTreeItemRoot
-      label={
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            p: 0.5,
-            pr: 0,
-          }}
-        >
-          <Box sx={{ display: "flex" }}>
-            <Avatar src={avatarUrl} alt="Remy Sharp" sx={{ mr: 1 }} />
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: "inherit", flexGrow: 1 }}
-              >
-                {username}
-              </Typography>
-
-              {!isEditMode ? (
+    <>
+      <StyledTreeItemRoot
+        label={
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              p: 0.5,
+              pr: 0,
+            }}
+          >
+            <Box sx={{ display: "flex" }}>
+              <Avatar src={avatarUrl} alt="Remy Sharp" sx={{ mr: 1 }} />
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography
-                  variant="caption"
+                  variant="body2"
                   sx={{ fontWeight: "inherit", flexGrow: 1 }}
                 >
-                  {commentText}
+                  {username}
                 </Typography>
-              ) : (
-                <Box sx={{ display: "flex" }}>
-                  <TextField inputRef={inputRef} defaultValue={commentText} />
-                  <Button
-                    onClick={(event) =>
-                      object._id.startsWith("new:")
-                        ? submitComment(event)
-                        : editComment(event)
-                    }
+
+                {!isEditMode ? (
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: "inherit", flexGrow: 1 }}
                   >
-                    <Check />
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      if (commentText === "") {
-                        removeNewComment();
-                      } else {
-                        setIsEditMode(false);
+                    {commentText}
+                  </Typography>
+                ) : (
+                  <Box sx={{ display: "flex" }}>
+                    <TextField inputRef={inputRef} defaultValue={commentText} />
+                    <Button
+                      onClick={(event) =>
+                        object._id.startsWith("new:")
+                          ? submitComment(event)
+                          : editComment(event)
                       }
-                    }}
-                  >
-                    <Close color="error" />
-                  </Button>
-                </Box>
-              )}
+                    >
+                      <Check />
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (commentText === "") {
+                          removeNewComment();
+                        } else {
+                          setIsEditMode(false);
+                        }
+                      }}
+                    >
+                      <Close color="error" />
+                    </Button>
+                  </Box>
+                )}
+              </Box>
+            </Box>
+            <Box sx={{ display: "flex" }}>
+              {bottoms(userId, isReply, handleReply, handleDelete, handleEdit)}
             </Box>
           </Box>
-          <Box sx={{ display: "flex" }}>
-            {bottoms(userId, isReply, handleReply, handleDelete, handleEdit)}
-          </Box>
-        </Box>
-      }
-      {...other}
-      ref={ref}
-    />
+        }
+        {...other}
+        ref={ref}
+      />
+      <RecarSnackbar
+        isSnackbarOpen={isSnackbarOpen}
+        setSnackbarOpen={setSnackbarOpen}
+        snackbarSeverity={snackbarSeverity}
+        snackbarMessage={snackbarMessage}
+      />
+    </>
   );
 });
 
@@ -393,10 +416,10 @@ export default function CommentsTree({
   ) => {
     const newComments = [...currComments];
     return () => {
-      if (isReply && replyIndex) {
-        newComments[commentIndex]?.replies.splice(replyIndex);
+      if (isReply && replyIndex !== undefined) {
+        newComments[commentIndex]?.replies.splice(replyIndex,1);
       } else {
-        newComments.splice(commentIndex);
+        newComments.splice(commentIndex,1);
       }
       setCurrComments(newComments);
     };
