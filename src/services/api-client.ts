@@ -1,9 +1,15 @@
 import axios, { CanceledError } from "axios";
 
-export { CanceledError };
+
+
+const accessToken: string =
+    JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
+
+
+export { CanceledError }
 const apiClient = axios.create({
-  //baseURL: 'https://10.10.248.100',
-  baseURL: "http://localhost:3000",
+    baseURL: 'http://localhost:3000',
+    headers:{ Authorization: 'Bearer ' + accessToken}
 });
 
 export default apiClient;
