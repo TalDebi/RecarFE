@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import { Comment } from "../pages/Car/CommentsTree";
 import apiClient, { CanceledError } from "./api-client";
 
@@ -52,6 +53,17 @@ export const getPost = (id: string) => {
   const req = apiClient.get("post/" + id + "/populated", {
     signal: abortController.signal,
   });
+  return { req, abort: () => abortController.abort() };
+};
+
+export const getPostsByUser = (id: string) => {
+  const abortController = new AbortController();
+  const req: Promise<AxiosResponse<string[], any>> = apiClient.get(
+    "post/user/" + id,
+    {
+      signal: abortController.signal,
+    }
+  );
   return { req, abort: () => abortController.abort() };
 };
 
@@ -129,3 +141,18 @@ export const deleteReply = (
   return { req, abort: () => abortController.abort() };
 };
 
+export const createPost = (post: any) => {
+  const abortController = new AbortController();
+  const req = apiClient.post("post/", post, {
+    signal: abortController.signal,
+  });
+  return { req, abort: () => abortController.abort() };
+};
+
+export const deletePost = (postId: string) => {
+  const abortController = new AbortController();
+  const req = apiClient.delete("post/" + postId, {
+    signal: abortController.signal,
+  });
+  return { req, abort: () => abortController.abort() };
+};

@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from "react";
+import { MouseEvent, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -11,14 +11,34 @@ import MoreVert from "@mui/icons-material/MoreVert";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import { useNavigate } from "react-router-dom";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { useQuery } from "react-query";
+import { getPost } from "../../services/posts-service";
 
-const mainInfo = ["יצרן", "דגם", "שנה", "איזור מכירה"];
+const mainInfo = [
+  {
+    label: "יצרן",
+    key: "make",
+  },
+  {
+    label: "דגם",
+    key: "model",
+  },
+  {
+    label: "שנה",
+    key: "year",
+  },
+  {
+    label: "איזור מכירה",
+    key: "city",
+  },
+];
 
 interface CarInfoCardProps {
   postId: string;
+  deletPost?: (_: string) => void;
 }
 
-function CarInfoCard({ postId }: CarInfoCardProps) {
+function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -42,7 +62,25 @@ function CarInfoCard({ postId }: CarInfoCardProps) {
     handleCloseMoreOptions();
   };
 
+  const deletePostAction = ()=>deletPost&&deletPost(postId)
+
+  const {
+    data: post,
+    isLoading: _isLoadingPost,
+    error: _errorFetchingPost,
+  } = useQuery(["post", postId], () => getPost(postId).req, {
+    onSuccess: (data): void => {
+      console.log("Posts loaded successfully:", data.data);
+    },
+    onError: (error): void => {
+      console.error("Error fetching data:", error);
+    },
+    retry: false,
+    refetchInterval: 5000,
+  });
+
   const moreOptions = [{ label: "פתח בחלון חדש", action: handleOpenInNewTab }];
+  deletPost && moreOptions.push({ label: "מחק", action: deletePostAction })
 
   return (
     <Card sx={{ display: "flex", width: "100%", height: 155, mb: 2 }}>
@@ -69,10 +107,10 @@ function CarInfoCard({ postId }: CarInfoCardProps) {
                   variant="subtitle1"
                   color="text.secondary"
                 >
-                  {field}:{" "}
+                  {field.label}:{" "}
                 </Typography>
                 <Typography component="span" variant="h6">
-                  toyota
+                  {post?.data.car[field.key]}
                 </Typography>
               </Box>
             )
@@ -82,7 +120,7 @@ function CarInfoCard({ postId }: CarInfoCardProps) {
           <Typography variant="h5" color="text.secondary">
             מחיר
           </Typography>
-          <Typography variant="h3">40,000₪</Typography>
+          <Typography variant="h3">{post?.data.car.price}₪</Typography>
         </Box>
         <Box sx={{ display: "flex" }}>
           <IconButton

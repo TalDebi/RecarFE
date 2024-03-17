@@ -17,12 +17,18 @@ import Divider from "@mui/material/Divider";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import CarInfoForm from "../CarInfoForm";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { CarExtraInfo } from "../../services/types";
 import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
 import { red } from "@mui/material/colors";
+import { editCar as editCarRequest } from "../../services/car-service";
+import {
+  dislikePost,
+  fetchLikedPostsInfo,
+  likePost as likePostRequest,
+} from "../../services/user";
 
 export interface CarInterface {
   _id?: string;
@@ -58,6 +64,16 @@ export const StyledButton = styled(Button)<ButtonProps>`
 `;
 function Car() {
   const theme = useTheme();
+  const { data: _likedPosts } = useQuery<[], Error>(
+    ["likedPosts", userId],
+    () => fetchLikedPostsInfo(userId ?? ""),
+    {
+      onSuccess: (data: string[]): void => {
+        setFavorite(data.includes(carID as string));
+      },
+      retry: false,
+    }
+  );
 
   const { carID } = useParams();
   const [isFavorite, setFavorite] = useState<boolean>(false);
@@ -96,6 +112,18 @@ function Car() {
       staleTime: Infinity,
     }
   );
+  const editCar = useMutation({
+    mutationFn: (car: any) => editCarRequest(car._id, car).req,
+  });
+
+  const likePost = useMutation({
+    mutationFn: () => likePostRequest(userId, carID as string).req,
+  });
+
+  const unlikePost = useMutation({
+    mutationFn: () => dislikePost(userId, carID as string).req,
+  });
+
   const additionalInfo = [
     { label: "קילומטראג", value: post?.data.car.mileage },
     { label: "יד", value: post?.data.car.hand },
@@ -103,6 +131,7 @@ function Car() {
   ];
 
   const handleFavorite = (): void => {
+    !isFavorite ? likePost.mutate() : unlikePost.mutate();
     setFavorite(!isFavorite);
   };
 
@@ -190,7 +219,7 @@ function Car() {
               </Box>
               {userId !== post?.data.publisher._id ? (
                 <StyledButton
-                  buttonColor={red[600]}
+                  buttonColor={theme.palette.secondary.light}
                   sx={{ height: "fit-content", width: 160 }}
                   variant="outlined"
                   endIcon={isFavorite ? <Favorite /> : <Favorite />}
@@ -270,6 +299,9 @@ function Car() {
         open={isEditMode}
         setOpen={setEditMode}
         defaultValues={post?.data.car}
+        dialogType="Edit"
+        dialogTitle="עריכת פרטי מכונית"
+        submitRequest={editCar.mutateAsync}
       />
     </>
   );

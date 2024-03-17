@@ -11,11 +11,10 @@ import {
 import Carousel from "react-material-ui-carousel";
 import EditIcon from "@mui/icons-material/Edit";
 import RecarDialog from "../customComponents/RecarDialog";
-import { FieldErrors, FieldValues, useForm } from "react-hook-form";
-import { useMutation, useQuery } from "react-query";
+import { FieldValues, useForm } from "react-hook-form";
+import { useQuery } from "react-query";
 import { fetchAllTypes } from "../services/opendatasoft";
 import { uploadPhoto } from "../services/file";
-import { editCar as editCarRequest } from "../services/car-service";
 import { CarInterface } from "./Car/Car";
 
 interface defaultValue {
@@ -26,18 +25,25 @@ interface CarInfoFormProps {
   defaultValues?: defaultValue;
   open: boolean;
   setOpen: (open: boolean) => void;
+  dialogType: "Creation" | "Edit";
+  dialogTitle: string;
+  submitRequest: Function;
 }
 
-const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
+const CarInfoForm = ({
+  defaultValues,
+  open,
+  setOpen,
+  dialogTitle,
+  dialogType,
+  submitRequest,
+}: CarInfoFormProps) => {
   const theme = useTheme();
   const [imagesSrc, setImagesSrc] = useState<(File | string)[]>(
     defaultValues && Array.isArray(defaultValues.imgsUrls)
       ? [...defaultValues.imgsUrls]
       : []
   );
-  const editCar = useMutation({
-    mutationFn: (car: any) => editCarRequest(car._id, car).req,
-  });
 
   useEffect(() => {
     defaultValues &&
@@ -45,7 +51,6 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
       setImagesSrc([...defaultValues.imgsUrls]);
   }, [defaultValues]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imgSrc, setImgSrc] = useState<File>();
   const [loadingPhotoUpload, setLoadingPhotoUpload] = useState<boolean>(false);
   const {
     data: allMakes,
@@ -170,6 +175,7 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const onSubmit = async (data: FieldValues) => {
     let newImageSrcs =
       defaultValues && Array.isArray(defaultValues.imgsUrls)
@@ -198,7 +204,7 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
       owner: JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "",
     };
 
-    await editCar.mutateAsync(editedCar);
+    await submitRequest(editedCar);
     setOpen(false);
   };
   return (
@@ -208,8 +214,8 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
       isValid={Object.keys(errors).length === 0}
       open={open}
       setOpen={setOpen}
-      dialogType="Edit"
-      dialogTitle="עריכת פרטי מכונית"
+      dialogType={dialogType}
+      dialogTitle={dialogTitle}
     >
       <Box
         sx={{
@@ -280,10 +286,14 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
                 id="make"
                 options={allMakesOptions}
                 sx={{ width: 300 }}
-                defaultValue={{
-                  label: defaultValues?.make,
-                  value: defaultValues?.make,
-                }}
+                defaultValue={
+                  defaultValues?.make
+                    ? {
+                        label: defaultValues?.make,
+                        value: defaultValues?.make,
+                      }
+                    : undefined
+                }
                 renderInput={(params) => (
                   <TextField
                     {...register("make", { required: true })}
@@ -302,10 +312,14 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
                 }
                 id="model"
                 options={allModelsOptions}
-                defaultValue={{
-                  label: defaultValues?.model,
-                  value: defaultValues?.model,
-                }}
+                defaultValue={
+                  defaultValues?.model
+                    ? {
+                        label: defaultValues?.model,
+                        value: defaultValues?.model,
+                      }
+                    : undefined
+                }
                 renderInput={(params) => (
                   <TextField
                     {...register("model", { required: true })}
