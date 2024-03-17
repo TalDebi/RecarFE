@@ -16,7 +16,6 @@ import CommentsTree from "./CommentsTree";
 import Divider from "@mui/material/Divider";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
-import RecarDialog from "../../customComponents/RecarDialog";
 import CarInfoForm from "../CarInfoForm";
 import { useQuery } from "react-query";
 import { CarExtraInfo } from "../../services/types";
@@ -24,10 +23,9 @@ import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
 import { red } from "@mui/material/colors";
-import { useForm } from "react-hook-form";
 
-export interface Car {
-  _id?: string
+export interface CarInterface {
+  _id?: string;
   make: string;
   model: string;
   year: number;
@@ -36,7 +34,7 @@ export interface Car {
   color: string;
   mileage: number;
   city: string;
-  owner:  string;
+  owner: string;
   imgsUrls?: string[];
 }
 

@@ -16,7 +16,7 @@ import { useMutation, useQuery } from "react-query";
 import { fetchAllTypes } from "../services/opendatasoft";
 import { uploadPhoto } from "../services/file";
 import { editCar as editCarRequest } from "../services/car-service";
-import Car from "./Car/Car";
+import { CarInterface } from "./Car/Car";
 
 interface defaultValue {
   [key: string]: string | number | string[];
@@ -184,7 +184,7 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
       }
       setLoadingPhotoUpload(false);
     }
-    const editedCar: Car = {
+    const editedCar: CarInterface = {
       ...defaultValues,
       make: data.make,
       model: data.model,
@@ -195,6 +195,7 @@ const CarInfoForm = ({ defaultValues, open, setOpen }: CarInfoFormProps) => {
       city: data.city,
       imgsUrls: newImageSrcs,
       hand: data.hand,
+      owner: JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "",
     };
 
     await editCar.mutateAsync(editedCar);
