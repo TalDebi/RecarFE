@@ -208,10 +208,6 @@ const CarInfoForm = ({
     await submitRequest(editedCar);
     setOpen(false);
   };
-      type: "text"
-    }
-
-  ]
 
   return (
     <RecarDialog
