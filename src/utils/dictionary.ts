@@ -1,4 +1,4 @@
-export const CarExtraInfoHebrewDict = {
+export const CarExtraInfoHebrewDict: { [key: string]: string } = {
   city_mpg: "צריכת דלק בעיר",
   class: "קטגוריה",
   combination_mpg: "צריכת דלק משולבת",

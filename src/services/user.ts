@@ -1,4 +1,3 @@
-import apiClient from "../services/api-client";
 import { CredentialResponse } from "@react-oauth/google";
 import {
   AuthorizedUser,
@@ -7,6 +6,7 @@ import {
   User,
   UserCredentials,
 } from "./types";
+import apiClient from "./api-client";
 
 export const registerUser = async (user: User): Promise<AuthorizedUser> => {
   const response = await apiClient.post("/auth/register", user);
@@ -58,10 +58,34 @@ export const editUser = async (user: User): Promise<SecuredUser> => {
 
 export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
   const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-  const response = await apiClient.get(`/user/likedPosts/${userID}`, {
+  const response = await apiClient.get(`user/${userID}/likedPosts`, {
     headers: {
       Authorization: `Bearer ${tokens?.accessToken}`,
     },
   });
-  return response.data?.likedPosts;
+
+  if (!response?.ok) {
+    throw new Error("cannot get user liked posts!");
+  }
+
+  return (await response?.json()).likedPosts;
+};
+
+export const likePost = (userId: string, postId: string) => {
+  const abortController = new AbortController();
+  const req = apiClient.post(
+    `user/${userId}/likedPosts`,
+    { _id: postId },
+    {
+      signal: abortController.signal,
+    }
+  );
+  return { req, abort: () => abortController.abort() };
+};
+export const dislikePost = (userId: string, postId: string) => {
+  const abortController = new AbortController();
+  const req = apiClient.delete(`user/${userId}/likedPosts/${postId}`, {
+    signal: abortController.signal,
+  });
+  return { req, abort: () => abortController.abort() };
 };
