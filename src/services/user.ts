@@ -6,6 +6,7 @@ import {
   User,
   UserCredentials,
 } from "./types";
+import apiClient from "./api-client";
 
 const uri = "http://localhost:3000";
 
@@ -94,7 +95,7 @@ export const editUser = async (user: User): Promise<SecuredUser> => {
 export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
   const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
 
-  const response = await fetch(`${uri}/user/likedPosts/${userID}`, {
+  const response = await fetch(`${uri}/user/${userID}/likedPosts`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${tokens?.accessToken}`,
@@ -105,5 +106,24 @@ export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
     throw new Error("cannot get user liked posts!");
   }
 
-  return response.json()?.likedPosts;
+  return (await response.json()).likedPosts;
+};
+
+export const likePost = (userId: string, postId: string) => {
+  const abortController = new AbortController();
+  const req = apiClient.post(
+    `user/${userId}/likedPosts`,
+    { _id: postId },
+    {
+      signal: abortController.signal,
+    }
+  );
+  return { req, abort: () => abortController.abort() };
+};
+export const dislikePost = (userId: string, postId: string) => {
+  const abortController = new AbortController();
+  const req = apiClient.delete(`user/${userId}/likedPosts/${postId}`, {
+    signal: abortController.signal,
+  });
+  return { req, abort: () => abortController.abort() };
 };

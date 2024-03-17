@@ -1,13 +1,17 @@
-import React, { ReactNode, SyntheticEvent, useState } from "react";
-import { useTheme } from "@mui/material/styles";
+import { ReactNode, SyntheticEvent, useState } from "react";
 import { Box, Button, Tab, Tabs, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CarInfoCard from "./CarInfoCard";
-import RecarDialog from "../../customComponents/RecarDialog";
 import CarInfoForm from "../CarInfoForm";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { fetchLikedPostsInfo } from "../../services/user";
 import { SecuredUser } from "../../services/types";
+import {
+  createPost as createPostRequest,
+  getPostsByUser,
+  deletePost as deletePostRequest,
+} from "../../services/posts-service";
+import { createCar as createCarRequest } from "../../services/car-service";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -43,14 +47,34 @@ function a11yProps(index: number) {
 }
 
 function MyCars() {
-  const theme = useTheme();
   const [isOpen, setOpen] = useState<boolean>(false);
   const user: SecuredUser = JSON.parse(localStorage.getItem("user") ?? "{}");
 
   const { data: likedPosts } = useQuery<[], Error>(
     ["likedPosts", user?._id],
-    () => fetchLikedPostsInfo(user?._id ?? "")
+    () => fetchLikedPostsInfo(user?._id ?? ""),
+    { retry: false, refetchInterval: 5000 }
   );
+
+  const { data: userPosts } = useQuery(
+    ["UserPosts", user?._id],
+    () => getPostsByUser(user?._id ?? "").req,
+    { retry: false, refetchInterval: 5000 }
+  );
+  const createPost = useMutation({
+    mutationFn: async (car: any) => {
+      const data = (await createCarRequest(car).req).data;
+      const post = {
+        publisher: user._id,
+        car: data._id,
+      };
+      await createPostRequest(post);
+    },
+  });
+
+  const deletePost = useMutation({
+    mutationFn: (postId: string) => deletePostRequest(postId).req,
+  });
 
   const handleCreatePost = (): void => {
     setOpen(!isOpen);
@@ -91,17 +115,21 @@ function MyCars() {
       </Box>
       <Box sx={{ overflow: "auto", height: 500 }}>
         <CustomTabPanel value={tabIndex} index={0}>
-          {[1, 2].map(
-            (index: number): JSX.Element => (
-              <CarInfoCard key={index} postId={"1"} />
+          {userPosts?.data ? (
+            userPosts?.data.map(
+              (post, index: number): JSX.Element => (
+                <CarInfoCard key={index} postId={post} deletPost={deletePost.mutateAsync} />
+              )
             )
+          ) : (
+            <></>
           )}
         </CustomTabPanel>
         <CustomTabPanel value={tabIndex} index={1}>
           {likedPosts ? (
             likedPosts.map(
               (post, index: number): JSX.Element => (
-                <CarInfoCard key={index} postId={"postid"} />
+                <CarInfoCard key={index} postId={post}  />
               )
             )
           ) : (
@@ -109,14 +137,13 @@ function MyCars() {
           )}
         </CustomTabPanel>
       </Box>
-      <RecarDialog
+      <CarInfoForm
         open={isOpen}
         setOpen={setOpen}
+        dialogTitle="פרסם מכונית"
         dialogType="Creation"
-        dialogTitle="יצירת פוסט חדש"
-      >
-        <CarInfoForm />
-      </RecarDialog>
+        submitRequest={createPost.mutateAsync}
+      />
     </>
   );
 }

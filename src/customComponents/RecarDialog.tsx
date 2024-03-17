@@ -15,6 +15,8 @@ interface RecarDialogProps {
   submitAction: (event: FormEvent<HTMLFormElement>) => Promise<void>;
   isValid: boolean;
   children: JSX.Element;
+  width?: number;
+  height?: number;
 }
 
 const RecarDialog = ({
@@ -26,8 +28,11 @@ const RecarDialog = ({
   submitAction,
   isValid,
   children,
+  height,
+  width,
 }: RecarDialogProps) => {
-  const handleClose = () => {
+  const handleClose = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.stopPropagation();
     setOpen(false);
   };
 
@@ -50,7 +55,10 @@ const RecarDialog = ({
       }}
     >
       <DialogTitle>{dialogTitle}</DialogTitle>
-      <DialogContent dividers sx={{ width: 600, height: 510 }}>
+      <DialogContent
+        dividers
+        sx={{ width: width ? width : 600, height: height ? height : 510 }}
+      >
         {children}
       </DialogContent>
       <DialogActions>
