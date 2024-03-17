@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -11,19 +11,27 @@ import RecarAvatar from "../assets/recarLogo.svg";
 import CarIllustration from "../assets/CarIllustration.svg";
 import { useNavigate } from "react-router-dom";
 import Copyright from "../customComponents/Copyright";
-import { CircularProgress, useTheme } from "@mui/material";
+import {
+  Checkbox,
+  CircularProgress,
+  Divider,
+  FormControlLabel,
+  useTheme,
+} from "@mui/material";
 import { useMutation } from "react-query";
-import { googleSignin, login } from "../services/user";
+import { googleSignin, login, refreshTokens } from "../services/user";
 import RecarSnackbar, {
   AlertSeverity,
 } from "../customComponents/RecarSnackbar";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { AuthorizedUser } from "../services/types";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const navigate = useNavigate();
   const theme = useTheme();
   const [isSnackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [isRememberMeOn, setRememberMeOn] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [snackbarSeverity, setSnackbarSeverity] =
     useState<AlertSeverity>("info");
@@ -31,6 +39,29 @@ export default function Login() {
   const navigateToRegistration = (): void => {
     navigate("/registration");
   };
+
+  useEffect(() => {
+    const checkIfRegistered = async () => {
+      const encodedRefreshToken = Cookies.get("refreshToken") ?? "";
+      const encodedUser = Cookies.get("user") ?? "";
+      const refreshToken =
+        encodedRefreshToken ?? decodeURIComponent(encodedRefreshToken);
+      const user = encodedUser ?? JSON.parse(decodeURIComponent(encodedUser));
+      if (refreshToken && user) {
+        const response = await refreshTokens();
+        if (response) {
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("tokens", JSON.stringify(response));
+          localStorage.setItem("isFirstLogin", "false");
+          window.dispatchEvent(new Event("storage"));
+          navigate("/search");
+        }
+      }
+    };
+
+    const isFirstLogin = localStorage.getItem("isFirstLogin") ?? "";
+    if (isFirstLogin !== "false") checkIfRegistered();
+  }, []);
 
   const onGoogleLoginSuccess = async (
     credentialResponse: CredentialResponse
@@ -41,6 +72,15 @@ export default function Login() {
     setSnackbarOpen(true);
     localStorage.setItem("user", JSON.stringify(res.user));
     localStorage.setItem("tokens", JSON.stringify(res.tokens));
+    localStorage.setItem("isFirstLogin", "false");
+    if (isRememberMeOn) {
+      Cookies.set("refreshToken", encodeURIComponent(res.tokens.refreshToken), {
+        expires: 7,
+      });
+      Cookies.set("user", encodeURIComponent(JSON.stringify(res.user)), {
+        expires: 7,
+      });
+    }
     window.dispatchEvent(new Event("storage"));
     navigate("/search");
   };
@@ -50,12 +90,26 @@ export default function Login() {
     setSnackbarSeverity("error");
     setSnackbarOpen(true);
   };
+
   const { mutate: submitLogin, isLoading } = useMutation(login, {
     onSuccess: (data) => {
       setSnackbarMessage("התחברת בהצלחה!");
       setSnackbarSeverity("success");
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("tokens", JSON.stringify(data.tokens));
+      localStorage.setItem("isFirstLogin", "false");
+      if (isRememberMeOn) {
+        Cookies.set(
+          "refreshToken",
+          encodeURIComponent(data.tokens.refreshToken),
+          { expires: 7 }
+        );
+        Cookies.set(
+          "user",
+          encodeURIComponent(JSON.stringify(data.tokens.refreshToken)),
+          { expires: 7 }
+        );
+      }
       window.dispatchEvent(new Event("storage"));
       navigate("/search");
     },
@@ -77,6 +131,10 @@ export default function Login() {
       email: data.get("email")?.toString() ?? "",
       password: data.get("password")?.toString() ?? "",
     });
+  };
+
+  const handleRememberMeChange = () => {
+    setRememberMeOn(!isRememberMeOn);
   };
 
   return (
@@ -139,24 +197,37 @@ export default function Login() {
                 )}
               </Button>
               <Grid container xs={12} justifyContent="space-between">
-                <Grid item xs={8}>
-                  <GoogleLogin
-                    onSuccess={onGoogleLoginSuccess}
-                    onError={onGoogleLoginFailure}
-                  />
+                <Grid container item xs={12} alignItems="center">
+                  <Grid item xs={8}>
+                    <FormControlLabel
+                      control={<Checkbox onChange={handleRememberMeChange} />}
+                      label="זכור אותי"
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Link
+                      href=""
+                      onClick={navigateToRegistration}
+                      variant="body2"
+                      color="primary.dark"
+                    >
+                      נרשמת בעבר? הירשם!{" "}
+                    </Link>
+                  </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                  <Link
-                    href=""
-                    onClick={navigateToRegistration}
-                    variant="body2"
-                    color="primary.dark"
-                  >
-                    נרשמת בעבר? הירשם!{" "}
-                  </Link>
+                <Grid item xs={12} mb={2}>
+                  <Divider>OR</Divider>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <GoogleLogin
+                      onSuccess={onGoogleLoginSuccess}
+                      onError={onGoogleLoginFailure}
+                    />
+                  </Box>
                 </Grid>
               </Grid>
-              <Copyright sx={{ mt: 5 }} />
+              <Copyright sx={{ mt: 4 }} />
             </Box>
           </Box>
         </Grid>

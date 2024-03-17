@@ -64,21 +64,9 @@ function Car() {
   const [isFavorite, setFavorite] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
 
-  const {
-    data: extraInfo,
-    isLoading: isLoadingExtraInfo,
-    error: errorFetchingExtraInfo,
-  } = useQuery<CarExtraInfo[], Error>(
+  const { data: extraInfo } = useQuery<CarExtraInfo[], Error>(
     ["extraCarInfo", carID],
-    () => fetchExtraCarInfo(carID ?? ""),
-    {
-      onSuccess: (data: CarExtraInfo[]): void => {
-        console.log("Data loaded successfully:", data);
-      },
-      onError: (error): void => {
-        console.error("Error fetching data:", error);
-      },
-    }
+    () => fetchExtraCarInfo(carID ?? "")
   );
 
   const handleFavorite = (): void => {

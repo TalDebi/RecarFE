@@ -1,9 +1,31 @@
-import axios, { CanceledError } from "axios";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosResponse,
+  AxiosRequestConfig,
+  CanceledError,
+} from "axios";
+import { refreshTokens } from "./user";
 
-export { CanceledError };
-const apiClient = axios.create({
-  //baseURL: 'https://10.10.248.100',
+type ErrorHandler = (error: AxiosError) => Promise<AxiosResponse>;
+
+const apiClient: AxiosInstance = axios.create({
   baseURL: "http://localhost:3000",
 });
 
+const errorHandler: ErrorHandler = async (error) => {
+  if (error?.response?.data?.errorType === "TokenExpired") {
+    const response = await refreshTokens();
+    localStorage.setItem("tokens", JSON.stringify(response));
+    return apiClient(error.config as AxiosRequestConfig);
+  }
+  return Promise.reject(error);
+};
+
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  errorHandler
+);
+
+export { CanceledError };
 export default apiClient;
