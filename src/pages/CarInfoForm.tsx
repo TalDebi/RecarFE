@@ -129,6 +129,7 @@ const CarInfoForm = ({
       register: {
         required: true,
       },
+
     },
     {
       name: "price",
@@ -207,6 +208,11 @@ const CarInfoForm = ({
     await submitRequest(editedCar);
     setOpen(false);
   };
+      type: "text"
+    }
+
+  ]
+
   return (
     <RecarDialog
       isLoading={loadingPhotoUpload}
@@ -274,7 +280,7 @@ const CarInfoForm = ({
           onChange={imgSelected}
           multiple
         />
-        <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 6 }}>
+        <Box component="form" noValidate onSubmit={() => { }} sx={{ mt: 6 }}>
           <Grid item container spacing={2}>
             <Grid item xs={3} />
             <Grid item xs={6}>
