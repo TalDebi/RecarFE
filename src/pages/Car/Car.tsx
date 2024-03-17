@@ -303,6 +303,7 @@ function Car() {
         dialogTitle="עריכת פרטי מכונית"
         submitRequest={editCar.mutateAsync}
       />
+
     </>
   );
 }
