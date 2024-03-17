@@ -283,7 +283,7 @@ function Car() {
             }}
           />
           <Typography variant="h5" mt={3}>
-            תגובות:
+        {`תגובות(${post?.data.comments.length}):`}
           </Typography>
           {post?.data.comments && (
             <CommentsTree
