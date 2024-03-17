@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Favorite } from "@mui/icons-material";
-
 import Box from "@mui/material/Box";
 import {
   Button,
@@ -78,40 +77,24 @@ function Car() {
   const { carID } = useParams();
   const [isFavorite, setFavorite] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
-  const {
-    data: post,
-    isLoading: _isLoadingPost,
-    error: _errorFetchingPost,
-    refetch,
-  } = useQuery(["post"], () => getPost(getCarId()).req, {
-    onSuccess: (data): void => {
-      console.log("Posts loaded successfully:", data.data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-    retry: false,
-    refetchInterval: 5000,
-  });
+  const { data: post, refetch } = useQuery(
+    ["post"],
+    () => getPost(getCarId()).req,
+    {
+      retry: false,
+      refetchInterval: 5000,
+    }
+  );
 
-  const {
-    data: extraInfo,
-    isLoading: _isLoadingExtraInfo,
-    error: _errorFetchingExtraInfo,
-  } = useQuery<CarExtraInfo[], Error>(
+  const { data: extraInfo } = useQuery<CarExtraInfo[], Error>(
     ["extraInfo"],
     () => fetchExtraCarInfo(carID ?? ""),
     {
-      onSuccess: (data: CarExtraInfo[]): void => {
-        console.log("Data loaded successfully:", data);
-      },
-      onError: (error): void => {
-        console.error("Error fetching data:", error);
-      },
       retry: false,
       staleTime: Infinity,
     }
   );
+
   const editCar = useMutation({
     mutationFn: (car: any) => editCarRequest(car._id, car).req,
   });
@@ -283,7 +266,7 @@ function Car() {
             }}
           />
           <Typography variant="h5" mt={3}>
-        {`תגובות(${post?.data.comments.length}):`}
+            {`תגובות(${post?.data.comments.length}):`}
           </Typography>
           {post?.data.comments && (
             <CommentsTree
@@ -303,7 +286,6 @@ function Car() {
         dialogTitle="עריכת פרטי מכונית"
         submitRequest={editCar.mutateAsync}
       />
-
     </>
   );
 }

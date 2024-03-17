@@ -8,105 +8,67 @@ import {
 } from "./types";
 import apiClient from "./api-client";
 
-const uri = "http://localhost:3000";
-
 export const registerUser = async (user: User): Promise<AuthorizedUser> => {
-  const response = await fetch(`${uri}/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(user),
-  });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  return response.json();
+  const response = await apiClient.post("/auth/register", user);
+  return response.data;
 };
 
 export const googleSignin = async (
   credentialResponse: CredentialResponse
 ): Promise<AuthorizedUser> => {
-  const response = await fetch(`${uri}/auth/google`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentialResponse),
-  });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  return response.json();
+  const response = await apiClient.post("/auth/google", credentialResponse);
+  return response.data;
 };
 
 export const login = async (user: UserCredentials): Promise<AuthorizedUser> => {
-  const response = await fetch(`${uri}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(user),
-  });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  return response.json();
+  const response = await apiClient.post("/auth/login", user);
+  return response.data;
 };
 
 export const logout = async (): Promise<void> => {
   const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-  const response = await fetch(`${uri}/auth/logout`, {
-    method: "GET",
+  await apiClient.get("/auth/logout", {
     headers: {
       Authorization: `Bearer ${tokens?.refreshToken}`,
     },
   });
+};
 
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
+export const refreshTokens = async (): Promise<Tokens> => {
+  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
+  console.log(tokens);
+  const response = await apiClient.get("/auth/refresh", {
+    headers: {
+      Authorization: `Bearer ${tokens?.refreshToken}`,
+    },
+  });
+  return response.data;
 };
 
 export const editUser = async (user: User): Promise<SecuredUser> => {
   const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-  const response = await fetch(`${uri}/auth/${user._id}`, {
-    method: "PUT",
+  console.log(tokens);
+  const response = await apiClient.put(`/auth/${user._id}`, user, {
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${tokens?.accessToken}`,
     },
-    body: JSON.stringify(user),
   });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-
-  return response.json();
+  return response.data;
 };
 
 export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
   const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-
-  const response = await fetch(`${uri}/user/${userID}/likedPosts`, {
-    method: "GET",
+  const response = await apiClient.get(`user/${userID}/likedPosts`, {
     headers: {
       Authorization: `Bearer ${tokens?.accessToken}`,
     },
   });
 
-  if (!response.ok) {
+  if (!response?.ok) {
     throw new Error("cannot get user liked posts!");
   }
 
-  return (await response.json()).likedPosts;
+  return (await response?.json()).likedPosts;
 };
 
 export const likePost = (userId: string, postId: string) => {

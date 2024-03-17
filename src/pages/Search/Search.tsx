@@ -171,38 +171,14 @@ function Search() {
     },
   });
 
-  const {
-    data: allMakes,
-    isLoading: isLoadingMakes,
-    error: errorFetchingMakes,
-  } = useQuery<{ results: [] }, Error>(
+  const { data: allMakes } = useQuery<{ results: [] }, Error>(
     ["allMakes"],
-    () => fetchAllTypes("make"),
-    {
-      onSuccess: (data: { results: [] }): void => {
-        console.log("Data loaded successfully:", data);
-      },
-      onError: (error): void => {
-        console.error("Error fetching data:", error);
-      },
-    }
+    () => fetchAllTypes("make")
   );
 
-  const {
-    data: allModels,
-    isLoading: isLoadingModels,
-    error: errorFetchingModels,
-  } = useQuery<{ results: [] }, Error>(
+  const { data: allModels } = useQuery<{ results: [] }, Error>(
     ["allModels"],
-    () => fetchAllTypes("model"),
-    {
-      onSuccess: (data: { results: [] }): void => {
-        console.log("Data loaded successfully:", data);
-      },
-      onError: (error): void => {
-        console.error("Error fetching data:", error);
-      },
-    }
+    () => fetchAllTypes("model")
   );
   const {
     data: allColors,

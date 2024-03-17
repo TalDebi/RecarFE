@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
 import { useMutation } from "react-query";
 import { logout } from "./services/user";
+import Cookies from "js-cookie";
 
 const pages = [
   { title: "חיפוש רכבים", route: "search", icon: <SearchIcon /> },
@@ -45,13 +46,13 @@ function Navbar() {
   }, []);
 
   const { mutate: submitLogout } = useMutation(logout, {
-    onSuccess: () => {
-      localStorage.removeItem("user");
-      localStorage.removeItem("tokens");
-      navigate(`/login`);
-    },
     onSettled: () => {
       handleCloseUserMenu();
+      localStorage.removeItem("user");
+      localStorage.removeItem("tokens");
+      Cookies.remove("user");
+      Cookies.remove("refreshToken");
+      navigate(`/login`);
     },
   });
 
