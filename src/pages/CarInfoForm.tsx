@@ -10,9 +10,15 @@ import {
 import Carousel from "react-material-ui-carousel";
 import EditIcon from "@mui/icons-material/Edit";
 
-interface CarInfoFormProps {}
+interface defaultValue {
+  [key: string]: string | number
+}
 
-const CarInfoForm = ({}: CarInfoFormProps) => {
+interface CarInfoFormProps {
+  defaultValues?: defaultValue
+}
+
+const CarInfoForm = ({ defaultValues }: CarInfoFormProps) => {
   const theme = useTheme();
   const [imagesSrc, setImagesSrc] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27,6 +33,52 @@ const CarInfoForm = ({}: CarInfoFormProps) => {
     console.log("Selecting image...");
     fileInputRef.current?.click();
   };
+
+  const fields = [
+    {
+      name: "model",
+      label: "דגם",
+      required: true,
+      type: "text"
+    },
+    {
+      name: "year",
+      label: "שנה",
+      required: true,
+      type: "number"
+    },
+    {
+      name: "city",
+      label: "איזור מכירה",
+      required: true,
+      type: "text"
+    },
+    {
+      name: "price",
+      label: "מחיר",
+      required: true,
+      type: "number"
+    },
+    {
+      name: "mileage",
+      label: "קילומטראז'",
+      required: true,
+      type: "number"
+    },
+    {
+      name: "hand",
+      label: "יד",
+      required: true,
+      type: "number"
+    },
+    {
+      name: "color",
+      label: "צבע",
+      required: true,
+      type: "text"
+    }
+
+  ]
 
   return (
     <>
@@ -82,7 +134,7 @@ const CarInfoForm = ({}: CarInfoFormProps) => {
           type="file"
           onChange={imgSelected}
         />
-        <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 6 }}>
+        <Box component="form" noValidate onSubmit={() => { }} sx={{ mt: 6 }}>
           <Grid item container spacing={2}>
             <Grid item xs={3} />
             <Grid item xs={6}>
@@ -93,45 +145,29 @@ const CarInfoForm = ({}: CarInfoFormProps) => {
                 id="make"
                 label="יצרן"
                 autoFocus
+                defaultValue={defaultValues && defaultValues["make"]}
               />
             </Grid>
             <Grid item xs={3} />
-            <Grid item xs={6}>
+            {
+              fields.map(field =>
+                <Grid item xs={6}>
+                  <TextField
+                    {...field}
+                    fullWidth
+                    defaultValue={defaultValues && defaultValues[field.name]}
+                  />
+                </Grid>)
+            }
+            <Grid item xs={6} />
+            <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
-                id="model"
-                label="דגם"
-                name="model"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                required
-                fullWidth
-                id="year"
-                label="שנה"
-                name="year"
-                type="number"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                required
-                fullWidth
-                name="city"
-                label="איזור מכירה"
-                id="city"
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                required
-                fullWidth
-                name="price"
-                label="מחיר"
-                type="number"
-                id="price"
+                id="decription"
+                label="תיאור"
+                name="decription"
+                multiline
+                rows={4}
               />
             </Grid>
           </Grid>
