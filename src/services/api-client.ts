@@ -9,8 +9,12 @@ import { refreshTokens } from "./user";
 
 type ErrorHandler = (error: AxiosError) => Promise<AxiosResponse>;
 
+const accessToken: string =
+  JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
+
 const apiClient: AxiosInstance = axios.create({
   baseURL: "http://localhost:3000",
+  headers: { Authorization: "Bearer " + accessToken },
 });
 
 const errorHandler: ErrorHandler = async (error) => {
