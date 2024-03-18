@@ -17,7 +17,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: { Authorization: "Bearer " + accessToken },
 });
 
-const errorHandler: ErrorHandler = async (error) => {
+const errorHandler: ErrorHandler = async (error: AxiosError<any, any>) => {
   if (error?.response?.data?.errorType === "TokenExpired") {
     const response = await refreshTokens();
     localStorage.setItem("tokens", JSON.stringify(response));

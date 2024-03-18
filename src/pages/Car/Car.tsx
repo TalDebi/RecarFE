@@ -21,7 +21,6 @@ import { CarExtraInfo } from "../../services/types";
 import { fetchExtraCarInfo } from "../../services/ninja";
 import { CarExtraInfoHebrewDict } from "../../utils/dictionary";
 import { getPost } from "../../services/posts-service";
-import { red } from "@mui/material/colors";
 import { editCar as editCarRequest } from "../../services/car-service";
 import {
   dislikePost,
@@ -87,15 +86,22 @@ function Car() {
   );
 
   const { data: extraInfo } = useQuery<CarExtraInfo[], Error>(
-    ["extraInfo"],
-    () => fetchExtraCarInfo(carID ?? ""),
+    ["extraInfo", post],
+    () =>
+      post
+        ? fetchExtraCarInfo(
+            post.data.car.make,
+            post.data.car.model,
+            post.data.car.year
+          )
+        : [],
     {
       retry: false,
       staleTime: Infinity,
     }
   );
 
-  const editCar = useMutation({
+  const { mutateAsync, isLoading } = useMutation({
     mutationFn: (car: any) => editCarRequest(car._id, car).req,
   });
 
@@ -122,15 +128,16 @@ function Car() {
     setEditMode(!isEditMode);
   };
 
-  const extraInfoFields = extraInfo
-    ? Object.entries(extraInfo[0])
-        .map(([key, value]) => ({ key, value }))
-        .filter(({ key }) => !["model", "make", "year"].includes(key))
-        .map(({ key, value }) => ({
-          label: CarExtraInfoHebrewDict[key],
-          value,
-        }))
-    : [];
+  const extraInfoFields =
+    extraInfo && extraInfo.length > 0
+      ? Object.entries(extraInfo[0])
+          .map(([key, value]) => ({ key, value }))
+          .filter(({ key }) => !["model", "make", "year"].includes(key))
+          .map(({ key, value }) => ({
+            label: CarExtraInfoHebrewDict[key],
+            value,
+          }))
+      : [];
 
   return (
     <>
@@ -284,7 +291,8 @@ function Car() {
         defaultValues={post?.data.car}
         dialogType="Edit"
         dialogTitle="עריכת פרטי מכונית"
-        submitRequest={editCar.mutateAsync}
+        submitRequest={mutateAsync}
+        isSubmitLoading={isLoading}
       />
     </>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import Slider from "@mui/material/Slider";
 import { SxProps, Theme, useTheme } from "@mui/material";
 
@@ -25,8 +24,12 @@ function RangeSlider({
 }: RangeSliderProps) {
   const theme = useTheme();
 
-  const handleChange = (_: Event, newValue: number[]): void => {
-    setValue(newValue);
+  const handleChange = (
+    _event: Event,
+    newValue: number | number[],
+    _activeThumb: number
+  ): void => {
+    setValue(Array.isArray(newValue) ? newValue : []);
   };
 
   const range = (

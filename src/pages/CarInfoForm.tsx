@@ -28,6 +28,7 @@ interface CarInfoFormProps {
   dialogType: "Creation" | "Edit";
   dialogTitle: string;
   submitRequest: Function;
+  isSubmitLoading: boolean;
 }
 
 const CarInfoForm = ({
@@ -37,6 +38,7 @@ const CarInfoForm = ({
   dialogTitle,
   dialogType,
   submitRequest,
+  isSubmitLoading,
 }: CarInfoFormProps) => {
   const theme = useTheme();
   const [imagesSrc, setImagesSrc] = useState<(File | string)[]>(
@@ -111,6 +113,8 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 1994,
+        max: 2024,
       },
     },
     {
@@ -130,6 +134,7 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 0,
       },
     },
     {
@@ -140,6 +145,7 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 0,
       },
     },
     {
@@ -150,6 +156,7 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 0,
       },
     },
     {
@@ -202,7 +209,7 @@ const CarInfoForm = ({
 
   return (
     <RecarDialog
-      isLoading={loadingPhotoUpload}
+      isLoading={loadingPhotoUpload || isSubmitLoading}
       submitAction={handleSubmit(onSubmit)}
       isValid={Object.keys(errors).length === 0}
       open={open}
