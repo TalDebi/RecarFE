@@ -61,7 +61,7 @@ function MyCars() {
     () => getPostsByUser(user?._id ?? "").req,
     { retry: false, refetchInterval: 5000 }
   );
-  const createPost = useMutation({
+  const {mutateAsync,isLoading} = useMutation({
     mutationFn: async (car: any) => {
       const data = (await createCarRequest(car).req).data;
       const post = {
@@ -142,7 +142,8 @@ function MyCars() {
         setOpen={setOpen}
         dialogTitle="פרסם מכונית"
         dialogType="Creation"
-        submitRequest={createPost.mutateAsync}
+        submitRequest={mutateAsync}
+        isSubmitLoading={isLoading}
       />
     </>
   );

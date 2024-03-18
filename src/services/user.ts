@@ -64,11 +64,11 @@ export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
     },
   });
 
-  if (!response?.ok) {
+  if (response.status >= 300) {
     throw new Error("cannot get user liked posts!");
   }
 
-  return (await response?.json()).likedPosts;
+  return response?.data.likedPosts;
 };
 
 export const likePost = (userId: string, postId: string) => {
