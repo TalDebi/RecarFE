@@ -13,7 +13,7 @@ const accessToken: string =
   JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: `https://${process.env.SERVER}:${process.env.SERVER_PORT}`,
   headers: { Authorization: "Bearer " + accessToken },
 });
 
