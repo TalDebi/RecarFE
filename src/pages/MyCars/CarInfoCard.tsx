@@ -94,7 +94,7 @@ function CarInfoCard({ postId, deletPost }: CarInfoCardProps) {
       <CardMedia
         component="img"
         sx={{ width: 350, height: 160 }}
-        image={post?.data.car.imgsUrls}
+        image={post?.data.car && post?.data.car.imgsUrls[0]}
         alt="no image provided"
       />
       <CardContent
