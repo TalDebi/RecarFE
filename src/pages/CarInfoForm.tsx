@@ -54,11 +54,7 @@ const CarInfoForm = ({
   }, [defaultValues]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loadingPhotoUpload, setLoadingPhotoUpload] = useState<boolean>(false);
-  const {
-    data: allMakes,
-    isLoading: _isLoadingMakes,
-    error: _errorFetchingMakes,
-  } = useQuery<{ results: [] }, Error>(
+  const { data: allMakes } = useQuery<{ results: [] }, Error>(
     ["allMakes"],
     () => fetchAllTypes("make"),
     {
@@ -78,11 +74,7 @@ const CarInfoForm = ({
         }))
       : [];
 
-  const {
-    data: allModels,
-    isLoading: _isLoadingModels,
-    error: _errorFetchingModels,
-  } = useQuery<{ results: [] }, Error>(
+  const { data: allModels } = useQuery<{ results: [] }, Error>(
     ["allModels"],
     () => fetchAllTypes("model"),
     {
@@ -248,13 +240,14 @@ const CarInfoForm = ({
           }
         >
           <Box
-            width={265}
+            width={300}
             height={200}
             border="1px solid"
             sx={{
               border: "1px solid",
               borderColor: theme.palette.primary.light,
               borderRadius: 1,
+              ml: 4,
             }}
           >
             <Carousel>
@@ -268,7 +261,7 @@ const CarInfoForm = ({
                         : URL.createObjectURL(image)
                     }
                     alt="no image"
-                    style={{ width: 265, height: 200, objectFit: "contain" }}
+                    style={{ width: 300, height: 200, objectFit: "contain" }}
                   />
                 )
               )}

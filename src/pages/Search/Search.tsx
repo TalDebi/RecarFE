@@ -31,6 +31,7 @@ import {
 } from "./consts";
 import { useMutation, useQuery } from "react-query";
 import { fetchAllTypes } from "../../services/opendatasoft";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import {
   dislikePost,
   fetchLikedPostsInfo,
@@ -440,7 +441,7 @@ function Search() {
             justifyContent: "flexStart",
             flexWrap: "wrap",
             height: 100,
-            mb: 2,
+            mb: 3,
           }}
         >
           {filterObjects.map((filter, index) => {
@@ -464,22 +465,21 @@ function Search() {
             mb: 2,
           }}
         >
-          <Box display="flex">
-            <Button
-              variant="text"
-              sx={{ color: theme.palette.primary.dark }}
-              onClick={handleClearFilters}
-            >
-              נקה
-            </Button>
-          </Box>
           <Button
             startIcon={<AddIcon />}
             variant="text"
-            sx={{ color: theme.palette.primary.dark }}
+            sx={{ color: theme.palette.primary.dark, ml: 3 }}
             onClick={handleOpenUserMenu}
           >
             חיפוש מתקדם
+          </Button>
+          <Button
+            startIcon={<SearchOffIcon />}
+            variant="text"
+            sx={{ color: theme.palette.primary.dark, ml: 3 }}
+            onClick={handleClearFilters}
+          >
+            נקה
           </Button>
           <Menu
             sx={{ mt: "45px" }}
@@ -516,7 +516,7 @@ function Search() {
           </Menu>
         </Box>
       </Box>
-      <Box width={1400} sx={{ mt: 3 }}>
+      <Box width={1400} sx={{ mt: 2 }}>
         <ResultsTable rows={postRows} />
       </Box>
     </>
