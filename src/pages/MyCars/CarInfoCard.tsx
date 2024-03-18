@@ -5,7 +5,6 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import carImage from "../../assets/toyotaExample.avif";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import MoreVert from "@mui/icons-material/MoreVert";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
@@ -87,7 +86,7 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
       <CardMedia
         component="img"
         sx={{ width: 350, height: 160 }}
-        image={carImage}
+        image={post?.data.car.imgsUrls}
         alt="no image provided"
       />
       <CardContent

@@ -101,7 +101,7 @@ function Car() {
     }
   );
 
-  const editCar = useMutation({
+  const { mutateAsync, isLoading } = useMutation({
     mutationFn: (car: any) => editCarRequest(car._id, car).req,
   });
 
@@ -291,7 +291,8 @@ function Car() {
         defaultValues={post?.data.car}
         dialogType="Edit"
         dialogTitle="עריכת פרטי מכונית"
-        submitRequest={editCar.mutateAsync}
+        submitRequest={mutateAsync}
+        isSubmitLoading={isLoading}
       />
     </>
   );
