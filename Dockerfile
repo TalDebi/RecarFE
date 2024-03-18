@@ -1,6 +1,6 @@
 FROM node:latest
-WORKDIR /
+WORKDIR /app
+COPY ./app
 RUN npm i
 RUN npm run build
-COPY . .
 ENTRYPOINT ["node", "./server.js"]
