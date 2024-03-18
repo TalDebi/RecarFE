@@ -119,6 +119,8 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 1994,
+        max: 2024,
       },
     },
     {
@@ -129,7 +131,6 @@ const CarInfoForm = ({
       register: {
         required: true,
       },
-
     },
     {
       name: "price",
@@ -139,6 +140,7 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 0,
       },
     },
     {
@@ -149,6 +151,7 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 0,
       },
     },
     {
@@ -159,6 +162,7 @@ const CarInfoForm = ({
       register: {
         required: true,
         valueAsNumber: true,
+        min: 0,
       },
     },
     {
@@ -276,7 +280,7 @@ const CarInfoForm = ({
           onChange={imgSelected}
           multiple
         />
-        <Box component="form" noValidate onSubmit={() => { }} sx={{ mt: 6 }}>
+        <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 6 }}>
           <Grid item container spacing={2}>
             <Grid item xs={3} />
             <Grid item xs={6}>

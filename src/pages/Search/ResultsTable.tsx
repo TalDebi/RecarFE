@@ -3,6 +3,7 @@ import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FavoriteIcon from "@mui/icons-material/FavoriteBorder";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 
 const columns: GridColDef[] = [
@@ -54,7 +55,7 @@ const columns: GridColDef[] = [
     width: 375,
     sortable: false,
     filterable: false,
-    renderCell: () => (
+    renderCell: (params) => (
       <Box
         sx={{
           display: "flex",
@@ -63,8 +64,15 @@ const columns: GridColDef[] = [
           width: "100%",
         }}
       >
-        <IconButton aria-label="favoriteIcon">
-          <FavoriteIcon />
+        <IconButton
+          onClick={() => params.row.handleFavorite(params.row.id)}
+          aria-label="favoriteIcon"
+        >
+          {params.row.isFavorite ? (
+            <Favorite color="error" />
+          ) : (
+            <FavoriteBorder />
+          )}
         </IconButton>
         <IconButton aria-label="optionsIcon">
           <MoreVertIcon />
@@ -74,17 +82,19 @@ const columns: GridColDef[] = [
   },
 ];
 
-
-
-function ResultsTable({rows}:  {rows:{
-  _id: string,
-  make: string,
-  model: string,
-  year: string,
-  city: string,
-  price: string,
-  picture:string
-}[]}) {
+function ResultsTable({
+  rows,
+}: {
+  rows: {
+    _id: string;
+    make: string;
+    model: string;
+    year: string;
+    city: string;
+    price: string;
+    picture: string;
+  }[];
+}) {
   const navigate = useNavigate();
 
   const handleRowDoubleclick = (carID: number): void => {

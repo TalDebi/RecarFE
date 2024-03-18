@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  ReactNode,
-  JSXElementConstructor,
-  ReactElement,
-} from "react";
+import React, { useState, useEffect, ReactElement } from "react";
 import {
   Box,
   Button,
@@ -35,8 +29,13 @@ import {
   MILEAGE_STEP,
   MIN_MILEAGE,
 } from "./consts";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { fetchAllTypes } from "../../services/opendatasoft";
+import {
+  dislikePost,
+  fetchLikedPostsInfo,
+  likePost as likePostRequest,
+} from "../../services/user";
 
 const handOptions = [
   { displayValue: "1", value: "1" },
@@ -83,6 +82,36 @@ interface advancedOption {
   setChecked: Function;
 }
 function Search() {
+  const userId: string =
+    JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "";
+  const { data: likedPosts } = useQuery<string[], Error>(
+    ["likedPosts", userId],
+    () => fetchLikedPostsInfo(userId ?? ""),
+    {
+      refetchInterval: 2000,
+      retry: false,
+    }
+  );
+
+  const likePost = useMutation({
+    mutationFn: (postId: string) => likePostRequest(userId, postId).req,
+  });
+
+  const unlikePost = useMutation({
+    mutationFn: (postId: string) => dislikePost(userId, postId).req,
+  });
+
+  const isLiked = (postId: string) => {
+    return likedPosts && likedPosts?.includes(postId);
+  };
+
+  const handleLiked = (postId: any) => {
+    if (!isLiked(postId)) {
+      likePost.mutate(postId);
+    } else {
+      unlikePost.mutate(postId);
+    }
+  };
   const theme = useTheme();
   const [filterQuery, setFilterQuery] = useState<SearchQuery>({});
   const [priceFilters, setPriceFilters] = useState<number[]>([
@@ -242,6 +271,8 @@ function Search() {
         city: item.car.city,
         price: item.car.price,
         picture: item.car.imgsUrls[0],
+        isFavorite: isLiked(item._id),
+        handleFavorite: handleLiked,
       }))
     : [];
 
@@ -491,5 +522,4 @@ function Search() {
     </>
   );
 }
-
 export default Search;
