@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  ReactNode,
-  JSXElementConstructor,
-  ReactElement,
-} from "react";
+import React, { useState, useEffect, ReactElement } from "react";
 import {
   Box,
   Button,
@@ -37,6 +31,7 @@ import {
 } from "./consts";
 import { useQuery } from "react-query";
 import { fetchAllTypes } from "../../services/opendatasoft";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 const handOptions = [
   { displayValue: "1", value: "1" },
@@ -158,18 +153,18 @@ function Search() {
     yearFilters,
     priceFilters,
   ]);
-  const {
-    data: posts,
-    isLoading: isLoadingPosts,
-    error: errorFetchingPosts,
-  } = useQuery([filterQuery], () => getAllPosts(filterQuery).req, {
-    onSuccess: (data): void => {
-      console.log("Posts loaded successfully:", data.data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-  });
+  const { data: posts } = useQuery(
+    [filterQuery],
+    () => getAllPosts(filterQuery).req,
+    {
+      onSuccess: (data): void => {
+        console.log("Posts loaded successfully:", data.data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
 
   const { data: allMakes } = useQuery<{ results: [] }, Error>(
     ["allMakes"],
@@ -180,30 +175,30 @@ function Search() {
     ["allModels"],
     () => fetchAllTypes("model")
   );
-  const {
-    data: allColors,
-    isLoading: isLoadingColors,
-    error: errorFetchingColors,
-  } = useQuery(["allColors"], () => getAllColors().req, {
-    onSuccess: (data: { data: string[] }): void => {
-      console.log("Data loaded successfully:", data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-  });
-  const {
-    data: allCities,
-    isLoading: isLoadingCities,
-    error: errorFetchingCities,
-  } = useQuery(["allCities"], () => getAllCities().req, {
-    onSuccess: (data: { data: string[] }): void => {
-      console.log("Data loaded successfully:", data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-  });
+  const { data: allColors } = useQuery(
+    ["allColors"],
+    () => getAllColors().req,
+    {
+      onSuccess: (data: { data: string[] }): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
+  const { data: allCities } = useQuery(
+    ["allCities"],
+    () => getAllCities().req,
+    {
+      onSuccess: (data: { data: string[] }): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
 
   const allMakesOptions: { displayValue: string; value: string }[] =
     allMakes && allMakes.results
@@ -409,7 +404,7 @@ function Search() {
             justifyContent: "flexStart",
             flexWrap: "wrap",
             height: 100,
-            mb: 2,
+            mb: 3,
           }}
         >
           {filterObjects.map((filter, index) => {
@@ -433,22 +428,21 @@ function Search() {
             mb: 2,
           }}
         >
-          <Box display="flex">
-            <Button
-              variant="text"
-              sx={{ color: theme.palette.primary.dark }}
-              onClick={handleClearFilters}
-            >
-              נקה
-            </Button>
-          </Box>
           <Button
             startIcon={<AddIcon />}
             variant="text"
-            sx={{ color: theme.palette.primary.dark }}
+            sx={{ color: theme.palette.primary.dark, ml: 3 }}
             onClick={handleOpenUserMenu}
           >
             חיפוש מתקדם
+          </Button>
+          <Button
+            startIcon={<SearchOffIcon />}
+            variant="text"
+            sx={{ color: theme.palette.primary.dark, ml: 3 }}
+            onClick={handleClearFilters}
+          >
+            נקה
           </Button>
           <Menu
             sx={{ mt: "45px" }}
@@ -485,7 +479,7 @@ function Search() {
           </Menu>
         </Box>
       </Box>
-      <Box width={1400} sx={{ mt: 3 }}>
+      <Box width={1400} sx={{ mt: 2 }}>
         <ResultsTable rows={postRows} />
       </Box>
     </>

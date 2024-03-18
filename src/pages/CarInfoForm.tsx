@@ -52,11 +52,7 @@ const CarInfoForm = ({
   }, [defaultValues]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loadingPhotoUpload, setLoadingPhotoUpload] = useState<boolean>(false);
-  const {
-    data: allMakes,
-    isLoading: _isLoadingMakes,
-    error: _errorFetchingMakes,
-  } = useQuery<{ results: [] }, Error>(
+  const { data: allMakes } = useQuery<{ results: [] }, Error>(
     ["allMakes"],
     () => fetchAllTypes("make"),
     {
@@ -76,11 +72,7 @@ const CarInfoForm = ({
         }))
       : [];
 
-  const {
-    data: allModels,
-    isLoading: _isLoadingModels,
-    error: _errorFetchingModels,
-  } = useQuery<{ results: [] }, Error>(
+  const { data: allModels } = useQuery<{ results: [] }, Error>(
     ["allModels"],
     () => fetchAllTypes("model"),
     {
@@ -129,7 +121,6 @@ const CarInfoForm = ({
       register: {
         required: true,
       },
-
     },
     {
       name: "price",
@@ -276,7 +267,7 @@ const CarInfoForm = ({
           onChange={imgSelected}
           multiple
         />
-        <Box component="form" noValidate onSubmit={() => { }} sx={{ mt: 6 }}>
+        <Box component="form" noValidate onSubmit={() => {}} sx={{ mt: 6 }}>
           <Grid item container spacing={2}>
             <Grid item xs={3} />
             <Grid item xs={6}>
