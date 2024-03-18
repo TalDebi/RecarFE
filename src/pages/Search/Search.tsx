@@ -187,18 +187,18 @@ function Search() {
     yearFilters,
     priceFilters,
   ]);
-  const {
-    data: posts,
-    isLoading: isLoadingPosts,
-    error: errorFetchingPosts,
-  } = useQuery([filterQuery], () => getAllPosts(filterQuery).req, {
-    onSuccess: (data): void => {
-      console.log("Posts loaded successfully:", data.data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-  });
+  const { data: posts } = useQuery(
+    [filterQuery],
+    () => getAllPosts(filterQuery).req,
+    {
+      onSuccess: (data): void => {
+        console.log("Posts loaded successfully:", data.data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
 
   const { data: allMakes } = useQuery<{ results: [] }, Error>(
     ["allMakes"],
@@ -209,30 +209,30 @@ function Search() {
     ["allModels"],
     () => fetchAllTypes("model")
   );
-  const {
-    data: allColors,
-    isLoading: isLoadingColors,
-    error: errorFetchingColors,
-  } = useQuery(["allColors"], () => getAllColors().req, {
-    onSuccess: (data: { data: string[] }): void => {
-      console.log("Data loaded successfully:", data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-  });
-  const {
-    data: allCities,
-    isLoading: isLoadingCities,
-    error: errorFetchingCities,
-  } = useQuery(["allCities"], () => getAllCities().req, {
-    onSuccess: (data: { data: string[] }): void => {
-      console.log("Data loaded successfully:", data);
-    },
-    onError: (error): void => {
-      console.error("Error fetching data:", error);
-    },
-  });
+  const { data: allColors } = useQuery(
+    ["allColors"],
+    () => getAllColors().req,
+    {
+      onSuccess: (data: { data: string[] }): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
+  const { data: allCities } = useQuery(
+    ["allCities"],
+    () => getAllCities().req,
+    {
+      onSuccess: (data: { data: string[] }): void => {
+        console.log("Data loaded successfully:", data);
+      },
+      onError: (error): void => {
+        console.error("Error fetching data:", error);
+      },
+    }
+  );
 
   const allMakesOptions: { displayValue: string; value: string }[] =
     allMakes && allMakes.results

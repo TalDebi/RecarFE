@@ -26,7 +26,6 @@ const RecarDialog = ({
   dialogTitle,
   isLoading,
   submitAction,
-  isValid,
   children,
   height,
   width,
