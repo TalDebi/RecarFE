@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { useQuery } from "react-query";
 import { getPost } from "../../services/posts-service";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const mainInfo = [
   {
@@ -38,7 +39,7 @@ interface CarInfoCardProps {
   deletPost?: (_: string) => void;
 }
 
-function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
+function CarInfoCard({ postId, deletPost }: CarInfoCardProps) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -62,13 +63,9 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
     handleCloseMoreOptions();
   };
 
-  const deletePostAction = ()=>deletPost&&deletPost(postId)
+  const deletePostAction = () => deletPost && deletPost(postId);
 
-  const {
-    data: post,
-    isLoading: _isLoadingPost,
-    error: _errorFetchingPost,
-  } = useQuery(["post", postId], () => getPost(postId).req, {
+  const { data: post } = useQuery(["post", postId], () => getPost(postId).req, {
     onSuccess: (data): void => {
       console.log("Posts loaded successfully:", data.data);
     },
@@ -79,8 +76,19 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
     refetchInterval: 5000,
   });
 
-  const moreOptions = [{ label: "פתח בחלון חדש", action: handleOpenInNewTab }];
-  deletPost && moreOptions.push({ label: "מחק", action: deletePostAction })
+  const moreOptions = [
+    {
+      label: "פתח בחלון חדש",
+      action: handleOpenInNewTab,
+      icon: <OpenInNewIcon fontSize="small" />,
+    },
+  ];
+  deletPost &&
+    moreOptions.push({
+      label: "מחק",
+      action: deletePostAction,
+      icon: <DeleteIcon fontSize="small" />,
+    });
 
   return (
     <Card sx={{ display: "flex", width: "100%", height: 155, mb: 2 }}>
@@ -155,9 +163,7 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
               {moreOptions.map((option) => (
                 <MenuItem onClick={option.action}>
                   <ListItemText>{option.label}</ListItemText>
-                  <ListItemIcon sx={{ ml: 1 }}>
-                    <OpenInNewIcon fontSize="small" />
-                  </ListItemIcon>
+                  <ListItemIcon sx={{ ml: 1 }}>{option.icon}</ListItemIcon>
                 </MenuItem>
               ))}
             </Menu>

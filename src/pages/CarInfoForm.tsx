@@ -233,13 +233,14 @@ const CarInfoForm = ({
           }
         >
           <Box
-            width={265}
+            width={300}
             height={200}
             border="1px solid"
             sx={{
               border: "1px solid",
               borderColor: theme.palette.primary.light,
               borderRadius: 1,
+              ml: 4,
             }}
           >
             <Carousel>
@@ -253,7 +254,7 @@ const CarInfoForm = ({
                         : URL.createObjectURL(image)
                     }
                     alt="no image"
-                    style={{ width: 265, height: 200, objectFit: "contain" }}
+                    style={{ width: 300, height: 200, objectFit: "contain" }}
                   />
                 )
               )}
