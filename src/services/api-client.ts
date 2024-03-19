@@ -25,9 +25,11 @@ const errorHandler: ErrorHandler = async (error: AxiosError<any, any>) => {
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
-    config.headers.Authorization =
-      "Bearer " +
-        JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
+    if (!config.headers.Authorization) {
+      config.headers.Authorization =
+        "Bearer " +
+          JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
+    }
 
     return config;
   }
