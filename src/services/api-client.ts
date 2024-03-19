@@ -18,6 +18,10 @@ const errorHandler: ErrorHandler = async (error: AxiosError<any, any>) => {
   if (error?.response?.data?.errorType === "TokenExpired") {
     const response = await refreshTokens();
     localStorage.setItem("tokens", JSON.stringify(response));
+    window.dispatchEvent(new Event("storage"));
+
+    error.config.headers.Authorization = "Bearer " + response.accessToken;
+
     return apiClient(error.config as AxiosRequestConfig);
   }
   return Promise.reject(error);

@@ -62,11 +62,7 @@ function CarInfoCard({ postId, deletPost }: CarInfoCardProps) {
 
   const deletePostAction = () => deletPost && deletPost(postId);
 
-  const {
-    data: post,
-    isLoading: _isLoadingPost,
-    error: _errorFetchingPost,
-  } = useQuery(["post", postId], () => getPost(postId).req, {
+  const { data: post } = useQuery(["post", postId], () => getPost(postId).req, {
     onSuccess: (data): void => {
       console.log("Posts loaded successfully:", data.data);
     },
