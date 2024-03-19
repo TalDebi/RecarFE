@@ -78,7 +78,7 @@ function CarInfoCard({ postId, deletPost }: CarInfoCardProps) {
   });
 
   const moreOptions = [
-    { label: "פתח בחלון חדש", action: handleOpenInNewTab, icon: FileOpen },
+    { label: "פתח בחלון חדש", action: handleOpenInNewTab, icon: OpenInNew },
   ];
   deletPost &&
     moreOptions.push({ label: "מחק", action: deletePostAction, icon: Delete });
