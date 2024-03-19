@@ -7,9 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import MoreVert from "@mui/icons-material/MoreVert";
-import FileOpenIcon from "@mui/icons-material/FileOpen";
+import { FileOpen, Delete, OpenInNew } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { useQuery } from "react-query";
 import { getPost } from "../../services/posts-service";
 
@@ -37,7 +36,7 @@ interface CarInfoCardProps {
   deletPost?: (_: string) => void;
 }
 
-function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
+function CarInfoCard({ postId, deletPost }: CarInfoCardProps) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -61,7 +60,7 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
     handleCloseMoreOptions();
   };
 
-  const deletePostAction = ()=>deletPost&&deletPost(postId)
+  const deletePostAction = () => deletPost && deletPost(postId);
 
   const {
     data: post,
@@ -78,15 +77,18 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
     refetchInterval: 5000,
   });
 
-  const moreOptions = [{ label: "פתח בחלון חדש", action: handleOpenInNewTab }];
-  deletPost && moreOptions.push({ label: "מחק", action: deletePostAction })
+  const moreOptions = [
+    { label: "פתח בחלון חדש", action: handleOpenInNewTab, icon: FileOpen },
+  ];
+  deletPost &&
+    moreOptions.push({ label: "מחק", action: deletePostAction, icon: Delete });
 
   return (
     <Card sx={{ display: "flex", width: "100%", height: 155, mb: 2 }}>
       <CardMedia
         component="img"
-        sx={{ width: 350, height: 160 }}
-        image={post?.data.car.imgsUrls}
+        sx={{ width: 350, height: 160, objectFit: "contain" }}
+        image={post?.data.car.imgsUrls.length > 0 && post?.data.car.imgsUrls[0]}
         alt="no image provided"
       />
       <CardContent
@@ -128,7 +130,7 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
             color="inherit"
             onClick={handleNavigateToPost}
           >
-            <FileOpenIcon />
+            <FileOpen />
           </IconButton>
           <Box>
             <IconButton
@@ -155,7 +157,7 @@ function CarInfoCard({ postId,deletPost }: CarInfoCardProps) {
                 <MenuItem onClick={option.action}>
                   <ListItemText>{option.label}</ListItemText>
                   <ListItemIcon sx={{ ml: 1 }}>
-                    <OpenInNewIcon fontSize="small" />
+                    <option.icon fontSize="small" />
                   </ListItemIcon>
                 </MenuItem>
               ))}
