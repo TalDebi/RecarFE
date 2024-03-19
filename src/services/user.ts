@@ -36,7 +36,6 @@ export const logout = async (): Promise<void> => {
 
 export const refreshTokens = async (): Promise<Tokens> => {
   const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-  console.log(tokens);
   const response = await apiClient.get("/auth/refresh", {
     headers: {
       Authorization: `Bearer ${tokens?.refreshToken}`,
@@ -46,23 +45,12 @@ export const refreshTokens = async (): Promise<Tokens> => {
 };
 
 export const editUser = async (user: User): Promise<SecuredUser> => {
-  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-  console.log(tokens);
-  const response = await apiClient.put(`/auth/${user._id}`, user, {
-    headers: {
-      Authorization: `Bearer ${tokens?.accessToken}`,
-    },
-  });
+  const response = await apiClient.put(`/auth/${user._id}`, user);
   return response.data;
 };
 
 export const fetchLikedPostsInfo = async (userID: string): Promise<[]> => {
-  const tokens: Tokens = JSON.parse(localStorage.getItem("tokens") ?? "{}");
-  const response = await apiClient.get(`user/${userID}/likedPosts`, {
-    headers: {
-      Authorization: `Bearer ${tokens?.accessToken}`,
-    },
-  });
+  const response = await apiClient.get(`user/${userID}/likedPosts`);
 
   if (response.status >= 300) {
     throw new Error("cannot get user liked posts!");

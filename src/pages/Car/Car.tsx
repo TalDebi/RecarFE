@@ -42,9 +42,6 @@ export interface CarInterface {
   imgsUrls?: string[];
 }
 
-const userId: string =
-  JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "";
-
 interface ButtonProps {
   buttonColor: string;
 }
@@ -61,6 +58,8 @@ export const StyledButton = styled(Button)<ButtonProps>`
   }
 `;
 function Car() {
+  const userId: string =
+    JSON.parse(localStorage.getItem("user") ?? "{}")?._id ?? "";
   const theme = useTheme();
   const { data: _likedPosts } = useQuery<[], Error>(
     ["likedPosts", userId],

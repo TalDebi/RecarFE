@@ -94,13 +94,11 @@ const CarInfoForm = ({
     : [];
 
   const imgSelected = (e: ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.target.value);
     if (e.target.files && e.target.files.length > 0) {
       setImagesSrc([...imagesSrc, ...e.target.files]);
     }
   };
   const selectImg = (): void => {
-    console.log("Selecting image...");
     fileInputRef.current?.click();
   };
 

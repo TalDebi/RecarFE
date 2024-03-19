@@ -373,7 +373,6 @@ function Search() {
   );
 
   const handleCloseUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(event);
     setAnchorElUser(null);
   };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -446,7 +445,6 @@ function Search() {
         >
           {filterObjects.map((filter, index) => {
             if (filterList.includes(filter.key)) {
-              console.log(filter);
               return (
                 <filter.component
                   clearKey={`${index}-${clearKey}`}
