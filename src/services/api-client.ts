@@ -4,17 +4,14 @@ import axios, {
   AxiosResponse,
   AxiosRequestConfig,
   CanceledError,
+  InternalAxiosRequestConfig,
 } from "axios";
 import { refreshTokens } from "./user";
 
 type ErrorHandler = (error: AxiosError) => Promise<AxiosResponse>;
 
-const accessToken: string =
-  JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
-
 const apiClient: AxiosInstance = axios.create({
   baseURL: `https://${process.env.SERVER}:${process.env.SERVER_PORT}`,
-  headers: { Authorization: "Bearer " + accessToken },
 });
 
 const errorHandler: ErrorHandler = async (error: AxiosError<any, any>) => {
@@ -25,6 +22,16 @@ const errorHandler: ErrorHandler = async (error: AxiosError<any, any>) => {
   }
   return Promise.reject(error);
 };
+
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig<any>) => {
+    config.headers.Authorization =
+      "Bearer " +
+        JSON.parse(localStorage.getItem("tokens") ?? "{}")?.accessToken ?? "";
+
+    return config;
+  }
+);
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
