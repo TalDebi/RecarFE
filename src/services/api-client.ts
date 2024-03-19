@@ -20,7 +20,7 @@ const errorHandler: ErrorHandler = async (error: AxiosError<any, any>) => {
     localStorage.setItem("tokens", JSON.stringify(response));
     window.dispatchEvent(new Event("storage"));
 
-    error.config.headers.Authorization = "Bearer " + response.accessToken;
+    error.config!.headers.Authorization = "Bearer " + response.accessToken;
 
     return apiClient(error.config as AxiosRequestConfig);
   }

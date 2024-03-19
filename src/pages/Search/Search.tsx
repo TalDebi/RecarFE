@@ -372,7 +372,7 @@ function Search() {
     null
   );
 
-  const handleCloseUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleCloseUserMenu = (_event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(null);
   };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
